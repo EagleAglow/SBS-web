@@ -12,7 +12,11 @@ class ShiftCodesTableSeeder extends Seeder
     public function run()
     {
         // Truncate the database so we don't repeat the seed
+        // first turn off foreign key check to avoid error
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         DB::table('shift_codes')->delete();
+        // restore foreign key check to avoid error
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         DB::table('shift_codes')->insertOrIgnore([ 'name' => '----', 'begin_time' => Null, 'end_time' => Null, ]);
         DB::table('shift_codes')->insertOrIgnore([ 'name' => '06BM', 'begin_time' => '06:45', 'end_time' => '17:15', ]);
