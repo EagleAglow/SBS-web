@@ -22,6 +22,7 @@
     <!-- Scripts -->
     <!-- don't defer loading, needed to make flash messages work -->
     <script src="{{ asset('js/app.js') }}"></script>
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -29,6 +30,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+
 </head>
 <body>
     <div id="app">
@@ -160,6 +162,7 @@
         $('#cover-spin').hide();
         $('div.alert').not('.alert-important').delay(1100).hide(900);
         $('#flash-overlay-modal').modal();
-    </script>
+    </script> 
+
 </body>
 </html>
