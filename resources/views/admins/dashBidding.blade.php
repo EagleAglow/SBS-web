@@ -53,13 +53,13 @@
                         if($bidding_state_param == 'running'){
                             $state = '<b><span style="color:red;">In Progress</span></b>';
                             if(isset($bidding_next)){
-                                $state = $state . ' &#9724; Next Bidder: ' . $bidding_next . ' (' .$next_name . ')';
+                                $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
-                                    $state = $state . ' &#9724; Next Bidder: ' . $bidding_next . ' (' .$next_name . ')';
+                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -72,12 +72,12 @@
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
                                                 if($bidding_next == 1){
-                                                    $state = $state . ' &#9724; Next Bidder: ' . $bidding_next . ' (' .$next_name . ')';
+                                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                                 } else {
-                                                    $state = $state . ' &#9724; Next Bidder: ' . $bidding_next . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
+                                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
                                                 }
                                             } else {
-                                                $state = $state . ' &#9724; Next Bidder: <span style="color:red;">Unexpected Error: No Value For Next Bidder</span>';
+                                                $state = $state . ' &#9724; Next: <span style="color:red;">Unexpected Error: No Value For Next Bidder</span>';
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported
@@ -96,10 +96,10 @@
                         $bidder = 'No Active Bidder';
                     } else {
                         if (count($items) == 1){
-                            $bidder = 'Active Bidder: ' . $items->first()->name;
+                            $bidder = 'Active: ' . $items->first()->name;
 
                             if (isset($items->first()->bid_order)){
-                            $bidder = $bidder . ' (Bidder Number: ' . $items->first()->bid_order . ')';
+                            $bidder = $bidder . ' (Order: ' . $items->first()->bid_order . ')';
                             } else {
                                 $bidder = $bidder . ' <span style="color:red;">(ERROR: Bid order number is missing!)</span>';
                             }

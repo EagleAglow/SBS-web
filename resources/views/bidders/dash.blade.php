@@ -101,26 +101,25 @@
                         $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
 
                         if($bidding_state_param == 'running'){
-                            $state = 'Bidding is in ACTIVE progress';
-                            if(isset($next_param->integer_value)){
-                                $state = $state . ' &#9724; Next Bidder: ' . $bidding_next->integer_value;
+                            $state = 'Bidding is ACTIVE.';
+                            if(isset($bidding_next)){
+                                $state = $state . ' &#9724; Next bidder order number: ' . $bidding_next;
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
-                                $state = 'Bidding is paused';
-                                if(isset($next_param->integer_value)){
-                                    $state = $state . ' &#9724; Next Bidder: ' . $bidding_next->integer_value;
+                                $state = 'Bidding is paused.';
+                                if(isset($bidding_next)){
+                                    $state = $state . ' &#9724; Next bidder order number: ' . $bidding_next;
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
-                                    $state = 'Bidding is complete';
+                                    $state = 'Bidding is complete.';
                                 } else {
                                     if($bidding_state_param == 'ready'){
                                         $state = 'Bidding is ready to begin, but is NOT active.';
-                                        if(isset($next_param->integer_value)){
-                                            $state = $state . ' &#9724; Next Bidder: ' . $bidding_next->integer_value;
-                                        }
-                                    } else {
+                                        if(isset($bidding_next)){
+                                            $state = $state . ' &#9724; Next bidder order number: ' . $bidding_next;
+                                        }                                    } else {
                                         $state = 'Bidding is not ready. ';
                                     }
                                 }
@@ -128,7 +127,7 @@
                         }
                         $you_are = Auth::user()->bid_order;
                         if(isset($you_are)){
-                            $you_are = 'You are not the active bidder. You are bidder number: ' . $you_are;
+                            $you_are = 'You are not the active bidder. &#9724; You are bidder order number: ' . $you_are;
                         } else {
                             $you_are = 'You are not the active bidder.';
                         }
@@ -145,7 +144,7 @@
                             @else
                                 <div class="card-body my-squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
                                 The <b>active bidder</b> can <b>bid</b> a line for an <b>active</b> schedule, <b>if bidding is active</b>.<br>
-                                {{ $you_are }}<br> {!! $state  !!}
+                                {!! $you_are !!}<br> {!! $state  !!}
                                 </div>
                             @endif
                         @else

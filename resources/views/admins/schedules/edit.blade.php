@@ -30,6 +30,7 @@
                             <label for="start" class="col-md-3 col-form-label text-md-right">{{ __('Start Date') }}</label>
                             <div class="col-md-6">
                                 <input id="start" type="date" class="form-control @error('start') is-invalid @enderror" name="start" value="{{ substr(old('start'), 0 , 10) ? substr(old('start'), 0 , 10) : substr($schedule->start, 0 , 10) }}"  required autocomplete="start" autofocus>
+                                @error('start')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
