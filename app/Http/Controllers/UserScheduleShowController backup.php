@@ -9,7 +9,6 @@ use App\ScheduleLine;
 use App\LineGroup;
 use App\User;
 use App\Pick;
-use DB;
 
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
@@ -30,24 +29,6 @@ class UserScheduleShowController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function index(Request $request, $id) {
-        if (!isset($id)){
-            abort('401');
-        }
-
-
-        return view('users.scheduleshow.index',
-            ['schedule'=>$schedule,
-            'schedule_lines'=>$schedule_lines,
-            'first_day'=>$first_day,
-            'last_day'=>$last_day,
-            'page'=>$page,
-            'id'=>$id,
-            ]);
-
-    }
- 
- 
-    public function show(Request $request, $id) {
         if (!isset($id)){
             abort('401');
         }
@@ -78,8 +59,6 @@ class UserScheduleShowController extends Controller {
         if ($user->hasRole('bidder-tnon')){
             $list[] = LineGroup::where('code','TNON')->first()['id'];
         }
-        // get user id for later join to user picks
-        $pick_uid = $user->id;
 
         // deal with bidding by supervisor... if there is an active bidder, use their role to get line group(s)
         if ($user->hasRole('supervisor')){
@@ -106,28 +85,173 @@ class UserScheduleShowController extends Controller {
                 if ($who->hasRole('bidder-tnon')){
                     $list[] = LineGroup::where('code','TNON')->first()['id'];
                 }
-                // get user id for later join to user picks
-                $pick_uid = $who->id;
             }
         }
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
+        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
 
-// original        
-// $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+        $first_day = $request['first_day'];
+        if (!isset($first_day)){
+            $first_day = 1;
+        }
+        $last_day = $request['last_day'];
+        if (!isset($last_day)){
+            $last_day = 7;
+        }
+
+        $page = $request['page'];
+        if (!isset($page)){
+            $page = '1';
+        }        
+
+        // deal with tag/untag requests
+        $pick = $request['pick'];
+        $schedule_line_id = $request['schedule_line_id'];
+        if (isset($schedule_line_id)){
+            if (isset($pick)){
+                if ($user->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
+                    if ($pick == 'tag'){
+                        // attempt to tag
+                        $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
+                        $uid = $user->id;
+                        // get highest rank, if already set
+                        $picks = Pick::where('user_id',$uid)->orderBy('rank','DESC')->get();
+                        if (count($picks) == 0){
+                            $rank = 1;
+                        } else {
+                            $rank = $picks->first()->rank +1;
+                        }
+                        // set this user id for this schedule line
+                        $pick = new Pick();
+                        $pick->schedule_line_id = $schedule_line->id;
+                        $pick->user_id = $uid;
+                        $pick->rank = $rank;
+                        $pick->save();
+                    }
+
+                    if ($pick == 'untag'){
+                        // attempt to untag
+                        $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
+                        $uid = $user->id;
+                        $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
+                        if (isset($pick)){
+                            $pick->delete();
+                            // re-rank remaining picks
+                            $picks = Pick::where('user_id',$uid)->orderBy('rank')->get();
+                            $rank = count($picks);
+                            if ($rank > 0){
+                                $rank = 0;
+                                foreach($picks as $pick){
+                                    $rank = $rank +1;
+                                    $pick->rank = $rank;
+                                    $pick->update();
+                                }
+                            }
+                        }
+                    }
+
+                    if ($pick == 'boost'){
+                        // if rank 2 or greater, switch with next lower number rank
+                        $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
+                        $uid = $user->id;
+                        $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
+                        if (isset($pick)){
+                            $hold = $pick->rank;
+                            if ($hold > 1){
+                                $other_pick = Pick::where('user_id',$uid)->where('rank',$hold -1)->get()->first();
+                                if (isset($other_pick)){
+                                    $other_pick->rank = $hold;
+                                    $other_pick->update();
+                                    $pick->rank = $hold -1;
+                                    $pick->update();
+                                }
+                            }
+                        }
+                    }
 
 
-        // collection of picks
-        $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
-        // get lines that have not been tagged for the user
-        $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-        ->select('schedule_lines.*', DB::raw('99999 as rank'));
-        // get lines that have been tagged for the user - join succeeds
-        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-        ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
-        ->paginate(5); //Get first 5 ScheduleLines
+
+
+                }
+            }  
+        }  
+
+        return view('users.scheduleshow.index',
+            ['schedule'=>$schedule,
+            'schedule_lines'=>$schedule_lines,
+            'first_day'=>$first_day,
+            'last_day'=>$last_day,
+            'page'=>$page,
+            'id'=>$id,
+            ]);
+
+    }
  
+    // apparently, we need a show method to set routes with "resource"
+    //this is a copy of the index method...
+     public function show(Request $request, $id) {
+        if (!isset($id)){
+            abort('401');
+        }
+
+        $user = auth()->user();
+        // bidder group codes: DEMO, OIDP, TSU, IRPA, TRAFFIC
+        // not using bidder groups for this, to permit some odd people that don't doe both TCOM and TNON
+        // select lines that this user can bid, based on role(s)
+        // roles: bidder-demo, bidder-oidp, bidder-tsu, bidder-irpa, bidder-tcom, bidder-tnon
+        // line group codes: DEMO, OIDP, TSU, IRPA, TCOM, TNON
+
+        $list = array();  //empty array
+        if ($user->hasRole('bidder-demo')){
+            $list[] = LineGroup::where('code','DEMO')->first()['id'];
+        }
+        if ($user->hasRole('bidder-oidp')){
+            $list[] = LineGroup::where('code','OIDP')->first()['id'];
+        }
+        if ($user->hasRole('bidder-tsu')){
+            $list[] = LineGroup::where('code','TSU')->first()['id'];
+        }
+        if ($user->hasRole('bidder-irpa')){
+            $list[] = LineGroup::where('code','IRPA')->first()['id'];
+        }
+        if ($user->hasRole('bidder-tcom')){
+            $list[] = LineGroup::where('code','TCOM')->first()['id'];
+        }
+        if ($user->hasRole('bidder-tnon')){
+            $list[] = LineGroup::where('code','TNON')->first()['id'];
+        }
+
+        // deal with bidding by supervisor... if there is an active bidder, use their role to get line group(s)
+        if ($user->hasRole('supervisor')){
+            $other_role = Role::where('name','bidder-active')->first();
+            $who = User::Role($other_role)->get();
+            if (count($who) > 0 ){
+                $who = $who->first();
+
+                if ($who->hasRole('bidder-demo')){
+                    $list[] = LineGroup::where('code','DEMO')->first()['id'];
+                }
+                if ($who->hasRole('bidder-oidp')){
+                    $list[] = LineGroup::where('code','OIDP')->first()['id'];
+                }
+                if ($who->hasRole('bidder-tsu')){
+                    $list[] = LineGroup::where('code','TSU')->first()['id'];
+                }
+                if ($who->hasRole('bidder-irpa')){
+                    $list[] = LineGroup::where('code','IRPA')->first()['id'];
+                }
+                if ($who->hasRole('bidder-tcom')){
+                    $list[] = LineGroup::where('code','TCOM')->first()['id'];
+                }
+                if ($who->hasRole('bidder-tnon')){
+                    $list[] = LineGroup::where('code','TNON')->first()['id'];
+                }
+            }
+        }
+ 
+        $schedule = Schedule::findOrFail($id);//Get schedule with the given id
+        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
 
         $first_day = $request['first_day'];
         if (!isset($first_day)){

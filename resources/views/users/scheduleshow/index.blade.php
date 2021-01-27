@@ -207,7 +207,10 @@
                                                     } else {
                                                         echo '<td class="text-center line-code" scope="col">';
                                                     }
-                                                    echo App\ShiftCode::find($schedule_line->getCode($d))->shift_divs . '</td>';
+
+                                                    $day_field_name =  'day_' . substr(('00' . $d),-2);
+                                                    $day_shiftcode_id = $schedule_line->$day_field_name;
+                                                    echo App\ShiftCode::find($day_shiftcode_id)->shift_divs . '</td>';
 
                                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                                 }

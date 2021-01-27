@@ -193,6 +193,7 @@ abort('401');  // test to see if we are hitting this
                     $state_param->update(['string_value' => 'complete']);
 
                     // log bidding complete
+                    $log_item = new LogItem();
                     $log_item->note = 'Bidding complete';
                     $log_item->save();
 

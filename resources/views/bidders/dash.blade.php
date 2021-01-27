@@ -150,7 +150,7 @@
                         @else
                             <div class="card-body my-squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
                             The <b>active bidder</b> can <b>bid</b> a line for an <b>active</b> schedule, <b>if bidding is active</b>.<br>
-                            {{ $you_are }}<br>  {!! $state !!}
+                            {!! $you_are !!}<br>  {!! $state !!}
                             </div>
                         @endif
                         @php
