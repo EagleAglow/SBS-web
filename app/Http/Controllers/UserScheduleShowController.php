@@ -34,6 +34,10 @@ class UserScheduleShowController extends Controller {
             abort('401');
         }
 
+        $my_sort = $request['my_sort'];
+        if(!isset($my_sort)){
+            $my_sort = 'filter';
+        }
 
         return view('users.scheduleshow.index',
             ['schedule'=>$schedule,
@@ -42,14 +46,20 @@ class UserScheduleShowController extends Controller {
             'last_day'=>$last_day,
             'page'=>$page,
             'id'=>$id,
+            'my_sort'=>$my_sort,
             ]);
-
     }
  
  
     public function show(Request $request, $id) {
         if (!isset($id)){
             abort('401');
+        }
+
+        $my_sort = $request['my_sort'];
+        $my_sort = $request['my_sort'];
+        if(!isset($my_sort)){
+            $my_sort = 'filter';
         }
 
         $user = auth()->user();
@@ -116,19 +126,21 @@ class UserScheduleShowController extends Controller {
 // original        
 // $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
 
-
-        // collection of picks
-        $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
-        // get lines that have not been tagged for the user
-        $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-        ->select('schedule_lines.*', DB::raw('99999 as rank'));
-        // get lines that have been tagged for the user - join succeeds
-        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-        ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
-        ->paginate(5); //Get first 5 ScheduleLines
- 
- $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+        if($my_sort == 'filter'){
+            // collection of picks
+            $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+            // get lines that have not been tagged for the user
+            $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+            ->select('schedule_lines.*', DB::raw('99999 as rank'));
+            // get lines that have been tagged for the user - join succeeds
+            $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+            ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+            ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
+            ->paginate(5); //Get first 5 ScheduleLines
+        } else {
+            // all
+            $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+        }
 
 
         $first_day = $request['first_day'];
@@ -210,15 +222,6 @@ class UserScheduleShowController extends Controller {
                             }
                         }
                     }
-
-
-
-
-
-
-
-
-
                 }
             }  
         }  
@@ -230,6 +233,7 @@ class UserScheduleShowController extends Controller {
             'last_day'=>$last_day,
             'page'=>$page,
             'id'=>$id,
+            'my_sort'=>$my_sort,
             ]);
 
     }

@@ -1,43 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-@php
-    // days to display
-    $delta = '7';
-
-    $cycles = $schedule->cycle_count;
-    if (!isset($page)){ $page = 1; }
-
-    if (isset($cycles)){
-        if (($cycles <= 0 ) || ( 5 <= $cycles )){
-            $cycles = 1;
-        }
-    } else { $cycles = 1; }
-
-    if (isset($first_day)){
-        if (($first_day <= 0 ) || ( 57 <= $first_day )){
-            $first_day = 1;
-        }
-    } else { $first_day = 1; }
-
-    if (isset($last_day)){
-        if (($last_day <= 9 ) || ( 57 <= $last_day )){
-            $last_day = $first_day + $delta - 1;
-        }
-    } else {
-        $last_day = $first_day + $delta - 1;
-    }
-    
-    if ( $last_day > 56 ){
-            $last_day = 56;
-            $first_day = $last_day - $delta + 1;                                
-    }
-
-    $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
-
-@endphp
-
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
@@ -49,38 +12,12 @@
                     </div>
                     @include('flash::message')
                 @else
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col-md-8">
-                                {{ __('Schedule: ') }}{{ $schedule->title }}
-                                @if(Auth::user()->hasRole('supervisor')) 
-                                    @if( count(App\User::role('bidder-active')->get('id')) > 0 )
-                                        <h6>You can place a bid for:<span style="color:red;"> {{ App\User::role('bidder-active')->get('name')->first()->name }} </span></h6>
-                                    @endif
-                                @endif
-                            </div>
-                            <div class="col">
-                                @if($my_sort == 'filter')
-                                    <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_sort" value="all">
-                                        @csrf
-                                        <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All</button>
-                                    </form>
-                                @else
-                                <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_sort" value="filter">
-                                        @csrf
-                                        <button type="submit" class="btn btn-secondary btn-shift float-right">Filter</button>
-                                    </form>
-                                @endif
-                            </div>
-                        </div>
+                    <div class="card-header">{{ __('Schedule: ') }}{{ $schedule->title }}
+                        @if(Auth::user()->hasRole('supervisor')) 
+                            @if( count(App\User::role('bidder-active')->get('id')) > 0 )
+                                <h6>You can place a bid for:<span style="color:red;"> {{ App\User::role('bidder-active')->get('name')->first()->name }} </span></h6>
+                            @endif
+                        @endif
                     </div>
                     @include('flash::message')
                     
@@ -88,6 +25,41 @@
                         <div class="table-responsive-md">
                             <table class="table table-striped">
                                 <thead><div class="pagination-text"></div>
+                                @php
+                                    // days to display
+                                    $delta = '7';
+
+                                    $cycles = $schedule->cycle_count;
+                                    if (!isset($page)){ $page = 1; }
+
+                                    if (isset($cycles)){
+                                        if (($cycles <= 0 ) || ( 5 <= $cycles )){
+                                            $cycles = 1;
+                                        }
+                                    } else { $cycles = 1; }
+
+                                    if (isset($first_day)){
+                                        if (($first_day <= 0 ) || ( 57 <= $first_day )){
+                                            $first_day = 1;
+                                        }
+                                    } else { $first_day = 1; }
+
+                                    if (isset($last_day)){
+                                        if (($last_day <= 9 ) || ( 57 <= $last_day )){
+                                            $last_day = $first_day + $delta - 1;
+                                        }
+                                    } else {
+                                        $last_day = $first_day + $delta - 1;
+                                    }
+                                    
+                                    if ( $last_day > 56 ){
+                                            $last_day = 56;
+                                            $first_day = $last_day - $delta + 1;                                
+                                    }
+
+                                    $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
+
+                                @endphp
                                 <tr>
                                 <th class="text-center btn-shift" scope="col">
 
@@ -96,7 +68,6 @@
                                     <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                     <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
-                                    <input type="hidden" name="my_sort" value={{$my_sort}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary btn-shift">&#8656;&nbsp;Earlier</button>
                                 </form>
@@ -129,7 +100,6 @@
                                     <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
                                     <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
-                                    <input type="hidden" name="my_sort" value={{$my_sort}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary">Later&nbsp;&#8658;</button>
                                 </form>
@@ -300,7 +270,6 @@
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="tag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                             </form>
@@ -311,7 +280,6 @@
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="untag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                             </form>
@@ -322,7 +290,6 @@
                                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                                     <input type="hidden" name="pick" value="boost">
                                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                    <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                                     @csrf
                                                                                     <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                                     {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -340,7 +307,6 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="tag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                     </form>
@@ -351,7 +317,6 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="untag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                     </form>
@@ -362,7 +327,6 @@
                                                                             <input type="hidden" name="page" value="{{ $page }}">
                                                                             <input type="hidden" name="pick" value="boost">
                                                                             <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                            <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                             @csrf
                                                                             <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                             {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -379,7 +343,6 @@
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="tag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                    <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                 </form>
@@ -390,7 +353,6 @@
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="untag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                    <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                 </form>
@@ -401,7 +363,6 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="boost">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_sort" value={{$my_sort}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                         {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -422,7 +383,7 @@
 
                                     @php
                                         // things to include with pagination 
-                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_sort'=>$my_sort);
+                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day);
                                     @endphp
 
                                     {{ $schedule_lines->appends($params)->links() }}    
