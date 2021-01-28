@@ -130,6 +130,9 @@
                                     @if( !Request::is('admins/logitems'))
                                         <a class="dropdown-item" href="{{ url('admins/logitems') }}">Admin - Log Items</a>
                                     @endif
+                                    @if( !Request::is('admins/settings'))
+                                        <a class="dropdown-item" href="{{ url('admins/settings') }}">Admin - Settings</a>
+                                    @endif
 
                                 @endrole
                                 @role('superuser')

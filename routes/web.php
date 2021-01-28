@@ -129,9 +129,15 @@ Route::prefix('admins')->group(function () {
     // bulk user delete
     Route::get('/userpurge', 'ImportExportUsersController@userpurge')->name('admins.userpurge');
 
-// log items table
+    // log items table
     Route::get('logitems', 'LogItemController@index')->name('admins.logitems');
     Route::get('logitems/purge', 'LogItemController@purge')->name('admins.logitems.purge');
+
+    // settings
+    Route::get('settings', 'SettingController@index')->name('admins.settings');
+    // set 'name' or 'taken' on bid page
+    Route::get('settings/name', 'SettingController@name')->name('admins.settings.name');
+    Route::get('settings/taken', 'SettingController@taken')->name('admins.settings.taken');
 
 });
 
