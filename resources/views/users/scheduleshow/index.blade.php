@@ -56,6 +56,9 @@
                                             $last_day = 56;
                                             $first_day = $last_day - $delta + 1;                                
                                     }
+
+                                    $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
+
                                 @endphp
                                 <tr>
                                 <th class="text-center btn-shift" scope="col">
@@ -226,9 +229,13 @@
 --}}
                                                     @if( (!$schedule->approved == 1) or ($schedule_line->blackout == 1) or (isset($schedule_line->user_id)) )
                                                         <!-- no approved schedule, line id tagged "black out" or line already taken -->
-                                                        <a href="#"><button type="button" disabled="disabled" class="btn btn-outline-primary btn-my-edit float-right">None</button></a>
                                                         @if(isset($schedule_line->user_id))
-                                                            <br><div style="font-size:0.7rem;text-align:center;margin-top:-0.3rem;color:red;"><b>TAKEN</b></div>
+                                                            @if($param_name_or_taken == 'taken')
+                                                                <a href="#"><button type="button" disabled="disabled" class="btn btn-outline-primary btn-my-edit float-right">None</button></a>
+                                                                <br><div style="font-size:0.7rem;text-align:center;margin-top:-0.3rem;color:red;"><b>TAKEN</b></div>
+                                                            @else
+                                                                <div style="font-size:0.7rem;text-align:center;margin-top:0rem;color:red;"><b>TAKEN</b><br>({{ App\User::where('id',$schedule_line->user_id)->first()->name   }})</div>
+                                                            @endif
                                                         @endif
                                                     @else
                                                         @if($schedule->active == 1)

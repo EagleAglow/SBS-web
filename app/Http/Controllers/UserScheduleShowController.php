@@ -128,6 +128,8 @@ class UserScheduleShowController extends Controller {
         ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
         ->paginate(5); //Get first 5 ScheduleLines
  
+ $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+
 
         $first_day = $request['first_day'];
         if (!isset($first_day)){

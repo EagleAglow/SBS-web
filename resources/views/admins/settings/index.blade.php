@@ -7,15 +7,12 @@
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card shadow">
-                <div class="card-header">
-					<div class="col">Admin Dashboard - Settings</div>
-				</div>
+                <div class="card-header">Admin Dashboard - Settings</div>
 
 				@include('flash::message')
 
 				@php
 					$param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
-
 				@endphp
 
 				<div class="card-body squash row">
