@@ -136,19 +136,19 @@
 
                         @if( count(App\User::role('bidder-active')->get('id')) > 0 )
                             @if ( Auth::user()->id == App\User::role('bidder-active')->get('id')->first()->id) 
-                                <div class="card-body my-squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
+                                <div class="card-body squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
                                 The <b>active bidder</b> can <b>bid</b> a line for an <b>active</b> schedule, <b>if bidding is active</b>.<br>
                                 <b><span style="color:red;">You are the active bidder, number {{ Auth::user()->bid_order }}.</span></b>
                                 <br> {!! $state !!}
                                 </div>
                             @else
-                                <div class="card-body my-squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
+                                <div class="card-body squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
                                 The <b>active bidder</b> can <b>bid</b> a line for an <b>active</b> schedule, <b>if bidding is active</b>.<br>
                                 {!! $you_are !!}<br> {!! $state  !!}
                                 </div>
                             @endif
                         @else
-                            <div class="card-body my-squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
+                            <div class="card-body squash">Select a schedule to review.<br>You can <b>tag</b> lines for any <b>approved</b> schedule.<br>
                             The <b>active bidder</b> can <b>bid</b> a line for an <b>active</b> schedule, <b>if bidding is active</b>.<br>
                             {!! $you_are !!}<br>  {!! $state !!}
                             </div>

@@ -8,6 +8,7 @@
 	<div class="row justify-content-center">
 		<div class="col-md-9">
 			<div class="card mt-7 shadow">
+                <div class="card-header">Use the button at the bottom of page to confirm this bid.</div>
                 <div class="card-body">
                     <div class="card-body my-squash">
                         @php
@@ -37,10 +38,10 @@
                     <table class="table">
                         <thead>
                             <tr>
-                            <th class="text-center" scope="col">Day</th>
-                            <th class="text-center" scope="col">Weekday</th>
-                            <th class="text-center" scope="col">Date(s)</th>
-                            <th class="text-center" scope="col">Shift</th>
+                            <th class="text-center compact" scope="col">Day</th>
+                            <th class="text-center compact" scope="col">Weekday</th>
+                            <th class="text-center compact" scope="col">Date(s)</th>
+                            <th class="text-center compact" scope="col">Shift</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,8 +53,8 @@
                                 $shift = App\ShiftCode::find($schedule_line->$d);
 
                                 $day = date('D', $stamp);
-                                echo '<tr><td class="text-center">' . $n . '</td>';
-                                echo '<td class="text-center">' . $day . '</td>';
+                                echo '<tr><td class="text-center compact">' . $n . '</td>';
+                                echo '<td class="text-center compact">' . $day . '</td>';
 
                                 $nextstamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                 for ($c = 1; $c <= $schedule->cycle_count; $c++){
@@ -65,12 +66,12 @@
                                     }
                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+56 days");
                                 }
-                                echo '<td class="text-center">' . $calendar . '</td>';
+                                echo '<td class="text-center compact">' . $calendar . '</td>';
 
                                 if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
                                     $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
                                 }
-                                echo '<td class="text-center">' . $cwt . '</td></tr>';
+                                echo '<td class="text-center compact">' . $cwt . '</td></tr>';
                                 $stamp = $nextstamp;
                             }
                             @endphp
