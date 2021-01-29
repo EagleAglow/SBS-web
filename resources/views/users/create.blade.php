@@ -35,19 +35,33 @@
                                 @enderror
                             </div>
                         </div>
+
+
+                        <!-- bidder_group dropdown  -->
+                        <div class="form-group row">
+                            <label for="bidder_group_id" class="col-md-4 col-form-label text-md-right">{{ __('Group') }}</label>
+                            <div class="col-md-4">
+                                <select required class="form-control" name="bidder_group_id" id="bidder_group_id" >
+                                    @foreach($groups as $group)
+                                        <option value="{{ $group->id }}" >{{ $group->code }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group row">
                             <label class="col-md-4 col-form-label text-md-right">{{ __('Roles') }}</label>
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
+                                @if(strpos($role->name, 'bidder-') === false )
                                 <div>
                                     <input type="checkbox" name="roles[]" value="{{ $role->id }}">
                                     &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
                                 </div>
+                                @endif
                             @endforeach                        
                             </div>
                         </div>
-
-
 
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('New Password') }}</label>

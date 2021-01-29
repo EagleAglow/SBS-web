@@ -50,7 +50,8 @@ class UserController extends Controller {
     public function create() {
     //Get all roles and pass it to the view
         $roles = Role::get();
-        return view('users.create', ['roles'=>$roles]);
+        $groups = BidderGroup::get();
+        return view('users.create', ['roles'=>$roles], ['groups'=>$groups]);
     }
 
 
@@ -68,12 +69,14 @@ class UserController extends Controller {
             'password'=>'required|min:6|confirmed'
         ]);
 
+        $bidder_group_id = $request['bidder_group_id'];
+
         $pwd_in_request = $request->password;
         // hash password for storage
         $request['password'] = Hash::make($pwd_in_request);
 
-        // use only name, email and password data from request
-        $user = User::create($request->only('email', 'name', 'password')); 
+        // use name, email, bidder_group_id and password data from request
+        $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id')); 
 
         $roles = $request['roles']; //Retrieving the roles field
 
@@ -84,6 +87,26 @@ class UserController extends Controller {
             $user->assignRole($role_r); //Assigning role to user
             }
         }        
+
+        // assign bidding roles based on bidding groups, special handling for NONE and TRAFFIC
+        if (isset($bidder_group_id)){
+            $bidder_groups = BidderGroup::all();
+            foreach($bidder_groups as $bidder_group){
+                if($bidder_group->id == $bidder_group_id){
+                    if($bidder_group->code == 'TRAFFIC'){
+                        // assign both TNON and TCOM
+                        $user->assignRole('bidder-tcom');
+                        $user->assignRole('bidder-tnon');
+                    } else {
+                        if($bidder_group->code == 'NONE'){
+                            // do nothing
+                        } else {
+                            $user->assignRole('bidder-' . strtolower($bidder_group->code));
+                        }
+                    }
+                }
+            }
+        }
 
         //Redirect to the users.index view and display message
         flash('User successfully added.')->success();
