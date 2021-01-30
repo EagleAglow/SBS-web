@@ -139,6 +139,14 @@ Route::prefix('admins')->group(function () {
     Route::get('settings/name', 'SettingController@name')->name('admins.settings.name');
     Route::get('settings/taken', 'SettingController@taken')->name('admins.settings.taken');
 
+    // control email to next bidder
+    Route::get('settings/nextbidderemailon', 'SettingController@nextbidderemailon')->name('admins.settings.nextbidderemailon');
+    Route::get('settings/nextbidderemailoff', 'SettingController@nextbidderemailoff')->name('admins.settings.nextbidderemailoff');
+
+    // control "bid accepted" email to bidder
+    Route::get('settings/bidacceptedemailon', 'SettingController@bidacceptedemailon')->name('admins.settings.bidacceptedemailon');
+    Route::get('settings/bidacceptedemailoff', 'SettingController@bidacceptedemailoff')->name('admins.settings.bidacceptedemailoff');
+
 });
 
 
@@ -154,13 +162,3 @@ Route::post('/bidder/setbid{id}', 'BidByBidderController@setbid')->name('bidder.
 // supervisor bidding
 Route::resource('/supervisor/bidfor', 'BidBySupervisorController');
 Route::post('/supervisor/setbidfor{id}', 'BidBySupervisorController@setbidfor')->name('supervisor.setbidfor');
-
-
-// mail notifications - under construction
-Route::get('send', 'NotifyController@index');
-Route::get('mail', function () {
-    $order = App\Order::find(1);
-
-    return (new App\Notifications\StatusUpdate($order))
-                ->toMail($order->user);
-});

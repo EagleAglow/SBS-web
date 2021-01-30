@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NextBidder extends Notification
+class NextBidderMail extends Notification
 {
     use Queueable;
 
@@ -42,10 +42,8 @@ class NextBidder extends Notification
     {
         return (new MailMessage)
             ->subject('Next Bidder')
-            ->line('--- You are the next bidder ---')
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->line('You are the next bidder.')
+            ->action('Login Page', url('/'));
     }
 
     /**

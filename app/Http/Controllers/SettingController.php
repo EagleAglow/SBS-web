@@ -8,6 +8,15 @@ use App\Param;
 
 use Session;
 
+
+use App\User;
+use Notification;
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\NextBidderMail;
+use App\Notifications\BidSelectionMail;
+
+
+
 class SettingController extends Controller {
 
     public function __construct()
@@ -173,7 +182,95 @@ class SettingController extends Controller {
         }
     }
 
-    
+    /**
+     * Turn on next bidder email
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function nextbidderemailon()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            // set 'name-or-taken' to 'taken'
+            $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
+            $param->string_value = 'on';
+            $param->save();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn off next bidder email
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function nextbidderemailoff()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            // set 'name-or-taken' to 'taken'
+            $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn on "bid accepted" email
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bidacceptedemailon()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            // set 'name-or-taken' to 'taken'
+            $param = Param::where('param_name','bid-accepted-email-on-or-off')->first();
+            $param->string_value = 'on';
+            $param->save();
+
+
+            $user = User::where('email','randy@atomicwizard.com')->first();
+            if (isset($user)){
+//                $user->notify(new NextBidderMail());
+
+                $user->notify(new BidSelectionMail($user->id));
+
+
+
+
+            }
+
+
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn off "bid accepted" email
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bidacceptedemailoff()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            // set 'name-or-taken' to 'taken'
+            $param = Param::where('param_name','bid-accepted-email-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
 
 
 }

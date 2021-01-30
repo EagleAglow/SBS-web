@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BidSelection extends Notification
+class BidSelectionMail extends Notification
 {
     use Queueable;
 
@@ -16,9 +16,9 @@ class BidSelection extends Notification
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($id)
     {
-        //
+       $this->id = $id;
     }
 
     /**
@@ -40,11 +40,12 @@ class BidSelection extends Notification
      */
     public function toMail($notifiable)
     {
+
+        $id = $this->id;
+
         return (new MailMessage)
-            ->subject('Bid Selection')
-            ->line('--- This is what you selected ---')
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->subject('Your Selection')
+            ->line('--- This is what you selected --- ' . $id)
             ->line('Thank you for using our application!');
     }
 

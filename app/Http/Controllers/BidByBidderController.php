@@ -190,6 +190,14 @@ abort('401');  // test to see if we are hitting this
                 // set next bidder
                 $next_param->update(['integer_value' => $next]);
                 $user->assignRole('bidder-active');
+
+                // send email?
+                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                if(isset($param_next_bidder_email_on_or_off)){
+                    if($param_next_bidder_email_on_or_off == 'on'){
+                        $user->notify(new NextBidder());
+                    }
+                }
             } else {
                 // complete
                 $next_param->update(['integer_value' => 1]);

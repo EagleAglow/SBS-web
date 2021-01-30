@@ -25,7 +25,7 @@
 						<table class="table table-striped">
 						<thead>
 							<tr>
-							<th class="text-center compact" scope="col">Date/Time (<b>GMT</b>)</th>
+							<th class="text-center compact" scope="col">Date/Time</th>
 							<th class="text-left compact" scope="col">Log Items</th>
 							</tr>
 						</thead>
