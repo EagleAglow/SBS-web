@@ -154,3 +154,13 @@ Route::post('/bidder/setbid{id}', 'BidByBidderController@setbid')->name('bidder.
 // supervisor bidding
 Route::resource('/supervisor/bidfor', 'BidBySupervisorController');
 Route::post('/supervisor/setbidfor{id}', 'BidBySupervisorController@setbidfor')->name('supervisor.setbidfor');
+
+
+// mail notifications - under construction
+Route::get('send', 'NotifyController@index');
+Route::get('mail', function () {
+    $order = App\Order::find(1);
+
+    return (new App\Notifications\StatusUpdate($order))
+                ->toMail($order->user);
+});
