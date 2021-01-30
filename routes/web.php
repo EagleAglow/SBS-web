@@ -147,6 +147,11 @@ Route::prefix('admins')->group(function () {
     Route::get('settings/bidacceptedemailon', 'SettingController@bidacceptedemailon')->name('admins.settings.bidacceptedemailon');
     Route::get('settings/bidacceptedemailoff', 'SettingController@bidacceptedemailoff')->name('admins.settings.bidacceptedemailoff');
 
+    // control "use test email"
+    Route::get('settings/testmailon', 'SettingController@testmailon')->name('admins.settings.testmailon');
+    Route::get('settings/testmailoff', 'SettingController@testmailoff')->name('admins.settings.testmailoff');
+    Route::put('settings/testmailsetaddress', 'SettingController@testmailsetaddress')->name('admins.settings.testmailsetaddress');
+
 });
 
 

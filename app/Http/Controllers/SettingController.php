@@ -66,6 +66,21 @@ class SettingController extends Controller {
                 $param->save();
             }
 
+            if (count(Param::where('param_name','all-email-to-test-address-on-or-off')->get()) == 0){
+                $param = new Param();
+                $param->param_name = 'all-email-to-test-address-on-or-off';
+                $param->string_value = 'off';
+                $param->save();
+            }
+
+            if (count(Param::where('param_name','email-test-address')->get()) == 0){
+                $param = new Param();
+                $param->param_name = 'email-test-address';
+                $param->string_value = '';
+                $param->save();
+            }
+
+
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -148,12 +163,11 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','name-or-taken')->first();
             $param->string_value = 'name';
             $param->save();
     
-//            flash('Set to show successful bidder name on bid page!')->success();
+            flash('Set to show successful bidder name on bid page!')->success();
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -170,12 +184,11 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','name-or-taken')->first();
             $param->string_value = 'taken';
             $param->save();
     
-//            flash('Set to show "TAKEN" (instead of successful bidder name) on bid page!')->success();
+            flash('Set to show "TAKEN" (instead of successful bidder name) on bid page!')->success();
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -191,10 +204,11 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
             $param->string_value = 'on';
             $param->save();
+    
+            flash('Email to next bidder is ON!')->success();
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -210,10 +224,12 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
             $param->string_value = 'off';
             $param->save();
+    
+            flash('Email to next bidder is OFF!')->success();
+            return view('admins.settings.index');
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -229,24 +245,11 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','bid-accepted-email-on-or-off')->first();
             $param->string_value = 'on';
             $param->save();
-
-
-            $user = User::where('email','randy@atomicwizard.com')->first();
-            if (isset($user)){
-//                $user->notify(new NextBidderMail());
-
-                $user->notify(new BidSelectionMail($user->id));
-
-
-
-
-            }
-
-
+    
+            flash('Email after accepted bid is ON!')->success();
             return view('admins.settings.index');
         } else {
             abort('401');
@@ -262,15 +265,116 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // set 'name-or-taken' to 'taken'
             $param = Param::where('param_name','bid-accepted-email-on-or-off')->first();
             $param->string_value = 'off';
             $param->save();
+
+            flash('Email after accepted bid is OFF!')->success();
             return view('admins.settings.index');
         } else {
             abort('401');
         }
     }
+
+    /**
+     * Turn on "use test email"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function testmailon()
+    {
+        if (Auth::user()->hasRole('admin')){
+            // do we have an address?
+            $param = Param::where('param_name','email-test-address')->first();
+            if (strlen($param->string_value)>0){
+                $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                $param->string_value = 'on';
+                $param->save();
+                flash('Bidding email to test address is ON!')->success();
+            } else {
+                flash('Missing test address!')->error();
+            }
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn off "use test email"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function testmailoff()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+
+            flash('Bidding email to test address is OFF!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    public function testmailsetaddress(Request $request) {
+        if (Auth::user()->hasRole('admin')){
+
+            $action = $request->action;
+            if (isset($action)){
+                if ($action == 'set'){
+                    $email = $request->email;
+                    if (isset($email)){
+                        //Validate 
+                        $this->validate($request, [
+                            'email'=>'email',
+                        ]);
+        
+                        // set 'email-test-address'
+                        $param = Param::where('param_name','email-test-address')->first();
+                        $param->string_value = $email;
+                        $param->save();
+                        flash('Test email address set successfully.')->success();
+                    } else {
+                        flash('Failed to set test email address.')->error();
+                    }
+                } else {
+                    if ($action == 'clear'){
+                        // clear 'email-test-address'
+                        $param = Param::where('param_name','email-test-address')->first();
+                        $param->string_value = '';
+                        $param->save();
+                        // turn off using test address
+                        $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                        $param->string_value = 'off';
+                        $param->save();
+                        flash('Test email address cleared, and bidding email to test address is OFF.')->success();
+                    } else {
+                        flash('Programmer error: No action.')->warning();
+                    }
+                }
+            }
+
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+
+
+/* 
+// code for sending email - save this!!!!!!!!!!!!!!!!!
+
+            $user = User::where('email','randy@atomicwizard.com')->first();
+            if (isset($user)){
+//                $user->notify(new NextBidderMail());
+                $user->notify(new BidSelectionMail($user->id));
+            }
+*/
 
 
 }
