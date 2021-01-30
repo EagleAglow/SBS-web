@@ -186,6 +186,32 @@ abort('401');  // test to see if we are hitting this
                     // set next bidder
                     $next_param->update(['integer_value' => $next]);
                     $who->assignRole('bidder-active');
+
+                    // send email?
+                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_email_on_or_off)){
+                        if($param_next_bidder_email_on_or_off == 'on'){
+                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                            if($param_all_email_to_test_address_on_or_off == 'on'){
+                                $param_email_test_address = Param::where('param_name','email-test-address')->first();
+                                if(isset($param_email_test_address)){
+                                    if(strlen($param_email_test_address) > 0){
+                                        // do it somehow....
+                                        // send mail to test address
+
+                                        Mail::to([
+                                            [ 'name' => 'Joe Schmoe', 'email' => 'joe@example.com' ],
+                                        ])->send(new ContactForm());
+
+                                    }
+                                }
+                            } else {
+                                // send to bidder
+                                $who->notify(new NextBidder());
+                            }
+                        }
+                    }
+
                 } else {
                     // complete
                     $next_param->update(['integer_value' => 1]);

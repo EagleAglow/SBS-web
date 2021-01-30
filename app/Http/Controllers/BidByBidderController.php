@@ -195,7 +195,19 @@ abort('401');  // test to see if we are hitting this
                 $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_email_on_or_off)){
                     if($param_next_bidder_email_on_or_off == 'on'){
-                        $user->notify(new NextBidder());
+                        $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                        if($param_all_email_to_test_address_on_or_off == 'on'){
+                            $param_email_test_address = Param::where('param_name','email-test-address')->first();
+                            if(isset($param_email_test_address)){
+                                if(strlen($param_email_test_address) > 0){
+                                    // send mail to test address
+                                    Mail::to($param_email_test_address)->send(new NextBidderTestMail($user->name));
+                                }
+                            }
+                        } else {
+                            // send to bidder
+                            $user->notify(new NextBidder());
+                        }
                     }
                 }
             } else {
@@ -219,3 +231,36 @@ abort('401');  // test to see if we are hitting this
     }
     
 }
+
+/* 
+// code for sending email - save this!!!!!!!!!!!!!!!!!
+
+            $user = User::where('email','randy@atomicwizard.com')->first();
+            if (isset($user)){
+//                $user->notify(new NextBidderMail());
+                $user->notify(new BidSelectionMail($user->id));
+            }
+
+            // do we have an address?
+            $param = Param::where('param_name','email-test-address')->first();
+            if (strlen($param->string_value)>0){
+                $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                $param->string_value = 'on';
+
+                        // set 'email-test-address'
+                        $param = Param::where('param_name','email-test-address')->first();
+                        $param->string_value = $email;
+                        $param->save();
+                        if (count(Param::where('param_name','next-bidder-email-on-or-off')->get()) == 0){
+                            $param = new Param();
+                            $param->param_name = 'next-bidder-email-on-or-off';
+                            $param->string_value = 'off';
+                            $param->save();
+                        }
+            
+                        if (count(Param::where('param_name','bid-accepted-email-on-or-off')->get()) == 0){
+                            $param = new Param();
+                            $param->param_name = 'bid-accepted-email-on-or-off';
+                            $param->string_value = 'off';
+            
+*/

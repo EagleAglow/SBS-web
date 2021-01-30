@@ -374,6 +374,29 @@ class SettingController extends Controller {
 //                $user->notify(new NextBidderMail());
                 $user->notify(new BidSelectionMail($user->id));
             }
+
+            // do we have an address?
+            $param = Param::where('param_name','email-test-address')->first();
+            if (strlen($param->string_value)>0){
+                $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                $param->string_value = 'on';
+
+                        // set 'email-test-address'
+                        $param = Param::where('param_name','email-test-address')->first();
+                        $param->string_value = $email;
+                        $param->save();
+                        if (count(Param::where('param_name','next-bidder-email-on-or-off')->get()) == 0){
+                            $param = new Param();
+                            $param->param_name = 'next-bidder-email-on-or-off';
+                            $param->string_value = 'off';
+                            $param->save();
+                        }
+            
+                        if (count(Param::where('param_name','bid-accepted-email-on-or-off')->get()) == 0){
+                            $param = new Param();
+                            $param->param_name = 'bid-accepted-email-on-or-off';
+                            $param->string_value = 'off';
+            
 */
 
 
