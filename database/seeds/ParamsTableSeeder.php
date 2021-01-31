@@ -21,6 +21,25 @@ class ParamsTableSeeder extends Seeder
 
             // bidding-next: bid_order value of users table; either 1 or actual next bidder (running/paused).  Wraps to 1 after last bidder
             DB::table('params')->insertOrIgnore([ 'param_name' => 'bidding-next', 'integer_value' => 1, ]);
+
+            // control display of bidder name on bidding page
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'name-or-taken', 'string_value' => 'taken', ]);
+
+            // control email to next bidder
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bidder-email-on-or-off', 'string_value' => 'off', ]);
+
+            // control email to bidder after bid accepted
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'bid-accepted-email-on-or-off', 'string_value' => 'off', ]);
+
+            // control "auto bidding" (takes highest ranking user pick for bid)
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'auto-bidding-on-or-off', 'string_value' => 'off', ]);
+
+            // use test address instead of actually sending email to bidders
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'all-email-to-test-address-on-or-off', 'string_value' => 'off', ]);
+ 
+            // address for test emails
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'email-test-address', 'string_value' => '', ]);
+
         }
     }
 }

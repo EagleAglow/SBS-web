@@ -37,50 +37,6 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            // make sure param table entries exist - if not, add default
-            if (count(Param::where('param_name','name-or-taken')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'name-or-taken';
-                $param->string_value = 'taken';
-                $param->save();
-            }
-
-            if (count(Param::where('param_name','next-bidder-email-on-or-off')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'next-bidder-email-on-or-off';
-                $param->string_value = 'off';
-                $param->save();
-            }
-
-            if (count(Param::where('param_name','bid-accepted-email-on-or-off')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'bid-accepted-email-on-or-off';
-                $param->string_value = 'off';
-                $param->save();
-            }
-
-            if (count(Param::where('param_name','auto-bidding-on-or-off')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'auto-bidding-on-or-off';
-                $param->string_value = 'off';
-                $param->save();
-            }
-
-            if (count(Param::where('param_name','all-email-to-test-address-on-or-off')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'all-email-to-test-address-on-or-off';
-                $param->string_value = 'off';
-                $param->save();
-            }
-
-            if (count(Param::where('param_name','email-test-address')->get()) == 0){
-                $param = new Param();
-                $param->param_name = 'email-test-address';
-                $param->string_value = '';
-                $param->save();
-            }
-
-
             return view('admins.settings.index');
         } else {
             abort('401');
