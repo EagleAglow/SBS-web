@@ -122,24 +122,25 @@ class UserScheduleShowController extends Controller {
         }
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
-
-// original        
-// $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
-
-        if($my_sort == 'filter'){
-            // collection of picks
-            $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
-            // get lines that have not been tagged for the user
-            $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-            ->select('schedule_lines.*', DB::raw('99999 as rank'));
-            // get lines that have been tagged for the user - join succeeds
-            $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
-            ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-            ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
-            ->paginate(5); //Get first 5 ScheduleLines
+        if ($schedule->approved == true){
+            if($my_sort == 'filter'){
+                // collection of picks
+                $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+                // get lines that have not been tagged for the user
+                $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                // get lines that have been tagged for the user - join succeeds
+                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
+                ->paginate(5); //Get first 5 ScheduleLines
+            } else {
+                // all
+                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+            }
         } else {
-            // all
-            $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+            // not approved - return an empty object
+            $schedule_lines = collect([]);
         }
 
 
@@ -167,9 +168,11 @@ class UserScheduleShowController extends Controller {
                         // attempt to tag
                         $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
                         $uid = $user->id;
-                        // get highest rank, if already set
-                        $picks = Pick::where('user_id',$uid)->orderBy('rank','DESC')->get();
-                        if (count($picks) == 0){
+                        // get highest rank, for lines in the same schedule, if already set
+                        $picks = Pick::join('schedule_lines','schedule_line_id','=','schedule_lines.id')
+                                ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->where('picks.user_id',$uid)->orderBy('picks.rank','DESC')->get();
+
+                                if (count($picks) == 0){
                             $rank = 1;
                         } else {
                             $rank = $picks->first()->rank +1;
@@ -189,12 +192,14 @@ class UserScheduleShowController extends Controller {
                         $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
                         if (isset($pick)){
                             $pick->delete();
-                            // re-rank remaining picks
-                            $picks = Pick::where('user_id',$uid)->orderBy('rank')->get();
-                            $rank = count($picks);
+                            // re-rank remaining picks in same schedule
+                            $pick_ids = Pick::select('picks.id')->where('picks.user_id',$uid)->join('schedule_lines','schedule_line_id','=','schedule_lines.id')
+                                    ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->orderBy('picks.rank')->get()->toArray();
+                            $rank = count($pick_ids);
                             if ($rank > 0){
                                 $rank = 0;
-                                foreach($picks as $pick){
+                                foreach($pick_ids as $pick_id){
+                                    $pick = Pick::where('id','=',$pick_id)->get()->first();
                                     $rank = $rank +1;
                                     $pick->rank = $rank;
                                     $pick->update();
@@ -205,19 +210,22 @@ class UserScheduleShowController extends Controller {
 
 
                     if ($pick == 'boost'){
-                        // if rank 2 or greater, switch with next lower number rank
+                        // if rank 2 or greater, switch with next lower number rank, in same schedule
                         $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
                         $uid = $user->id;
                         $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
                         if (isset($pick)){
                             $hold = $pick->rank;
                             if ($hold > 1){
-                                $other_pick = Pick::where('user_id',$uid)->where('rank',$hold -1)->get()->first();
-                                if (isset($other_pick)){
-                                    $other_pick->rank = $hold;
-                                    $other_pick->update();
+                                $other_pick_id = Pick::select('picks.id')->where('picks.user_id','=',$uid)->where('picks.rank','<',$hold)
+                                        ->join('schedule_lines','schedule_line_id','=','schedule_lines.id')->where('schedule_lines.schedule_id',$schedule_line->schedule_id)
+                                        ->orderByDesc('picks.rank')->get()->first()->id;
+                                if (isset($other_pick_id)){
                                     $pick->rank = $hold -1;
                                     $pick->update();
+                                    $other_pick = Pick::where('id','=',$other_pick_id)->get()->first();
+                                    $other_pick->rank = $hold;
+                                    $other_pick->update();
                                 }
                             }
                         }

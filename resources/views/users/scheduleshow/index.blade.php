@@ -44,9 +44,9 @@
 			<div class="card shadow">
 
                 @if ($schedule_lines->isEmpty($schedule_lines))
-                    <div class="card-header">
-                        No schedules are ready for bidding.
-                    </div>
+                    <div class="card-header">No Schedule Lines.</div>
+                    <div class="card-body squash">Schedule is not approved, or is empty, without schedule lines.</div>
+
                     @include('flash::message')
                 @else
                     <div class="card-header">
