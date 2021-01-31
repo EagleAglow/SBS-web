@@ -15,6 +15,10 @@ use App\Param;
 use App\Pick;
 use App\LogItem;
 
+use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderTestMail;
+use App\Notifications\BidSelectionMail;
+use App\Mail\BidSelectionTestMail;
 
 class BidByBidderController extends Controller
 {
@@ -206,7 +210,7 @@ abort('401');  // test to see if we are hitting this
                             }
                         } else {
                             // send to bidder
-                            $user->notify(new NextBidder());
+//                            $user->notify(new NextBidderMail());
                         }
                     }
                 }

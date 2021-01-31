@@ -14,6 +14,10 @@ use App\User;
 use App\Param;
 use App\LogItem;
 
+use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderTestMail;
+use App\Notifications\BidSelectionMail;
+use App\Mail\BidSelectionTestMail;
 
 class BidBySupervisorController extends Controller
 {
@@ -196,18 +200,13 @@ abort('401');  // test to see if we are hitting this
                                 $param_email_test_address = Param::where('param_name','email-test-address')->first();
                                 if(isset($param_email_test_address)){
                                     if(strlen($param_email_test_address) > 0){
-                                        // do it somehow....
                                         // send mail to test address
-
-                                        Mail::to([
-                                            [ 'name' => 'Joe Schmoe', 'email' => 'joe@example.com' ],
-                                        ])->send(new ContactForm());
-
+                                        Mail::to($param_email_test_address)->send(new NextBidderTestMail($who->name));
                                     }
                                 }
                             } else {
                                 // send to bidder
-                                $who->notify(new NextBidder());
+//                                $who->notify(new NextBidderMail());
                             }
                         }
                     }

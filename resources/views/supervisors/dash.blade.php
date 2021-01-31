@@ -7,12 +7,8 @@
         <div class="col-md-10">
             <div class="card shadow">
                 <div class="card-header">Supervisor Dashboard</div>
-                    @if ($message = Session::get('flash_message'))
-                        <div class="alert alert-success alert-block container">
-                                <button type="button" class="close" data-dismiss="alert">×</button>    
-                                <strong>{{ $message }}</strong>
-                        </div>
-                    @endif
+
+                    @include('flash::message')
 
                     @php
                     // get bidding-state: none, ready (to begin, next bidder is no. 1), running, paused, complete (after last bidder)
