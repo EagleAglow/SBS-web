@@ -192,7 +192,7 @@ abort('401');  // test to see if we are hitting this
                             if(isset($param_email_test_address)){
                                 if(strlen($param_email_test_address) > 0){
                                     // send mail to test address
-                                    Mail::to($param_email_test_address)->send(new BidSelectionTestMail($who->name));
+                                    Mail::to($param_email_test_address)->send(new BidSelectionTestMail($who->name, $schedule_line->id));
                                 }
                             }
                         } else {

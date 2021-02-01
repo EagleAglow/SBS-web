@@ -8,7 +8,10 @@ use App\User;
 use App\Param;
 use App\ScheduleLine;
 use App\Role;
-//use Spatie\Permission\Models\Role;
+
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderTestMail;
 
 use App\LogItem;
 use DB;
