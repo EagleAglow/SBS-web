@@ -1,5 +1,5 @@
 <?php
-
+ 
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -16,9 +16,9 @@ class BidSelectionTestMail extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($name)
     {
-        //
+        $this->name = $name;
     }
 
     /**
@@ -28,6 +28,11 @@ class BidSelectionTestMail extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        $name = $this->name;
+        return $this->subject('Bid Selection Test Mail')
+            ->markdown('mailtemplates.bidselectiontest')
+            ->with([
+                'name' => $name, 
+            ]);
     }
 }

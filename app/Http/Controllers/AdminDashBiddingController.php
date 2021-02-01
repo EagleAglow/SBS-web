@@ -369,6 +369,31 @@ class AdminDashBiddingController extends Controller
                 $next_param = Param::where('param_name','bidding-next')->first();
                 $next_param->update(['integer_value' => 1]);
 
+
+                // send email to next bidder?
+                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                if(isset($param_next_bidder_email_on_or_off)){
+                    if($param_next_bidder_email_on_or_off == 'on'){
+                        $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                        if($param_all_email_to_test_address_on_or_off == 'on'){
+                            $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                            if(isset($param_email_test_address)){
+                                if(strlen($param_email_test_address) > 0){
+                                    // send mail to test address
+                                    Mail::to($param_email_test_address)->send(new NextBidderTestMail($user->name));
+                                }
+                            }
+                        } else {
+                            // send to bidder
+//                                $user->notify(new NextBidderMail());
+                        }
+                    }
+                }
+
+
+
+
+
                 // log
                 $log_item = new LogItem();
                 $log_item->note = 'Start bidding';

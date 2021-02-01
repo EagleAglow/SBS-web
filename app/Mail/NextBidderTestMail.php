@@ -16,9 +16,9 @@ class NextBidderTestMail extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($name)
     {
-        //
+        $this->name = $name;
     }
 
     /**
@@ -26,13 +26,13 @@ class NextBidderTestMail extends Mailable
      *
      * @return $this
      */
-    public function build($name)
+    public function build()
     {
-        return $this->view('view.name');
-        return $this->subject('Test Message To Next Bidder')
+        $name = $this->name;
+        return $this->subject('Next Bidder Test Mail')
             ->markdown('mailtemplates.nextbiddertest')
             ->with([
-                'name' => $name,
+                'name' => $name, 
             ]);
     }
 }

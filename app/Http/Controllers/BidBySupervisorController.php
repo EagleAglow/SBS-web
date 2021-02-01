@@ -14,6 +14,7 @@ use App\User;
 use App\Param;
 use App\LogItem;
 
+use Illuminate\Support\Facades\Mail;
 use App\Notifications\NextBidderMail;
 use App\Mail\NextBidderTestMail;
 use App\Notifications\BidSelectionMail;
@@ -181,6 +182,26 @@ abort('401');  // test to see if we are hitting this
                 $log_item->save();
 
 
+                // send email to successful bidder?
+                $bid_accepted_email_on_or_off = Param::where('param_name','bid-accepted-email-on-or-off')->first()->string_value;
+                if(isset($bid_accepted_email_on_or_off)){
+                    if($bid_accepted_email_on_or_off == 'on'){
+                        $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                        if($param_all_email_to_test_address_on_or_off == 'on'){
+                            $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                            if(isset($param_email_test_address)){
+                                if(strlen($param_email_test_address) > 0){
+                                    // send mail to test address
+                                    Mail::to($param_email_test_address)->send(new BidSelectionTestMail($who->name));
+                                }
+                            }
+                        } else {
+                            // send to bidder
+//                                $who->notify(new BidSelectionMail());
+                        }
+                    }
+                }
+
                 // increment next bidder number
                 $next = $next +1;
 
@@ -191,13 +212,13 @@ abort('401');  // test to see if we are hitting this
                     $next_param->update(['integer_value' => $next]);
                     $who->assignRole('bidder-active');
 
-                    // send email?
+                    // send email to next bidder?
                     $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
                     if(isset($param_next_bidder_email_on_or_off)){
                         if($param_next_bidder_email_on_or_off == 'on'){
-                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
+                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
                             if($param_all_email_to_test_address_on_or_off == 'on'){
-                                $param_email_test_address = Param::where('param_name','email-test-address')->first();
+                                $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
                                 if(isset($param_email_test_address)){
                                     if(strlen($param_email_test_address) > 0){
                                         // send mail to test address

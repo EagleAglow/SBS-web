@@ -45,8 +45,11 @@
 
                 @if ($schedule_lines->isEmpty($schedule_lines))
                     <div class="card-header">No Schedule Lines.</div>
-                    <div class="card-body squash">Schedule is not approved, or is empty, without schedule lines.</div>
-
+                    @if(Auth::user()->hasRole('supervisor')) 
+                        <div class="card-body squash">Bidding has not started or schedule is not approved, or schedule is empty, without schedule lines.</div>
+                    @else
+                        <div class="card-body squash">Schedule is not approved, or is empty, without schedule lines.</div>
+                    @endif
                     @include('flash::message')
                 @else
                     <div class="card-header">
