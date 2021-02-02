@@ -24,7 +24,7 @@ class BidSelectionTestMail extends Mailable
     {
         $this->name = $name;
         $this->schedule_line_id = $schedule_line_id;
-        $this->garbage = '';  // use this later
+        $this->ics = '';  // use this later to attach ics file
     }
 
     /**
@@ -34,7 +34,7 @@ class BidSelectionTestMail extends Mailable
      */
     public function build()
     {
-        $this->garbage = 'Just some text';  // placeholder for future ics file
+        $this->ics = '';  // placeholder for future ics file
 
         $name = $this->name;  // recipient
         $schedule_line_id = $this->schedule_line_id;
@@ -58,14 +58,9 @@ class BidSelectionTestMail extends Mailable
             $comment = $comment . ', OFFSITE';
         }
         // get data for the email table
-        $day_number = array(); // just numbers
-        $day_text = array();
-        $code = array();
-        $on = array();
-        $off = array();
+        $table_rows = array();
 
         $stamp = strtotime( $start_date );
-        $first = true;
         $row_number = 0;
         for ($c = 1; $c <= $cycles; $c++){  //cycles
             for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
@@ -73,35 +68,105 @@ class BidSelectionTestMail extends Mailable
                 $d = 'day_' . substr(('00' . $n),-2);   // field name
                 $shift = ShiftCode::where('id', $schedule_line->$d)->get()->first();
                 $shift_code = $shift->name;                              // e.g., 06BX
-                $shift_on = date('H:i',strtotime($shift->begin_time));
-                $shift_off = date('H:i',strtotime($shift->end_time));
+                if ($shift_code == '----'){
+                    $shift_on = '----';
+                    $shift_off = '----';
+                } else {
+                    $shift_on = date('H:i',strtotime($shift->begin_time));
+                    $shift_off = date('H:i',strtotime($shift->end_time));
+                }
                 $row_number = $row_number +1;
 
-                array_push($day_number, $n);
-                array_push($day_text, $day);
-                array_push($code, $shift_code);
-                array_push($on, $shift_on);
-                array_push($off, $shift_off);
+                $table_row = array([
+                    'row_number'=>$row_number,   // maybe delete later, not used now
+                    'day_number'=>$n,            // maybe delete later, not used now
+                    'day_text'=>$day,
+                    'code'=>$shift_code,
+                    'on'=>$shift_on,
+                    'off'=>$shift_off
+                ]);
+
+                $table_rows[] = $table_row;
 
                 $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days"); // next date
             }
         }
 
+        // begin ics file
+        $linefeed = chr(13) . chr(10);
+        $ics = 'BEGIN:VCALENDAR' . $linefeed;
+        $ics = $ics . 'PRODID:-//SBS//Shift Bid System//EN' . $linefeed;
+        $ics = $ics . 'VERSION:2.0' . $linefeed;  
 
-/// working model
-$table_rows = array();
-$table_row = array(['row_number'=>1,'day_number'=>'1','day_text'=>'Tuesday 2 June 2021','code'=>'05BS','on'=>'06:23','off'=>'16:22']);
-$table_rows[] = $table_row;
-$table_row = array(['row_number'=>2,'day_number'=>'3','day_text'=>'Tuesday 4 June 2021','code'=>'06BS','on'=>'07:23','off'=>'17:22']);
-//array_push($table_rows,$table_row);
-$table_rows[] = $table_row;
+        $stamp = strtotime( $start_date );
+        $row_number = 0;  // included in UID (unique identifier)
+        for ($c = 1; $c <= $cycles; $c++){  //cycles
+            for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
+                $day = date("l, j F Y", $stamp);   // result like: Saturday, 10 March 2021
+                $d = 'day_' . substr(('00' . $n),-2);   // field name
+                $shift = ShiftCode::where('id', $schedule_line->$d)->get()->first();
+                $shift_code = $shift->name;                              // e.g., 06BX
+                if ($shift_code == '----'){
+                    // skipping days off
+                } else {
+                    // begin event section
+                    $ics = $ics . 'BEGIN:VEVENT' . $linefeed;
+                    $ics = $ics . 'DTSTAMP:' . gmdate("Ymd\THis\Z",time()) . $linefeed;
+                    // unique identifier
+                    $ics = $ics . 'UID:' .  gmdate("Ymd\THis\Z",time()) . 'ROW' . $row_number . '@' . $_SERVER['SERVER_ADDR'] . $linefeed;
 
+                    // handle shifts that span (or end on) midnight
+                    // use YYYY-MM-DD HH:MM:SS format for date/time comparison!
+                    $shift_on = date("Y-m-d H:i:s", strtotime( date( 'Y-m-d', $stamp ) . ' ' . date( 'H:i:s', strtotime($shift->begin_time )  )  ) );
+                    $shift_off = date("Y-m-d H:i:s", strtotime( date( 'Y-m-d', $stamp ) . ' ' . date( 'H:i:s', strtotime($shift->end_time )  )  ) );
+                    // convert to seconds to compare
+                    $date_time_on = date_create($shift_on);
+                    $date_time_off = date_create($shift_off);
+                    $delta = $date_time_off->format('U') - $date_time_on->format('U');
+                    if ($delta > 0){
+                        $shift_on = date("Ymd\THis", strtotime( date( 'Y-m-d', $stamp ) . ' ' . date( 'H:i:s', strtotime($shift->begin_time )  )  ) );
+                        $shift_off = date("Ymd\THis", strtotime( date( 'Y-m-d', $stamp ) . ' ' . date( 'H:i:s', strtotime($shift->end_time )  )  ) );
+                    } else {
+                        $shift_on = date("Ymd\THis", strtotime( date( 'Y-m-d', $stamp ) . ' ' . date( 'H:i:s', strtotime($shift->begin_time )  )  ) );
+                        $stamp2 = strtotime( date( 'Y/m/d', $stamp ) . "+1 days"); // next date
+                        $shift_off = date("Ymd\THis", strtotime( date( 'Y-m-d', $stamp2 ) . ' ' . date( 'H:i:s', strtotime($shift->end_time )  )  ) );
+                    }
+                    // debugging 
+//                    $ics = $ics . $linefeed . 'Delta hours=' .  $delta . $linefeed . $linefeed;
+                    
+                    // event start
+                    $ics = $ics . 'DTSTART;TZID=America/Detroit:' . $shift_on . $linefeed;
+                    // event end
+                    $ics = $ics . 'DTEND;TZID=America/Detroit:' . $shift_off . $linefeed;
+                    // category and summary
+                    $ics = $ics . 'CATEGORIES:@Work' . $linefeed;
+                    $ics = $ics . 'SUMMARY:' . $shift_code . $linefeed;
+                    // close event
+                    $ics = $ics . 'END:VEVENT' . $linefeed;
 
+                    // format should be like this:
+                    // BEGIN:VEVENT  
+                    // DTSTAMP:19960704T120000Z
+                    // UID:20210131T212909@atomicwizard.com
+                    // DTSTART;TZID=America/Detroit:20210202T020000
+                    // DTEND;TZID=America/Detroit:20210202T120000
+                    // CATEGORIES:@Work
+                    // SUMMARY:02BX
+                    // END:VEVENT
 
+                }
+                $row_number = $row_number +1;
+                $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days"); // next date
+            }
+        }
+        // wrap up file
+        $ics = $ics . 'END:VCALENDAR' . $linefeed;
+        $this->ics = $ics;
 
         return $this->subject('Bid Selection Test Mail')
             ->markdown('mailtemplates.bidselectiontest')
-            ->attachData($this->garbage, 'some.txt', [ 'mime' => 'text/plain', ])
+            ->attachData($this->ics, 'schedule.ics', [ 'mime' => 'text/calendar', ])
+//            ->attachData($this->ics, 'schedule.ics', [ 'mime' => 'text/plain', ])    // for development...
             ->with([
                 'name' => $name, 
                 'title' => $title,

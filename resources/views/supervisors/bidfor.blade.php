@@ -8,7 +8,6 @@
 	<div class="row justify-content-center">
 		<div class="col-md-9">
 			<div class="card mt-7 shadow">
-                <div class="card-header">Use the button at the bottom of page to confirm this bid.</div>
                 <div class="card-body">
                     <div class="card-body my-squash">
                         @php

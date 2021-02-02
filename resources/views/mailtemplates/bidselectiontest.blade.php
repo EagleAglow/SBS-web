@@ -11,18 +11,14 @@ Schedule: {{ $title }}
 <br>Group: {{ $line_group_name }}
 <br>Line: {{ $line_number }}
 <br>Note: {{ $comment }}
-
-<br> 
-
+<br><hr> 
 @component('mail::table')
-| Row | Day | Date                                      | Code | On    | Off   |
-|:---:|:---:|:------------------------------------------|:----:|:-----:|:-----:|
+| Weekday, Date                             | Code | On    | Off   |
+|:------------------------------------------|:----:|:-----:|:-----:|
 @foreach ($table_rows as $row_number=>$row_value)
 @foreach ($row_value as $v)
-|{{ $v['row_number'] }}|{{ $v['day_number'] }}|{{ $v['day_text'] }}|{{ $v['code'] }}|{{ $v['on'] }}|{{ $v['off'] }}|
+|{{ $v['day_text'] }}|{{ $v['code'] }}|{{ $v['on'] }}|{{ $v['off'] }}|
 @endforeach
 @endforeach
 @endcomponent
-
-
 @endcomponent
