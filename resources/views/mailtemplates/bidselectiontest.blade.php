@@ -12,13 +12,17 @@ Schedule: {{ $title }}
 <br>Line: {{ $line_number }}
 <br>Note: {{ $comment }}
 
+<br> 
+
 @component('mail::table')
-| Day | Date                          | Code | On    | Off   |
-|:---:|:------------------------------|:----:|:-----:|:-----:|
-| 1   | Thursday, March 4, 2020       |{{$day_01_code}}|{{$day_01_on}}|{{$day_01_off}}|
-| 2   | Wednesday, September 24, 2020 |{{$day_02_code}}|{{$day_02_on}}|{{$day_02_off}}|
-| 3   | Friday, June 3, 2020          |{{$day_03_code}}|{{$day_03_on}}|{{$day_03_off}}|
-| 4   | Friday, June 3, 2020          |{{$day_04_code}}|{{$day_04_on}}|{{$day_04_off}}|
+| Row | Day | Date                                      | Code | On    | Off   |
+|:---:|:---:|:------------------------------------------|:----:|:-----:|:-----:|
+@foreach ($table_rows as $row_number=>$row_value)
+@foreach ($row_value as $v)
+|{{ $v['row_number'] }}|{{ $v['day_number'] }}|{{ $v['day_text'] }}|{{ $v['code'] }}|{{ $v['on'] }}|{{ $v['off'] }}|
+@endforeach
+@endforeach
 @endcomponent
+
 
 @endcomponent

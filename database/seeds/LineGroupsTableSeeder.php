@@ -37,12 +37,12 @@ class LineGroupsTableSeeder extends Seeder
             ]);
         DB::table('line_groups')->insertOrIgnore([
             'code' => 'TCOM',
-            'name' => 'Traffic Line, Commercial',
+            'name' => 'Commercial Traffic Line',
             'order' => '5',
         ]);
         DB::table('line_groups')->insertOrIgnore([
             'code' => 'TNON',
-            'name' => 'Traffic Line, Non-commercial',
+            'name' => 'Non-commercial Traffic Line',
             'order' => '6',
         ]);
         DB::table('line_groups')->insertOrIgnore([

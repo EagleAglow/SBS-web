@@ -63,10 +63,8 @@ class BidSelectionTestMail extends Mailable
         $code = array();
         $on = array();
         $off = array();
-
         $stamp = strtotime( $start_date );
         $first = true;
-        $row_number = 0;
         for ($c = 1; $c <= $cycles; $c++){  //cycles
             for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
                 $day = date("l, j F Y", $stamp);   // result like: Saturday, 10 March 2021
@@ -75,7 +73,6 @@ class BidSelectionTestMail extends Mailable
                 $shift_code = $shift->name;                              // e.g., 06BX
                 $shift_on = date('H:i',strtotime($shift->begin_time));
                 $shift_off = date('H:i',strtotime($shift->end_time));
-                $row_number = $row_number +1;
 
                 array_push($day_number, $n);
                 array_push($day_text, $day);
@@ -87,18 +84,6 @@ class BidSelectionTestMail extends Mailable
             }
         }
 
-
-/// working model
-$table_rows = array();
-$table_row = array(['row_number'=>1,'day_number'=>'1','day_text'=>'Tuesday 2 June 2021','code'=>'05BS','on'=>'06:23','off'=>'16:22']);
-$table_rows[] = $table_row;
-$table_row = array(['row_number'=>2,'day_number'=>'3','day_text'=>'Tuesday 4 June 2021','code'=>'06BS','on'=>'07:23','off'=>'17:22']);
-//array_push($table_rows,$table_row);
-$table_rows[] = $table_row;
-
-
-
-
         return $this->subject('Bid Selection Test Mail')
             ->markdown('mailtemplates.bidselectiontest')
             ->attachData($this->garbage, 'some.txt', [ 'mime' => 'text/plain', ])
@@ -108,7 +93,13 @@ $table_rows[] = $table_row;
                 'line_group_name' => $line_group_name,
                 'line_number' => $line_number,
                 'comment' => $comment,
-                'table_rows' => $table_rows,
+                'day_number' => $day_number,
+                'day_text' => $day_text = array();
+$code = array();
+$on = array();
+$off = array();
+
+
             ]);
     }
 }
