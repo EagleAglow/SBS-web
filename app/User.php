@@ -23,6 +23,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name', 'email', 'password', 'bidder_group_id','has_bid',
         'bid_order', 'bidder_primary_order', 'bidder_secondary_order',
+        'phone_number',
     ];
 
     /**
