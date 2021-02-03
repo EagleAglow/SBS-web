@@ -373,7 +373,7 @@ class AdminDashBiddingController extends Controller
                 $next_param->update(['integer_value' => 1]);
 
 
-                // send email to next bidder?
+                // send email to this bidder?
                 $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_email_on_or_off)){
                     if($param_next_bidder_email_on_or_off == 'on'){
@@ -388,7 +388,7 @@ class AdminDashBiddingController extends Controller
                             }
                         } else {
                             // send to bidder
-//                                $user->notify(new NextBidderMail());
+                            Mail::to($user->email)->send(new NextBidderTestMail($user->name));     
                         }
                     }
                 }

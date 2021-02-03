@@ -16,9 +16,9 @@ use App\Pick;
 use App\LogItem;
 
 use Illuminate\Support\Facades\Mail;
-use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
-use App\Notifications\BidSelectionMail;
+use App\Mail\BidSelectionMail;
 use App\Mail\BidSelectionTestMail;
 
 class BidByBidderController extends Controller
@@ -197,12 +197,13 @@ abort('401');  // test to see if we are hitting this
                         if(isset($param_email_test_address)){
                             if(strlen($param_email_test_address) > 0){
                                 // send mail to test address
-                                Mail::to($param_email_test_address)->send(new BidSelectionTestMail($who->name, $schedule_line->id));
+                                Mail::to($param_email_test_address)->send(new BidSelectionTestMail($user->name, $schedule_line->id));
                             }
                         }
                     } else {
                         // send to bidder
-//                                $user->notify(new BidSelectionMail($user->name));
+                        Mail::to($user->email)->send(new BidSelectionMail($user->name, $schedule_line->id));
+
                     }
                 }
             }
@@ -232,7 +233,7 @@ abort('401');  // test to see if we are hitting this
                             }
                         } else {
                             // send to bidder
-//                                $user->notify(new NextBidderMail());
+                            Mail::to($user->email)->send(new NextBidderMail($user->name));
                         }
                     }
                 }

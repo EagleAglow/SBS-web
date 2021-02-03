@@ -24,17 +24,17 @@
 				<div class="card-body setting-squash row">
 					@if($param_name_or_taken == 'taken')
 						<div class="col">
-							Lines already taken by bidders show "TAKEN" instead of bidder name. Click to show bidder name.
+							When not filtered, bidding page <b>lines show TAKEN</b> (by bidders). Click to show bidder name.
 						</div>
 						<div class="col-sm-2">
-							<a href="{{ url('admins/settings/name') }}" class="btn btn-primary float-right" >Name</a>
+							<a href="{{ url('admins/settings/name') }}" class="btn btn-primary float-right" >NAME</a>
 						</div>
 					@else
 						<div class="col">
-							Lines already taken by bidders show bidder name. Click to show "TAKEN".
+							When not filtered, bidding page <b>lines show bidder name</b>. Click to show "TAKEN".
 						</div>
 						<div class="col-sm-2">
-							<a href="{{ url('admins/settings/taken') }}" class="btn btn-primary float-right" >Taken</a>
+							<a href="{{ url('admins/settings/taken') }}" class="btn btn-primary float-right" >TAKEN</a>
 						</div>
 					@endif
 				</div>
@@ -43,14 +43,14 @@
 				<div class="card-body setting-squash2 row">
 					@if($param_next_bidder_email_on_or_off == 'on')
 						<div class="col">
-							Email will be sent to notify the next bidder. Click to turn this off.
+							<b>Next bidder email is on.</b> Click to turn this off.
 						</div>
 						<div class="col-sm-2">
 							<a href="{{ url('admins/settings/nextbidderemailoff') }}" class="btn btn-primary float-right" >OFF</a>
 						</div>
 					@else
 						<div class="col">
-							Email will not be sent to notify the next bidder. Click to turn this on.
+							Next bidder will not be notified by email. Click to turn this on.
 						</div>
 						<div class="col-sm-2">
 							<a href="{{ url('admins/settings/nextbidderemailon') }}" class="btn btn-primary float-right" >ON</a>
@@ -62,14 +62,14 @@
 				<div class="card-body setting-squash2 row">
 					@if($bid_accepted_email_on_or_off == 'on')
 						<div class="col">
-							Email will be sent to notify bid accepted. Click to turn this off.
+							<b>Bidder will get schedule by email</b>. Click to turn this off.
 						</div>
 						<div class="col-sm-2">
 							<a href="{{ url('admins/settings/bidacceptedemailoff') }}" class="btn btn-primary float-right" >OFF</a>
 						</div>
 					@else
 						<div class="col">
-							Email will not be sent to notify bid accepted. Click to turn this on.
+							Bidder will not get schedule by email. Click to turn this on.
 						</div>
 						<div class="col-sm-2">
 							<a href="{{ url('admins/settings/bidacceptedemailon') }}" class="btn btn-primary float-right" >ON</a>
@@ -81,17 +81,17 @@
 				<div class="card-body setting-squash2 row">
 					@if($all_email_to_test_address_on_or_off == 'on')
 						<div class="col">
-							Bidding emails (if they are turned on, above) will be sent ONLY to the test address. Click to turn this off.
+							Bid emails (if enabled above) are <b>sent <u>ONLY</u> to the test address</b>. Click to send to users.
 						</div>
 						<div class="col-sm-2">
-							<a href="{{ url('admins/settings/testmailoff') }}" class="btn btn-primary float-right" >OFF</a>
+							<a href="{{ url('admins/settings/testmailoff') }}" class="btn btn-primary float-right" >USERS</a>
 						</div>
 					@else
 						<div class="col">
-							Bidding emails (if they are turned on, above) will be sent to users. After you set a test address, click to turn this on.
+							Bid emails (if enabled above) are <span style="color:red;"><b>sent to users</b></span>. After you set a test address, click to send to test address.
 						</div>
 						<div class="col-sm-2">
-							<a href="{{ url('admins/settings/testmailon') }}" class="btn btn-primary float-right" >ON</a>
+							<a href="{{ url('admins/settings/testmailon') }}" class="btn btn-primary float-right" >TEST</a>
 						</div>
 					@endif
 				</div>

@@ -15,9 +15,9 @@ use App\Param;
 use App\LogItem;
 
 use Illuminate\Support\Facades\Mail;
-use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
-use App\Notifications\BidSelectionMail;
+use App\Mail\BidSelectionMail;
 use App\Mail\BidSelectionTestMail;
 
 class BidBySupervisorController extends Controller
@@ -197,7 +197,7 @@ abort('401');  // test to see if we are hitting this
                             }
                         } else {
                             // send to bidder
-//                                $who->notify(new BidSelectionMail($who->name));
+                            Mail::to($who->email)->send(new BidSelectionMail($who->name, $schedule_line->id));
                         }
                     }
                 }
@@ -227,7 +227,8 @@ abort('401');  // test to see if we are hitting this
                                 }
                             } else {
                                 // send to bidder
-//                                $who->notify(new NextBidderMail());
+                                Mail::to($who->email)->send(new NextBidderMail($who->name));
+
                             }
                         }
                     }
