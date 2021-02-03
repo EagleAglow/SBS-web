@@ -73,8 +73,7 @@ div.my-group {padding-top: 0.5rem;}
 a.navbar-brand {font-size:1.55rem;font-weight:500;}
 
 /* fiddle with dash.php elements */
-div.card-header {font-size:1.25rem; font-weight:500;
-}
+div.card-header {font-size:1.2rem; font-weight:600;}
 
 div.card-body.my-squash {padding-top: 0;}
 div.card-body.my-squash2 {padding-top: 0.3rem;padding-bottom:0}

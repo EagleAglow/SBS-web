@@ -202,7 +202,7 @@ abort('401');  // test to see if we are hitting this
                         }
                     } else {
                         // send to bidder
-//                                $user->notify(new BidSelectionMail());
+//                                $user->notify(new BidSelectionMail($user->name));
                     }
                 }
             }

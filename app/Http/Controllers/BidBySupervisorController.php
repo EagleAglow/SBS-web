@@ -197,7 +197,7 @@ abort('401');  // test to see if we are hitting this
                             }
                         } else {
                             // send to bidder
-//                                $who->notify(new BidSelectionMail());
+//                                $who->notify(new BidSelectionMail($who->name));
                         }
                     }
                 }

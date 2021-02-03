@@ -18,7 +18,7 @@ class NextBidderMail extends Notification
      */
     public function __construct()
     {
-        //
+        $this->name = $name;
     }
 
     /**
@@ -40,8 +40,10 @@ class NextBidderMail extends Notification
      */
     public function toMail($notifiable)
     {
+        $name = $this->name;
         return (new MailMessage)
-            ->subject('Next Bidder')
+            ->subject('Next Bidder Mail')
+            ->greeting('Hello ' . $name . ',' )
             ->line('You are the next bidder.')
             ->action('Login Page', url('/'));
     }
