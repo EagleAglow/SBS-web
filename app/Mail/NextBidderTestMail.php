@@ -19,6 +19,7 @@ class NextBidderTestMail extends Mailable
     public function __construct($name)
     {
         $this->name = $name;
+        $this->url = $_SERVER['SERVER_ADDR'];
     }
 
     /**
@@ -29,10 +30,12 @@ class NextBidderTestMail extends Mailable
     public function build()
     {
         $name = $this->name;
+        $url = $this->url;
         return $this->subject('Next Bidder Test Mail')
             ->markdown('mailtemplates.nextbiddertest')
             ->with([
-                'name' => $name, 
+                'name' => $name,
+                'url' =>  $url,
             ]);
     }
 }

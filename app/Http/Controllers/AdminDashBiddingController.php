@@ -10,7 +10,7 @@ use App\ScheduleLine;
 use App\Role;
 
 use Illuminate\Support\Facades\Mail;
-use App\Notifications\NextBidderMail;
+use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
 
 use App\LogItem;
@@ -388,7 +388,7 @@ class AdminDashBiddingController extends Controller
                             }
                         } else {
                             // send to bidder
-                            Mail::to($user->email)->send(new NextBidderTestMail($user->name));     
+                            Mail::to($user->email)->send(new NextBidderMail($user->name));     
                         }
                     }
                 }

@@ -88,7 +88,7 @@
 						</div>
 					@else
 						<div class="col">
-							Bid emails (if enabled above) are <span style="color:red;"><b>sent to users</b></span>. After you set a test address, click to send to test address.
+							Bid emails (if enabled above) are <span style="color:red;"><b>sent to users</b></span>. Click to send bid emails to a test address (below).
 						</div>
 						<div class="col-sm-2">
 							<a href="{{ url('admins/settings/testmailon') }}" class="btn btn-primary float-right" >TEST</a>
