@@ -27,25 +27,6 @@
 				@endphp
 
 				<div class="card-body setting-squash row">
-					@if($param_name_or_taken == 'taken')
-						<div class="col-sm-9">
-							When not filtered, bidding page <b>lines show TAKEN</b> (by bidders). Click to show bidder name.
-						</div>
-						<div class="col-sm-3">
-							<a href="{{ url('admins/settings/name') }}" class="btn btn-primary float-right" >SHOW NAME</a>
-						</div>
-					@else
-						<div class="col-sm-9">
-							When not filtered, bidding page <b>lines show bidder name</b>. Click to show "TAKEN".
-						</div>
-						<div class="col-sm-3">
-							<a href="{{ url('admins/settings/taken') }}" class="btn btn-primary float-right" >SHOW TAKEN</a>
-						</div>
-					@endif
-				</div>
-
-				<hr>
-				<div class="card-body setting-squash2 row">
 					@if($param_next_bidder_email_on_or_off == 'on')
 						<div class="col-sm-9">
 							<b>Next bidder email is on.</b> Click to turn this off.
@@ -63,7 +44,6 @@
 					@endif
 				</div>
 
-				<hr>
 				<div class="card-body setting-squash2 row">
 					@if($param_bid_accepted_email_on_or_off == 'on')
 						<div class="col-sm-9">
@@ -82,7 +62,6 @@
 					@endif
 				</div>
 
-				<hr>
 				<div class="card-body setting-squash2 row">
 					@if($param_all_email_to_test_address_on_or_off == 'on')
 						<div class="col-sm-9">
@@ -104,7 +83,7 @@
 				<div class="card-body setting-squash2">
 					<form method="POST" action="{{ route('admins.settings.testmailsetaddress') }}" accept-charset="UTF-8">
                         @csrf
-                        @method('PUT')
+                        @method('POST')
 						<div class="form-group row">
 							<label for="email" class="col-md-3 col-form-label text-md-right">{{ __('Test Address') }}</label>
 							<div class="col-sm-6 float-right">
@@ -147,7 +126,6 @@
 					@endif
 				</div>
 
-				<hr>
 				<div class="card-body setting-squash2 row">
 					@if($param_all_text_to_test_phone_on_or_off == 'on')
 						<div class="col-sm-9">
@@ -169,12 +147,12 @@
 				<div class="card-body setting-squash2">
 					<form method="POST" action="{{ route('admins.settings.testtextsetphone') }}" accept-charset="UTF-8">
                         @csrf
-                        @method('PUT')
+                        @method('POST')
 						<div class="form-group row">
 							<label for="phone" class="col-md-3 col-form-label text-md-right">{{ __('Test Phone') }}</label>
 							<div class="col-sm-6 float-right">
 								<input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') ? old('phone') : $text_test_phone }}" required autocomplete="phone">
-								@error('email')
+								@error('phone')
 								<span class="invalid-feedback" role="alert">
 									<strong>{{ $message }}</strong>
 								</span>
@@ -213,17 +191,24 @@
 					@endif
 				</div>
 
-
-
-				{{--
-					$param_next_bidder_text_on_or_off = App\Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
-					$param_all_text_to_test_phone_on_or_off = App\Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
-					$text_test_phone = App\Param::where('param_name','text-test-phone')->first()->string_value;
-
-					$param_auto_bid_on_or_off = App\Param::where('param_name','autobid-on-or-off')->first()->string_value;
---}}					
-
-
+				<hr>
+				<div class="card-body setting-squash2 row">
+					@if($param_name_or_taken == 'taken')
+						<div class="col-sm-9">
+							When not filtered, bidding page <b>lines show TAKEN</b> (by bidders). Click to show bidder name.
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url('admins/settings/name') }}" class="btn btn-primary float-right" >SHOW NAME</a>
+						</div>
+					@else
+						<div class="col-sm-9">
+							When not filtered, bidding page <b>lines show bidder name</b>. Click to show "TAKEN".
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url('admins/settings/taken') }}" class="btn btn-primary float-right" >SHOW TAKEN</a>
+						</div>
+					@endif
+				</div>
 
 			</div>
 		</div>

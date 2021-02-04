@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\NextBidderMail;
 use App\Notifications\BidSelectionMail;
 
-
+use App\Rules\DummyFail;
 
 class SettingController extends Controller {
 
@@ -319,8 +319,6 @@ class SettingController extends Controller {
         }
     }
 
-/////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Turn on "use test text"
      *
@@ -373,11 +371,14 @@ class SettingController extends Controller {
                 if ($action == 'set'){
                     $phone = $request->phone;
                     if (isset($phone)){
-                        //Validate 
-                        $this->validate($request, [
-                            'phone'=>'integer',
-                        ]);
-        
+                        //Validate for ten digits - error if not
+                        if(!preg_match("/\d{10}/",$phone)) {
+                            // dummy validation function - if called, just returns message
+                            $this->validate($request, [ 
+                                'phone'=>new DummyFail( 'Number should be 10 digits!')
+                            ]);
+                        }
+
                         // set 'text-test-address'
                         $param = Param::where('param_name','text-test-phone')->first();
                         $param->string_value = $phone;
@@ -409,8 +410,6 @@ class SettingController extends Controller {
         }
     }
 
-///////
-//////////////////////////////////////
 
     /**
      * Turn on "auto-bidding"
