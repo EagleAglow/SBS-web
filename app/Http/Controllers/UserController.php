@@ -17,6 +17,10 @@ use Spatie\Permission\Models\Permission;
 //Enables us to output flash messaging
 use Session;
 
+// ad lib validaton
+use App\Rules\DummyFail;
+
+
 class UserController extends Controller {
 
     public function __construct() {
@@ -69,6 +73,22 @@ class UserController extends Controller {
             'password'=>'required|min:6|confirmed'
         ]);
 
+        //Validate phone number for ten digits - error if not
+        $phone = $request['phone_number'];
+        if (isset($phone)){
+            if (strlen($phone)>0){
+                if(!preg_match("/\d{10}/",$phone)) {
+                    // dummy validation function - if called, just returns message
+                    $this->validate($request, [ 
+                        'phone'=>new DummyFail( 'Number should be 10 digits!')
+                    ]);
+                }
+            }
+        } else {
+            $phone = '';
+        }
+        $request['phone_number'] = $phone;
+
         $bidder_group_id = $request['bidder_group_id'];
 
         $pwd_in_request = $request->password;
@@ -76,7 +96,7 @@ class UserController extends Controller {
         $request['password'] = Hash::make($pwd_in_request);
 
         // use name, email, bidder_group_id and password data from request
-        $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id')); 
+        $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id', 'phone_number')); 
 
         $roles = $request['roles']; //Retrieving the roles field
 
@@ -159,9 +179,25 @@ class UserController extends Controller {
                 'bidder_primary_order'=>'nullable|integer',
                 'bidder_secondary_order'=>'nullable|integer',
             ]);
-    
+        
             // hash password for storage
             $request['password'] = Hash::make($pwd_in_request);
+
+            //Validate phone number for ten digits - error if not
+            $phone = $request['phone_number'];
+            if (isset($phone)){
+                if (strlen($phone)>0){
+                    if(!preg_match("/\d{10}/",$phone)) {
+                        // dummy validation function - if called, just returns message
+                        $this->validate($request, [ 
+                            'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                        ]);
+                    }
+                }
+            } else {
+                $phone = '';
+            }
+            $request['phone_number'] = $phone;
         } else {
             // password field was empty
             // does a password hash for this email already exist?
@@ -177,6 +213,23 @@ class UserController extends Controller {
                 ]);
                 // store it unchanged
                 $request['password'] = $pwd;
+
+                //Validate phone number for ten digits - error if not
+                $phone = $request['phone_number'];
+                if (isset($phone)){
+                    if (strlen($phone)>0){
+                        if(!preg_match("/\d{10}/",$phone)) {
+                            // dummy validation function - if called, just returns message
+                            $this->validate($request, [ 
+                                'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                            ]);
+                        }
+                    }
+                } else {
+                    $phone = '';
+                }
+                $request['phone_number'] = $phone;
+
             } else {
                 // should fail validation - should not actually get to this code, anyway...
                 //Validate 
@@ -191,6 +244,22 @@ class UserController extends Controller {
         
                 // hash password for storage
                 $request['password'] = Hash::make($pwd_in_request);
+
+                //Validate phone number for ten digits - error if not
+                $phone = $request['phone_number'];
+                if (isset($phone)){
+                    if (strlen($phone)>0){
+                        if(!preg_match("/\d{10}/",$phone)) {
+                            // dummy validation function - if called, just returns message
+                            $this->validate($request, [ 
+                                'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                            ]);
+                        }
+                    }
+                } else {
+                    $phone = '';
+                }
+                $request['phone_number'] = $phone;
             }
         }
 
@@ -198,7 +267,7 @@ class UserController extends Controller {
         $superusers = User::role('superuser')->get()->count();
 
         $input = $request->only(['name', 'email', 'password','bidder_group_id','bid_order', 'bidder_primary_order',
-            'bidder_secondary_order']); 
+            'bidder_secondary_order', 'phone_number']); 
 
         $user->fill($input)->save();
 

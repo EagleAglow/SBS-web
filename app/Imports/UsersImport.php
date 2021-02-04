@@ -20,7 +20,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
     * @return \Illuminate\Database\Eloquent\Model|null
     */
     
-    // Header: NAME, EMAIL, SENIORITY, GROUP, PASSWORD (optional)
+    // Header: NAME, EMAIL, PHONE, SENIORITY, GROUP, PASSWORD (optional)
     // expects header row, or will miss an entry...
     // ****** REQUIRES header row in order to index $row array with field names ********
     // switches header text to lower case for index
@@ -50,6 +50,12 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
             if ($user->hasRole('superuser')){ $admin_flag = true; }
         }
 
+        // validate phone number - only use it if ten digits, otherwise blank
+        $phone = $row['email'];
+        if(!preg_match("/\d{10}/",$phone)) {
+            $phone = '';
+        }
+
         // setup for upsert - skip if admin, change password if >5 characters
         // do not add new user without a password, so skip those
         if (!$admin_flag){
@@ -58,6 +64,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                 return new User([
                     'name'     => $row['name'],
                     'email'    => $row['email'],
+                    'phone_number'    => $phone,
                     'password' => \Hash::make($row['password']),
                     'bidder_primary_order' => $row['seniority'],
                     'bidder_group_id' => BidderGroup::select('id')->where('code','=', $row['group'])->first()->id,
@@ -68,6 +75,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     return new User([
                         'name'     => $row['name'],
                         'email'    => $row['email'],
+                        'phone_number'    => $phone,
                         'password' => $user->password,
                         'bidder_primary_order' => $row['seniority'],
                         'bidder_group_id' => BidderGroup::select('id')->where('code','=', $row['group'])->first()->id,

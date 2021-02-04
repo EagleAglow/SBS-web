@@ -20,7 +20,7 @@ class UsersExport implements FromCollection
 //        return User::all();
 
         // an array
-        $first = DB::select(DB::raw("SELECT 'NAME' as name, 'EMAIL' as email, 'SENIORITY' as bidder_primary_order, 'GROUP' as code;"));
+        $first = DB::select(DB::raw("SELECT 'NAME' as name, 'EMAIL' as email, 'PHONE' as phone_number, 'SENIORITY' as bidder_primary_order, 'GROUP' as code;"));
         // another array
         $users = DB::table('users')->join('bidder_groups', 'bidder_group_id', '=', 'bidder_groups.id')->select('users.name', 'email', 'bidder_primary_order', 'code')->get()->toArray();
         // make a collection from combined arrays

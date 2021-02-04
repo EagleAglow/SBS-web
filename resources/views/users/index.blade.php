@@ -24,7 +24,7 @@
                         <table class="table table-striped">
 						<thead>
 							<tr>
-							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Name</span><br>Email</th>
+							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Name</span><br>Email / Number</th>
 							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Group</span><br>Roles</th>
 							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Seniority</span><br>Tie&nbsp;Breaker</th>
 							<th class="text-center" scope="col">Bid Order</th>
@@ -36,7 +36,7 @@
 						<tbody>
 							@foreach ($users as $user)
 							<tr>
-							<td class="text-center"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">{{ $user->name }}</span><br>{{ $user->email }}</td>
+							<td class="text-center"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">{{ $user->name }}</span><br>{{ $user->email }} {{ $user->phone_number }}</td>
 							<td class="text-center">
 								@if(isset($user->bidder_group)) 						
 								<span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">{{ $user->bidder_group->code }}</span><br>
