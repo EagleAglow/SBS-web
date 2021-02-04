@@ -31,7 +31,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
     {
         // is there password text in fifth column, with "PASSWORD" in header row?
         $pwd_flag = false;
-        if (count($row) > 4){
+        if (count($row) > 5){
             // is text longer than 5 characters?
             if (strlen($row['password']) > 5){
                 $pwd_flag = true;
@@ -51,7 +51,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
         }
 
         // validate phone number - only use it if ten digits, otherwise blank
-        $phone = $row['email'];
+        $phone = $row['phone'];
         if(!preg_match("/\d{10}/",$phone)) {
             $phone = '';
         }
