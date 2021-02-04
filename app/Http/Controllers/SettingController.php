@@ -371,8 +371,8 @@ class SettingController extends Controller {
             $action = $request->action;
             if (isset($action)){
                 if ($action == 'set'){
-                    $email = $request->text;
-                    if (isset($email)){
+                    $phone = $request->phone;
+                    if (isset($phone)){
                         //Validate 
                         $this->validate($request, [
                             'phone'=>'integer',
@@ -393,7 +393,7 @@ class SettingController extends Controller {
                         $param->string_value = '';
                         $param->save();
                         // turn off using test address
-                        $param = Param::where('param_name','param-all-text-to-test-phone-on-or-off')->first();
+                        $param = Param::where('param_name','all-text-to-test-phone-on-or-off')->first();
                         $param->string_value = 'off';
                         $param->save();
                         flash('Test texting phone number cleared, and bidding texting to test phone number is OFF.')->success();
