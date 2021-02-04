@@ -152,6 +152,19 @@ Route::prefix('admins')->group(function () {
     Route::get('settings/testmailoff', 'SettingController@testmailoff')->name('admins.settings.testmailoff');
     Route::put('settings/testmailsetaddress', 'SettingController@testmailsetaddress')->name('admins.settings.testmailsetaddress');
 
+    // control "use test text"
+    Route::get('settings/testtexton', 'SettingController@testtexton')->name('admins.settings.testtexton');
+    Route::get('settings/testtextoff', 'SettingController@testtextoff')->name('admins.settings.testtextoff');
+    Route::put('settings/testtextsetphone', 'SettingController@testtextsetphone')->name('admins.settings.testtextsetphone');
+
+    // control text to next bidder
+    Route::get('settings/nextbiddertexton', 'SettingController@nextbiddertexton')->name('admins.settings.nextbiddertexton');
+    Route::get('settings/nextbiddertextoff', 'SettingController@nextbiddertextoff')->name('admins.settings.nextbiddertextoff');
+
+    // control auto bidding
+    Route::get('settings/autobidon', 'SettingController@autobidon')->name('admins.settings.autobidon');
+    Route::get('settings/autobidoff', 'SettingController@autobidoff')->name('admins.settings.autobidoff');
+
 });
 
 

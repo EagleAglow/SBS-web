@@ -31,14 +31,23 @@ class ParamsTableSeeder extends Seeder
             // control email to bidder after bid accepted
             DB::table('params')->insertOrIgnore([ 'param_name' => 'bid-accepted-email-on-or-off', 'string_value' => 'off', ]);
 
-            // control "auto bidding" (takes highest ranking user pick for bid)
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'auto-bidding-on-or-off', 'string_value' => 'off', ]);
-
             // use test address instead of actually sending email to bidders
             DB::table('params')->insertOrIgnore([ 'param_name' => 'all-email-to-test-address-on-or-off', 'string_value' => 'off', ]);
  
             // address for test emails
             DB::table('params')->insertOrIgnore([ 'param_name' => 'email-test-address', 'string_value' => '', ]);
+
+            // control text to next bidder
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bidder-text-on-or-off', 'string_value' => 'off', ]);
+
+            // use test phone instead of actually sending text to bidders
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'all-text-to-test-phone-on-or-off', 'string_value' => 'off', ]);
+ 
+            // phone for test texts
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'text-test-phone', 'string_value' => '', ]);
+
+            // control "auto bidding" (takes highest ranking user pick for bid)
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'autobid-on-or-off', 'string_value' => 'off', ]);
 
         }
     }

@@ -14,11 +14,16 @@
 				@php
 					$param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
 					$param_next_bidder_email_on_or_off = App\Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
-					$bid_accepted_email_on_or_off = App\Param::where('param_name','bid-accepted-email-on-or-off')->first()->string_value;
+					$param_bid_accepted_email_on_or_off = App\Param::where('param_name','bid-accepted-email-on-or-off')->first()->string_value;
 
-					$all_email_to_test_address_on_or_off = App\Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+					$param_all_email_to_test_address_on_or_off = App\Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
 					$email_test_address = App\Param::where('param_name','email-test-address')->first()->string_value;
 
+					$param_next_bidder_text_on_or_off = App\Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+					$param_all_text_to_test_phone_on_or_off = App\Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+					$text_test_phone = App\Param::where('param_name','text-test-phone')->first()->string_value;
+
+					$param_auto_bid_on_or_off = App\Param::where('param_name','autobid-on-or-off')->first()->string_value;
 				@endphp
 
 				<div class="card-body setting-squash row">
@@ -60,7 +65,7 @@
 
 				<hr>
 				<div class="card-body setting-squash2 row">
-					@if($bid_accepted_email_on_or_off == 'on')
+					@if($param_bid_accepted_email_on_or_off == 'on')
 						<div class="col">
 							<b>Bidder will get schedule by email</b>. Click to turn this off.
 						</div>
@@ -79,7 +84,7 @@
 
 				<hr>
 				<div class="card-body setting-squash2 row">
-					@if($all_email_to_test_address_on_or_off == 'on')
+					@if($param_all_email_to_test_address_on_or_off == 'on')
 						<div class="col">
 							Bid emails (if enabled above) are <b>sent <u>ONLY</u> to the test address</b>. Click to send to users.
 						</div>
@@ -122,6 +127,104 @@
 						</div>
                     </form>
 				</div>
+
+				<hr>
+				<div class="card-body setting-squash2 row">
+					@if($param_next_bidder_text_on_or_off == 'on')
+						<div class="col">
+							<b>Next bidder text is on.</b> Click to turn this off.
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/nextbiddertextoff') }}" class="btn btn-primary float-right" >OFF</a>
+						</div>
+					@else
+						<div class="col">
+							Next bidder will not be notified by text. Click to turn this on.
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/nextbiddertexton') }}" class="btn btn-primary float-right" >ON</a>
+						</div>
+					@endif
+				</div>
+
+				<hr>
+				<div class="card-body setting-squash2 row">
+					@if($param_all_text_to_test_phone_on_or_off == 'on')
+						<div class="col">
+							Text messages (if enabled above) are <b>sent <u>ONLY</u> to the test phone</b>. Click to send to users.
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/testtextoff') }}" class="btn btn-primary float-right" >USERS</a>
+						</div>
+					@else
+						<div class="col">
+							Text messages (if enabled above) are <span style="color:red;"><b>sent to users</b></span>. Click to send texts to a test phone (below).
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/testtexton') }}" class="btn btn-primary float-right" >TEST</a>
+						</div>
+					@endif
+				</div>
+
+				<div class="card-body setting-squash2">
+					<form method="POST" action="{{ route('admins.settings.testtextsetphone') }}" accept-charset="UTF-8">
+                        @csrf
+                        @method('PUT')
+						<div class="form-group row">
+							<label for="phone" class="col-md-4 col-form-label text-md-right">{{ __('Test Phone') }}</label>
+							<div class="col-sm-6 float-right">
+								<input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') ? old('phone') : $text_test_phone }}" required autocomplete="phone">
+								@error('email')
+								<span class="invalid-feedback" role="alert">
+									<strong>{{ $message }}</strong>
+								</span>
+								@enderror
+							</div>
+							<div class="col-sm-2">
+								@if(strlen($text_test_phone) > 0)
+									<input class="btn btn-primary float-right" type="submit" value="CLEAR">
+									<input type="hidden" name="action" value="clear">
+								@else
+									<input class="btn btn-primary float-right" type="submit" value="SET">
+									<input type="hidden" name="action" value="set">
+								@endif
+							</div>
+						</div>
+                    </form>
+				</div>
+
+				<hr>
+				<div class="card-body setting-squash2 row">
+					@if($param_auto_bid_on_or_off == 'on')
+						<div class="col">
+							<b>Auto-bidding is on.</b> A bidder automatically gets an available line, with their lowest number tag.
+							 If none of the available lines are tagged, bidding is not automatic. Click to turn off.
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/autobidoff') }}" class="btn btn-primary float-right" >OFF</a>
+						</div>
+					@else
+						<div class="col">
+							Auto-bidding is off, bidding is not automatic. Click to turn on.
+						</div>
+						<div class="col-sm-2">
+							<a href="{{ url('admins/settings/autobidon') }}" class="btn btn-primary float-right" >ON</a>
+						</div>
+					@endif
+				</div>
+
+
+
+				{{--
+					$param_next_bidder_text_on_or_off = App\Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+					$param_all_text_to_test_phone_on_or_off = App\Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+					$text_test_phone = App\Param::where('param_name','text-test-phone')->first()->string_value;
+
+					$param_auto_bid_on_or_off = App\Param::where('param_name','autobid-on-or-off')->first()->string_value;
+--}}					
+
+
+
 			</div>
 		</div>
 	</div>   

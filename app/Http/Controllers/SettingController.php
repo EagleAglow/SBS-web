@@ -186,7 +186,6 @@ class SettingController extends Controller {
     
             flash('Email to next bidder is OFF!')->success();
             return view('admins.settings.index');
-            return view('admins.settings.index');
         } else {
             abort('401');
         }
@@ -320,40 +319,177 @@ class SettingController extends Controller {
         }
     }
 
+/////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Turn on "use test text"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function testtexton()
+    {
+        if (Auth::user()->hasRole('admin')){
+            // do we have an address?
+            $param = Param::where('param_name','text-test-phone')->first();
+            if (strlen($param->string_value)>0){
+                $param = Param::where('param_name','all-text-to-test-phone-on-or-off')->first();
+                $param->string_value = 'on';
+                $param->save();
+                flash('Bidding texts to test phone is ON!')->success();
+            } else {
+                flash('Missing phone number!')->error();
+            }
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
 
-/* 
-// code for sending email - save this!!!!!!!!!!!!!!!!!
+    /**
+     * Turn off "use test email"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function testtextoff()
+    {
+        if (Auth::user()->hasRole('admin')){
 
-            $user = User::where('email','randy@atomicwizard.com')->first();
-            if (isset($user)){
-//                $user->notify(new NextBidderMail());
-                $user->notify(new BidSelectionMail($user->id));
+            $param = Param::where('param_name','all-text-to-test-phone-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+
+            flash('Bidding texts to test phone is OFF!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    public function testtextsetphone(Request $request) {
+        if (Auth::user()->hasRole('admin')){
+
+            $action = $request->action;
+            if (isset($action)){
+                if ($action == 'set'){
+                    $email = $request->text;
+                    if (isset($email)){
+                        //Validate 
+                        $this->validate($request, [
+                            'phone'=>'integer',
+                        ]);
+        
+                        // set 'text-test-address'
+                        $param = Param::where('param_name','text-test-phone')->first();
+                        $param->string_value = $phone;
+                        $param->save();
+                        flash('Test texting phone set successfully.')->success();
+                    } else {
+                        flash('Failed to set test texting phone number.')->error()->important();
+                    }
+                } else {
+                    if ($action == 'clear'){
+                        // clear 'email-test-address'
+                        $param = Param::where('param_name','text-test-phone')->first();
+                        $param->string_value = '';
+                        $param->save();
+                        // turn off using test address
+                        $param = Param::where('param_name','param-all-text-to-test-phone-on-or-off')->first();
+                        $param->string_value = 'off';
+                        $param->save();
+                        flash('Test texting phone number cleared, and bidding texting to test phone number is OFF.')->success();
+                    } else {
+                        flash('Programmer error: No action.')->warning()->important();
+                    }
+                }
             }
 
-            // do we have an address?
-            $param = Param::where('param_name','email-test-address')->first();
-            if (strlen($param->string_value)>0){
-                $param = Param::where('param_name','all-email-to-test-address-on-or-off')->first();
-                $param->string_value = 'on';
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
 
-                        // set 'email-test-address'
-                        $param = Param::where('param_name','email-test-address')->first();
-                        $param->string_value = $email;
-                        $param->save();
-                        if (count(Param::where('param_name','next-bidder-email-on-or-off')->get()) == 0){
-                            $param = new Param();
-                            $param->param_name = 'next-bidder-email-on-or-off';
-                            $param->string_value = 'off';
-                            $param->save();
-                        }
-            
-                        if (count(Param::where('param_name','bid-accepted-email-on-or-off')->get()) == 0){
-                            $param = new Param();
-                            $param->param_name = 'bid-accepted-email-on-or-off';
-                            $param->string_value = 'off';
-            
-*/
+///////
+//////////////////////////////////////
 
+    /**
+     * Turn on "auto-bidding"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autobidon()
+    {
+        if (Auth::user()->hasRole('admin')){
+            $param = Param::where('param_name','autobid-on-or-off')->first();
+            $param->string_value = 'on';
+            $param->save();
+
+            flash('Auto-bidding is ON!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn off auto-bidding"
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autobidoff()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            $param = Param::where('param_name','autobid-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+
+            flash('Auto-bidding is OFF!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+/*
+
+    /**
+     * Turn on next bidder text
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function nextbiddertexton()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            $param = Param::where('param_name','next-bidder-text-on-or-off')->first();
+            $param->string_value = 'on';
+            $param->save();
+    
+            flash('Texting to next bidder is ON!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+    /**
+     * Turn off next bidder text
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function nextbiddertextoff()
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            $param = Param::where('param_name','next-bidder-text-on-or-off')->first();
+            $param->string_value = 'off';
+            $param->save();
+    
+            flash('Texting to next bidder is OFF!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
 
 }

@@ -19,8 +19,9 @@ class NextBidderMail extends Mailable
     public function __construct($name)
     {
         $this->name = $name;
-        $this->url = $_SERVER['SERVER_ADDR'];
-    }
+//      $this->url = $_SERVER['SERVER_ADDR'];
+        $this->url = 'https://Bid.453amb.ca/login';
+}
 
     /**
      * Build the message.

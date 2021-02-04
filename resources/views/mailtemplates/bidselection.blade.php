@@ -1,6 +1,7 @@
 @component('mail::message')
 Hello **{{$name}}**,  {{-- use double space for line break or <br> --}}
-You have completed bidding.  Your schedule is shown below.  {{-- use double space for line break --}}
+You have completed bidding.  Your schedule is shown below,  {{-- use double space for line break --}}
+and it is also in the attached "ics" file.  {{-- use double space for line break --}}
 Regards,  {{-- use double space for line break --}}
 Schedule Bid System  {{-- use double space for line break --}}
 <br>
