@@ -6,7 +6,7 @@
 		<div class="col-md-12">
 			<div class="card shadow">
                 <div class="card-header">
-                    <div class="flex row"><div class="col">Admin Dashboard - Schedules</div>
+                    <div class="flex row"><div class="col">Admin - Schedules</div>
                         <div class="col">
                             <div class="text-right">
                                 <a href="{{ route('schedules.create') }}"><button type="button"  onclick="return confirm('This only adds a schedule, individual schedule lines will need to be added later. It is better to Clone the existing schedule. Continue?')" class="btn btn-success">Add Schedule</button></a>

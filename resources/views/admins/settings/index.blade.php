@@ -7,7 +7,7 @@
 	<div class="row justify-content-center"> 
 		<div class="col-md-12">
 			<div class="card shadow">
-                <div class="card-header">Admin Dashboard - Settings</div>
+                <div class="card-header">Admin - Settings</div>
 
 				@include('flash::message')
 
@@ -173,26 +173,6 @@
 
 				<hr>
 				<div class="card-body setting-squash2 row">
-					@if($param_auto_bid_on_or_off == 'on')
-						<div class="col-sm-9">
-							<b>Auto-bidding is on.</b> A bidder automatically gets an available line, with their lowest number tag.
-							 If none of the available lines are tagged, bidding is not automatic. Click to turn off.
-						</div>
-						<div class="col-sm-3">
-							<a href="{{ url('admins/settings/autobidoff') }}" class="btn btn-primary float-right" >OFF</a>
-						</div>
-					@else
-						<div class="col-sm-9">
-							Auto-bidding is off, bidding is not automatic. Click to turn on.
-						</div>
-						<div class="col-sm-3">
-							<a href="{{ url('admins/settings/autobidon') }}" class="btn btn-primary float-right" >ON</a>
-						</div>
-					@endif
-				</div>
-
-				<hr>
-				<div class="card-body setting-squash2 row">
 					@if($param_name_or_taken == 'taken')
 						<div class="col-sm-9">
 							When not filtered, bidding page <b>lines show TAKEN</b> (by bidders). Click to show bidder name.
@@ -210,6 +190,27 @@
 					@endif
 				</div>
 
+{{--  suppress this until I figure out how to actually do it!
+				<hr>
+				<div class="card-body setting-squash2 row">
+					@if($param_auto_bid_on_or_off == 'on')
+						<div class="col-sm-9">
+							<b>Auto-bidding is on.</b> A bidder automatically gets an available line, with their lowest number tag.
+							 If none of the available lines are tagged, bidding is not automatic. Click to turn off.
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url('admins/settings/autobidoff') }}" class="btn btn-primary float-right" >OFF</a>
+						</div>
+					@else
+						<div class="col-sm-9">
+							Auto-bidding is off, bidding is not automatic. Click to turn on.
+						</div>
+						<div class="col-sm-3">
+							<a href="{{ url('admins/settings/autobidon') }}" class="btn btn-primary float-right" >ON</a>
+						</div>
+					@endif
+				</div>
+--}}
 			</div>
 		</div>
 	</div>   

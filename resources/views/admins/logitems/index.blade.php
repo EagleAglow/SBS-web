@@ -9,7 +9,7 @@
 			<div class="card shadow">
                 <div class="card-header d-print-none">
                     <div class="flex row">
-						<div class="col">Admin Dashboard - Log</div>
+						<div class="col">Admin - Log</div>
 						<div class="col">
 							<div class="float-right">
 								<a href="{{ route('admins.logitems.purge') }}"><button type="button" class="btn btn-danger" onclick="return confirm('This clears all log entries.\n\nAre you sure you want to DELETE ALL ENTRIES?')">Purge All Log Entries</button></a>

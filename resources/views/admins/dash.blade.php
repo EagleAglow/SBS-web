@@ -5,12 +5,9 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card shadow">
-                <div class="card-header">Admin Dashboard - Bidders/Schedules</div>
-
+                <div class="card-header">Admin - Bidders vs. Schedules</div>
 
                 @include('flash::message')
- 
-
 
                 <div class="card-body"><b>Bidders By Bidder Group</b><br>
                    <span style="font-size:0.8rem;">TCOM is commercial traffic only, TNON is non-commercial traffic only, TRAFFIC is either commercial or non-commercial.

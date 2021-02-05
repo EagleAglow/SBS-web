@@ -101,7 +101,7 @@
                                 @endrole
                                 @role('admin')
                                     @if( !Request::is('admins/dash'))
-                                        <a class="dropdown-item" href="{{ route('admins.dash') }}">Admin - Bidders/Schedules</a>
+                                        <a class="dropdown-item" href="{{ route('admins.dash') }}">Admin - Bidders vs. Schedules</a>
                                     @endif
                                     @if( !Request::is('admins/dashBidding'))
                                         <a class="dropdown-item" href="{{ route('admins.dashBidding') }}" onclick="$('#cover-spin').show(0)">Admin - Manage Bidding</a>
@@ -128,7 +128,7 @@
                                         <a class="dropdown-item" href="{{ url('admins/excel-csv-file-schedules') }}">Admin - Schedules Import/Export</a>
                                     @endif
                                     @if( !Request::is('admins/logitems'))
-                                        <a class="dropdown-item" href="{{ url('admins/logitems') }}">Admin - Log Items</a>
+                                        <a class="dropdown-item" href="{{ url('admins/logitems') }}">Admin - Log</a>
                                     @endif
                                     @if( !Request::is('admins/settings'))
                                         <a class="dropdown-item" href="{{ url('admins/settings') }}">Admin - Settings</a>

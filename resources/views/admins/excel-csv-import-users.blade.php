@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card shadow">
-                <div class="card-header">Users - Import/Export Excel/CSV Files</div>
+                <div class="card-header">Admin - Users Import/Export</div>
 
                 @include('flash::message')
 

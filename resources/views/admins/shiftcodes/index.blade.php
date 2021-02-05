@@ -8,7 +8,7 @@
 		<div class="col-md-12">
 			<div class="card shadow">
                 <div class="card-header">
-                    <div class="flex row"><div class="col">Admin Dashboard - Shift Codes</div>
+                    <div class="flex row"><div class="col">Admin - Shift Codes</div>
                         <div class="col">
                             <div class="text-right">
 								<a href="{{ route('shiftcodes.create') }}"><button type="button" class="btn btn-success">Add Shift Code</button></a>

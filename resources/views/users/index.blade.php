@@ -8,7 +8,7 @@
 		<div class="col-md-12">
 			<div class="card shadow">
                 <div class="card-header">
-                    <div class="flex row"><div class="col">Admin Dashboard - Users</div>
+                    <div class="flex row"><div class="col">Admin - Users</div>
                         <div class="col">
                             <div class="text-right">
 								<a href="{{ route('users.create') }}"><button type="button" class="btn btn-success">Add User</button></a>

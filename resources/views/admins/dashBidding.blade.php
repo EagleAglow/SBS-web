@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card shadow">
-                <div class="card-header">Admin Dashboard - Manage Bidding</div>
+                <div class="card-header">Admin - Manage Bidding</div>
 
                 @include('flash::message')
 
