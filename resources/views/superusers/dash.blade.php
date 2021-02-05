@@ -27,10 +27,11 @@
                     <a href="{{ url('superusers/picks') }}" class="btn btn-primary">Bidder Tagged Lines</a>
                 </div>
 
-
-
             </div>
         </div>
     </div>
+    @php
+//     echo phpinfo();
+    @endphp
 </div>
 @endsection

@@ -233,6 +233,31 @@ abort('401');  // test to see if we are hitting this
                         }
                     }
 
+                    // send text to next bidder?
+                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_text_on_or_off)){
+                        if($param_next_bidder_text_on_or_off == 'on'){
+                            $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+                            if($param_all_text_to_test_phone_on_or_off == 'on'){
+                                $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                                if(isset($param_text_test_phone)){
+                                    if(strlen($param_text_test_phone) > 0){
+                                        // send text to test phone number
+                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $who->name . ', you are the next bidder.');
+                                    }
+                                }
+                            } else {
+                                // send to bidder, if they have a number
+                                if (isset($who->phone_number)){
+                                    if (strlen($who->phone_number)>0){
+                                        LaraTwilio::notify($who->phone_number, 'Hello '. $who->name . ', you are the next bidder.');
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
                 } else {
                     // complete
                     $next_param->update(['integer_value' => 1]);
