@@ -57,12 +57,18 @@ Auth::routes(['login' => true, 'reset' => true, 'register' => false,]);
 // ---------------------------------------------------------------------
 
 
+// download ICS file
+Route::get('/bidders/dash/ics/{id}', 'BidderDashController@ics')->name('bidders.dash.ics');
+
+
 // future - remove HomeController ??
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admins/dash', 'AdminDashController@index')->name('admins.dash');
 Route::get('/bidders/dash', 'BidderDashController@index')->name('bidders.dash');
 Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervisors.dash');
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
+
+
 
 
 // permissions (superuser mode)
