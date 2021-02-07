@@ -63,24 +63,72 @@
                                 @endif
                             </div>
                             <div class="col">
-                                @if($my_sort == 'filter')
-                                    <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_sort" value="all">
-                                        @csrf
-                                        <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All</button>
-                                    </form>
+{{--
+                                cycle $my_sort between 'filter', 'tnon', 'tcom', all', but only use 'tnon' and 'tcom' if both are in $list
+                                $traffic is 'yes' if both are in sequence
+--}}                            
+                                @if($traffic == 'yes')
+                                    @if($my_sort == 'all')
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_sort" value="tnon">
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable TNON</button>
+                                        </form>
+                                    @else
+                                        @if($my_sort == 'tnon')
+                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                                <input type="hidden" name="page" value="1">
+                                                <input type="hidden" name="my_sort" value="tcom">
+                                                @csrf
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable TCOM</button>
+                                            </form>
+                                        @else
+                                            @if($my_sort == 'tcom')
+                                                <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                                    <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                                    <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                                    <input type="hidden" name="page" value="1">
+                                                    <input type="hidden" name="my_sort" value="filter">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable</button>
+                                                </form>
+                                            @else
+                                                <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                                    <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                                    <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                                    <input type="hidden" name="page" value="1">
+                                                    <input type="hidden" name="my_sort" value="all">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">All Lines</button>
+                                                </form>
+                                            @endif
+                                        @endif
+                                    @endif
                                 @else
-                                <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_sort" value="filter">
-                                        @csrf
-                                        <button type="submit" class="btn btn-secondary btn-shift float-right">Filter</button>
-                                    </form>
+                                    @if($my_sort == 'filter')
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_sort" value="all">
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All</button>
+                                        </form>
+                                    @else
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_sort" value="filter">
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">Show Available</button>
+                                        </form>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -100,6 +148,7 @@
                                     <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
                                     <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                    <input type="hidden" name="traffic" value={{$traffic}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary btn-shift">&#8656;&nbsp;Earlier</button>
                                 </form>
@@ -133,6 +182,7 @@
                                     <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
                                     <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                    <input type="hidden" name="traffic" value={{$traffic}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary">Later&nbsp;&#8658;</button>
                                 </form>
@@ -304,6 +354,7 @@
                                                                                 <input type="hidden" name="pick" value="tag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                                 <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                                <input type="hidden" name="traffic" value={{$traffic}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                             </form>
@@ -315,6 +366,7 @@
                                                                                 <input type="hidden" name="pick" value="untag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                                 <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                                <input type="hidden" name="traffic" value={{$traffic}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                             </form>
@@ -326,6 +378,7 @@
                                                                                     <input type="hidden" name="pick" value="boost">
                                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                                     <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                                    <input type="hidden" name="traffic" value={{$traffic}}>
                                                                                     @csrf
                                                                                     <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                                     {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -344,6 +397,7 @@
                                                                         <input type="hidden" name="pick" value="tag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                         <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                        <input type="hidden" name="traffic" value={{$traffic}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                     </form>
@@ -355,6 +409,7 @@
                                                                         <input type="hidden" name="pick" value="untag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                         <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                        <input type="hidden" name="traffic" value={{$traffic}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                     </form>
@@ -366,6 +421,7 @@
                                                                             <input type="hidden" name="pick" value="boost">
                                                                             <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                             <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                            <input type="hidden" name="traffic" value={{$traffic}}>
                                                                             @csrf
                                                                             <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                             {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -383,6 +439,7 @@
                                                                     <input type="hidden" name="pick" value="tag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                     <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                    <input type="hidden" name="traffic" value={{$traffic}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                 </form>
@@ -394,6 +451,7 @@
                                                                     <input type="hidden" name="pick" value="untag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                     <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                    <input type="hidden" name="traffic" value={{$traffic}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
                                                                 </form>
@@ -405,6 +463,7 @@
                                                                         <input type="hidden" name="pick" value="boost">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
                                                                         <input type="hidden" name="my_sort" value={{$my_sort}}>
+                                                                        <input type="hidden" name="traffic" value={{$traffic}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
                                                                         {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -425,7 +484,7 @@
 
                                     @php
                                         // things to include with pagination 
-                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_sort'=>$my_sort);
+                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_sort'=>$my_sort,'traffic'=>$traffic);
                                     @endphp
 
                                     {{ $schedule_lines->appends($params)->links() }}    

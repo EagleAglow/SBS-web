@@ -38,6 +38,11 @@ class UserScheduleShowController extends Controller {
         if(!isset($my_sort)){
             $my_sort = 'filter';
         }
+        $traffic = $request['traffic'];
+        if(!isset($traffic)){
+            $traffic = 'yes';
+        }
+
 
         return view('users.scheduleshow.index',
             ['schedule'=>$schedule,
@@ -47,6 +52,7 @@ class UserScheduleShowController extends Controller {
             'page'=>$page,
             'id'=>$id,
             'my_sort'=>$my_sort,
+            'traffic'=>$traffic,
             ]);
     }
  
@@ -57,9 +63,12 @@ class UserScheduleShowController extends Controller {
         }
 
         $my_sort = $request['my_sort'];
-        $my_sort = $request['my_sort'];
         if(!isset($my_sort)){
             $my_sort = 'filter';
+        }
+        $traffic = $request['traffic'];
+        if(!isset($traffic)){
+            $traffic = 'yes';
         }
 
         $user = auth()->user();
@@ -69,6 +78,8 @@ class UserScheduleShowController extends Controller {
         // roles: bidder-demo, bidder-oidp, bidder-tsu, bidder-irpa, bidder-tcom, bidder-tnon
         // line group codes: DEMO, OIDP, TSU, IRPA, TCOM, TNON
 
+        // also, flag when both TCOM and TNON are in list, then capture id
+        $tcount = 0;
         $list = array();  //empty array
         if ($user->hasRole('bidder-demo')){
             $list[] = LineGroup::where('code','DEMO')->first()['id'];
@@ -83,10 +94,14 @@ class UserScheduleShowController extends Controller {
             $list[] = LineGroup::where('code','IRPA')->first()['id'];
         }
         if ($user->hasRole('bidder-tcom')){
-            $list[] = LineGroup::where('code','TCOM')->first()['id'];
+            $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
+            $list[] = $tcom_id;
+            $tcount = $tcount +1;
         }
         if ($user->hasRole('bidder-tnon')){
-            $list[] = LineGroup::where('code','TNON')->first()['id'];
+            $tnon_id = LineGroup::where('code','TNON')->first()['id'];
+            $list[] = $tnon_id;
+            $tcount = $tcount +1;
         }
         // get user id for later join to user picks
         $pick_uid = $user->id;
@@ -111,14 +126,34 @@ class UserScheduleShowController extends Controller {
                     $list[] = LineGroup::where('code','IRPA')->first()['id'];
                 }
                 if ($who->hasRole('bidder-tcom')){
-                    $list[] = LineGroup::where('code','TCOM')->first()['id'];
+                    $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
+                    $list[] = $tcom_id;
+                    $tcount = $tcount +1;
                 }
                 if ($who->hasRole('bidder-tnon')){
-                    $list[] = LineGroup::where('code','TNON')->first()['id'];
+                    $tnon_id[] = LineGroup::where('code','TNON')->first()['id'];
+                    $list[] = $tnon_id;
+                    $tcount = $tcount +1;
                 }
+
                 // get user id for later join to user picks
                 $pick_uid = $who->id;
             }
+        } 
+
+        // cycle $my_sort between 'filter', 'tnon', 'tcom', all', but only use 'tnon' and 'tcom' if both are in $list
+        // use $traffic = 'yes' or 'no' to handle that - getting ugly in here
+        if ($tcount >1 ){
+            $traffic = 'yes';
+        } else {
+            $traffic = 'no';
+        }
+        // fix an unlikely error
+        if (!isset($tnon_id)){
+            $my_sort == 'filter';
+        }
+        if (!isset($tcom_id)){
+            $my_sort == 'filter';
         }
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
@@ -135,8 +170,34 @@ class UserScheduleShowController extends Controller {
                 ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
                 ->paginate(5); //Get first 5 ScheduleLines
             } else {
-                // all
-                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+                if($my_sort == 'tcom'){
+                    // collection of picks
+                    $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+                    // get lines that have not been tagged for the user
+                    $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $tcom_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                    // get lines that have been tagged for the user - join succeeds
+                    $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
+                    ->paginate(5); //Get first 5 ScheduleLines
+                } else {
+                    if($my_sort == 'tnon'){
+                        // collection of picks
+                        $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+                        // get lines that have not been tagged for the user
+                        $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $tnon_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                        ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                        // get lines that have been tagged for the user - join succeeds
+                        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                        ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line')
+                        ->paginate(5); //Get first 5 ScheduleLines
+                    } else {
+                        // all
+                        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5); //Get first 5 ScheduleLines
+                    }
+                }
             }
         } else {
             // not approved - return an empty object
@@ -242,6 +303,7 @@ class UserScheduleShowController extends Controller {
             'page'=>$page,
             'id'=>$id,
             'my_sort'=>$my_sort,
+            'traffic'=>$traffic,
             ]);
 
     }

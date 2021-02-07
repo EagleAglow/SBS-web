@@ -73,17 +73,7 @@
                     </div>
                     <div class="card-body my-squash d-print-none">
                         <a href="#"><button type="button" class="btn btn-primary btn-my-edit" onclick="window.print();">Print This Schedule Bid</button></a>
-
                         <a href="{{ url('bidders/dash/ics/' . $schedule_line->id ) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Download ICS Calendar File</button></a>
-
-
-
-{{--
-add down load button for ics file
-see: https://stackoverflow.com/questions/40084474/laravel5-3-generate-download-txt-on-the-fly
-need controller to check that user id is the same as user requesting file
-
---}}                        
                     </div>
                     <hr class="d-print-none">
 
