@@ -18,6 +18,8 @@ use App\LogItem;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
+use App\Mail\ActiveBidderMail;
+use App\Mail\ActiveBidderTestMail;
 use App\Mail\BidSelectionMail;
 use App\Mail\BidSelectionTestMail;
 
@@ -230,12 +232,12 @@ abort('401');  // test to see if we are hitting this
                             if(isset($param_email_test_address)){
                                 if(strlen($param_email_test_address) > 0){
                                     // send mail to test address
-                                    Mail::to($param_email_test_address)->send(new NextBidderTestMail($user->name));
+                                    Mail::to($param_email_test_address)->send(new ActiveBidderTestMail($user->name));
                                 }
                             }
                         } else {
                             // send to bidder
-                            Mail::to($user->email)->send(new NextBidderMail($user->name));
+                            Mail::to($user->email)->send(new ActiveBidderMail($user->name));
                         }
                     }
                 }
@@ -250,20 +252,72 @@ abort('401');  // test to see if we are hitting this
                             if(isset($param_text_test_phone)){
                                 if(strlen($param_text_test_phone) > 0){
                                     // send text to test phone number
-                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ', you are the next bidder.');
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . '- You can bid now, you are the active bidder.');
                                 }
                             }
                         } else {
                             // send to bidder, if they have a number
                             if (isset($user->phone_number)){
                                 if (strlen($user->phone_number)>0){
-                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ', you are the next bidder.');
+                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . '- You can bid now, you are the active bidder.');
                                 }
                             }
                         }
                     }
                 }
 
+///// begin second up
+
+                // look for a following bidder
+                $user2 = User::where('bid_order', ($next +1))->first();
+                if(isset($user2) ){
+
+                    // send email to next bidder?
+                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_email_on_or_off)){
+                        if($param_next_bidder_email_on_or_off == 'on'){
+                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                            if($param_all_email_to_test_address_on_or_off == 'on'){
+                                $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                                if(isset($param_email_test_address)){
+                                    if(strlen($param_email_test_address) > 0){
+                                        // send mail to test address
+                                        Mail::to($param_email_test_address)->send(new NextBidderTestMail($user2->name));
+                                    }
+                                }
+                            } else {
+                                // send to bidder
+                                Mail::to($user2->email)->send(new NextBidderMail($user2->name));
+                            }
+                        }
+                    }
+
+                    // send text to next bidder?
+                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_text_on_or_off)){
+                        if($param_next_bidder_text_on_or_off == 'on'){
+                            $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+                            if($param_all_text_to_test_phone_on_or_off == 'on'){
+                                $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                                if(isset($param_text_test_phone)){
+                                    if(strlen($param_text_test_phone) > 0){
+                                        // send text to test phone number
+                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . '- You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                    }
+                                }
+                            } else {
+                                // send to bidder, if they have a number
+                                if (isset($user2->phone_number)){
+                                    if (strlen($user2->phone_number)>0){
+                                        LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . '- You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+////// end second up
 
             } else {
                 // complete

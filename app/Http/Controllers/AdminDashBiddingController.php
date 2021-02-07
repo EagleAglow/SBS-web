@@ -12,6 +12,8 @@ use App\Role;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
+use App\Mail\ActiveBidderMail;
+use App\Mail\ActiveBidderTestMail;
 
 use App\LogItem;
 use DB;
@@ -373,9 +375,10 @@ class AdminDashBiddingController extends Controller
                 $state_param->update(['string_value' => 'running']);
                 $next_param = Param::where('param_name','bidding-next')->first();
                 $next_param->update(['integer_value' => 1]);
+                // get second bidder - assumes always at least two
+                $user2 = User::where('bid_order',2)->first();
 
-
-                // send email to this bidder?
+                // send email to bidders?
                 $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_email_on_or_off)){
                     if($param_next_bidder_email_on_or_off == 'on'){
@@ -385,17 +388,19 @@ class AdminDashBiddingController extends Controller
                             if(isset($param_email_test_address)){
                                 if(strlen($param_email_test_address) > 0){
                                     // send mail to test address
-                                    Mail::to($param_email_test_address)->send(new NextBidderTestMail($user->name));
+                                    Mail::to($param_email_test_address)->send(new ActiveBidderTestMail($user->name));
+                                    Mail::to($param_email_test_address)->send(new NextBidderTestMail($user2->name));
                                 }
                             }
                         } else {
-                            // send to bidder
-                            Mail::to($user->email)->send(new NextBidderMail($user->name));     
+                            // send to bidders
+                            Mail::to($user->email)->send(new ActiveBidderMail($user->name));     
+                            Mail::to($user->email)->send(new NextBidderMail($user2->name));     
                         }
                     }
                 }
 
-                // send text to this bidder?
+                // send text to bidders?
                 $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_text_on_or_off)){
                     if($param_next_bidder_text_on_or_off == 'on'){
@@ -404,15 +409,22 @@ class AdminDashBiddingController extends Controller
                             $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
                             if(isset($param_text_test_phone)){
                                 if(strlen($param_text_test_phone) > 0){
-                                    // send text to test phone number
-                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ', you are the next bidder.');
+                                    // send texts to test phone number
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . '- You can bid now, you are the active bidder.');
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ', you are the next bidder.');
                                 }
                             }
                         } else {
-                            // send to bidder, if they have a number
+                            // send to active bidder, if they have a number
                             if (isset($user->phone_number)){
                                 if (strlen($user->phone_number)>0){
-                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ', you are the next bidder.');
+                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . '- You can bid now, you are the active bidder.');
+                                }
+                            }
+                            // send to next bidder, if they have a number
+                            if (isset($user2->phone_number)){
+                                if (strlen($user2->phone_number)>0){
+                                    LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . '- You will be able to bid soon. You will be notified wihen the current bidder is done.');
                                 }
                             }
                         }
