@@ -94,6 +94,11 @@
                                         <a class="dropdown-item" href="{{ route('bidders.dash') }}">Bidder</a>
                                     @endif
                                 @endhasanyrole
+                                @hasanyrole('admin|supervisor|superuser')
+                                    @if( !Request::is('users/progress'))
+                                        <a class="dropdown-item" href="{{ route('users.progress') }}">Bidding Progress Scoreboard</a>
+                                    @endif
+                                @endhasanyrole
                                 @role('supervisor')
                                     @if( !Request::is('supervisors/dash'))
                                         <a class="dropdown-item" href="{{ route('supervisors.dash') }}">Supervisor</a>

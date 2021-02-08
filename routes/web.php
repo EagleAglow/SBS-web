@@ -69,6 +69,8 @@ Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervi
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
 
 
+// show progress scoreboard to admins / supervisors
+Route::get('users/progress', 'ProgressScoreboardController@index')->name('users.progress');
 
 
 // permissions (superuser mode)
