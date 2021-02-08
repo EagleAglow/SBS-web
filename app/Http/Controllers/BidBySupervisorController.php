@@ -298,14 +298,14 @@ abort('401');  // test to see if we are hitting this
                                     if(isset($param_text_test_phone)){
                                         if(strlen($param_text_test_phone) > 0){
                                             // send text to test phone number
-                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $who2->name . '- You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $who2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
                                         }
                                     }
                                 } else {
                                     // send to bidder, if they have a number
                                     if (isset($who2->phone_number)){
                                         if (strlen($who2->phone_number)>0){
-                                            LaraTwilio::notify($who2->phone_number, 'Hello '. $who2->name . '- You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                            LaraTwilio::notify($who2->phone_number, 'Hello '. $who2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
                                         }
                                     }
                                 }
