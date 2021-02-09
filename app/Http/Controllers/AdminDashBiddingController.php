@@ -497,7 +497,7 @@ class AdminDashBiddingController extends Controller
                     flash('Missing next bidder order, unable to continue!')->warning()->important();
                     return redirect()->route('admins.dashBidding');
                 } else {
-                    $user = User::where('bid_order','=',$next_param)->first();
+                    $user = User::where('bid_order','=',$next_param->integer_value)->first();
                     if (!isset($user)){
                     // do nothing, except complain
                         flash('Missing bidder, unable to continue!')->warning()->important();
