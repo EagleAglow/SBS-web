@@ -17,13 +17,13 @@
                     if($state_param->string_value == 'running'){
                         $state = 'Bidding is in ACTIVE progress.';
                         if(isset($next_param->integer_value)){
-                            $state = $state . ' &#9724; Next Bidder: ' . $next_param->integer_value;
+                            $state = $state . ' &#9724; Next Bidder Order: ' . $next_param->integer_value;
                         }
                     } else {
                         if($state_param->string_value == 'paused'){
                             $state = 'Bidding is paused.';
                             if(isset($next_param->integer_value)){
-                                $state = $state . ' &#9724; Next Bidder: ' . $next_param->integer_value;
+                                $state = $state . ' &#9724; Next Bidder Order: ' . $next_param->integer_value;
                             }
                         } else {
                             if($state_param->string_value == 'complete'){
@@ -32,7 +32,7 @@
                                 if($state_param->string_value == 'ready'){
                                     $state = 'Bidding is ready to begin, but NOT active.';
                                     if(isset($next_param->integer_value)){
-                                        $state = $state . ' &#9724; Next Bidder: ' . $next_param->integer_value;
+                                        $state = $state . ' &#9724; Next Bidder Order: ' . $next_param->integer_value;
                                     }
                                 } else {
                                     $state = 'Bidding is not ready.';
