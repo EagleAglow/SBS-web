@@ -456,6 +456,11 @@ class AdminDashBiddingController extends Controller
                 flash('Unable to pause!')->warning()->important();
                 return redirect()->route('admins.dashBidding');
             } else {
+                // remove role from active bidder (or bidders, in case of operator error)
+                $active_bidders = User::role('bidder-active')->get();
+                foreach ($active_bidders as $active_bidder){
+                    $active_bidder->removeRole('bidder-active');                    
+                }
 
                 // set parameter
                 $state_param = Param::where('param_name','bidding-state')->first();
@@ -485,22 +490,37 @@ class AdminDashBiddingController extends Controller
                 flash('Unable to continue!')->warning()->important();
                 return redirect()->route('admins.dashBidding');
             } else {
+                // make current bidder active
+                $next_param = Param::where('param_name','bidding-next')->first();
+                if (!isset($next_param)){
+                    // do nothing, except complain
+                    flash('Missing next bidder order, unable to continue!')->warning()->important();
+                    return redirect()->route('admins.dashBidding');
+                } else {
+                    $user = User::where('bid_order','=',$next_param)->first();
+                    if (!isset($user)){
+                    // do nothing, except complain
+                        flash('Missing bidder, unable to continue!')->warning()->important();
+                        return redirect()->route('admins.dashBidding');
+                    } else {
+                        // assign role, move on
+                        $user->assignRole('bidder-active');
+                        // set parameter
+                        $state_param = Param::where('param_name','bidding-state')->first();
+                        $state_param->update(['string_value' => 'running']);
 
-                // set parameter
-                $state_param = Param::where('param_name','bidding-state')->first();
-                $state_param->update(['string_value' => 'running']);
+                        // log
+                        $log_item = new LogItem();
+                        $log_item->note = 'Continue bidding';
+                        $log_item->save();
 
-                // log
-                $log_item = new LogItem();
-                $log_item->note = 'Continue bidding';
-                $log_item->save();
-
-                flash('Bidding Continued...')->success();
-                return view('admins.dashBidding');
+                        flash('Bidding Continued...')->success();
+                        return view('admins.dashBidding');
+                    }
+                }
             }
         } else {
             abort('401');
         }
     }
-
 }
