@@ -33,15 +33,15 @@
                     $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
 
                     if ($bidding_next == 0){
-                        $next_name = 'NEXT BIDDER NOT YET SET!';
+                        $next_name = 'CURRENT BIDDER NOT YET SET!';
                     } else {
                         $next_bidder_in_order = App\User::where('bid_order',$bidding_next)->get();
                         if (count($next_bidder_in_order) == 0){
-                            $next_name = 'NEXT BIDDER NOT FOUND!';
+                            $next_name = 'CURRENT BIDDER NOT FOUND!';
                         } else {
                             $next_name = $next_bidder_in_order->first()->name;
                             if (!isset($next_name)){
-                                $next_name = 'NEXT BIDDER HAS NO NAME!';
+                                $next_name = 'CURRENT BIDDER HAS NO NAME!';
                             } 
                         }
                     }
@@ -53,13 +53,13 @@
                         if($bidding_state_param == 'running'){
                             $state = '<b><span style="color:red;">In Progress</span></b>';
                             if(isset($bidding_next)){
-                                $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
-                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -72,12 +72,12 @@
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
                                                 if($bidding_next == 1){
-                                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                                 } else {
-                                                    $state = $state . ' &#9724; Next: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
+                                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
                                                 }
                                             } else {
-                                                $state = $state . ' &#9724; Next: <span style="color:red;">Unexpected Error: No Value For Next Bidder</span>';
+                                                $state = $state . ' &#9724; Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported

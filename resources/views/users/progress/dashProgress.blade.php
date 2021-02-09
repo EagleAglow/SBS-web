@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.scoreboard')
 
 @section('content')
 <div class="container">
@@ -31,18 +31,32 @@
                         DB::table('params')->insertOrIgnore([ 'param_name' => 'bidding-next', 'integer_value' => 0, ]);
                     }
                     $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
+                    $bidder_next_next = '';
+                    $next_next_name = '';
 
                     if ($bidding_next == 0){
-                        $next_name = 'NEXT BIDDER NOT YET SET!';
+                        $next_name = 'CURRENT BIDDER NOT YET SET!';
                     } else {
                         $next_bidder_in_order = App\User::where('bid_order',$bidding_next)->get();
                         if (count($next_bidder_in_order) == 0){
-                            $next_name = 'NEXT BIDDER NOT FOUND!';
+                            $next_name = 'CURRENT BIDDER NOT FOUND!';
                         } else {
                             $next_name = $next_bidder_in_order->first()->name;
                             if (!isset($next_name)){
-                                $next_name = 'NEXT BIDDER HAS NO NAME!';
+                                $next_name = 'CURRENT BIDDER HAS NO NAME!';
                             } 
+                            // see if we have the following bidder
+                            $bidder_next_next = App\User::where('bid_order',$bidding_next +1)->get();
+                            if (count($bidder_next_next) == 0){
+                                $next_next_name = 'Current Bidder Is Last Bidder';
+                            } else {
+                                $next_next_name = $bidder_next_next->first()->name;
+                                if (isset($next_name)){
+                                    $next_next_name = 'Next After Current Bidder: ' . $next_next_name . ' (Order: ' . ($bidding_next +1) . ')';
+                                } else {
+                                    $next_next_name = 'BIDDER FOLLOWING CURRENT BIDDER HAS NO NAME!';
+                                }
+                            }
                         }
                     }
 
@@ -52,14 +66,15 @@
                     } else {
                         if($bidding_state_param == 'running'){
                             $state = '<b><span style="color:red;">In Progress</span></b>';
+                            $state = $state . '<br>Bidders: ' . App\User::select('id')->where('bid_order','>',0)->get()->count();
                             if(isset($bidding_next)){
-                                $state = $state . ' <br> Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
-                                    $state = $state . ' <br> Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -72,12 +87,12 @@
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
                                                 if($bidding_next == 1){
-                                                    $state = $state . ' <br> Next: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                                 } else {
-                                                    $state = $state . ' <br> Next: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
+                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
                                                 }
                                             } else {
-                                                $state = $state . ' <br> Next: <span style="color:red;">Unexpected Error: No Value For Next Bidder</span>';
+                                                $state = $state . ' <br> Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported
@@ -99,7 +114,7 @@
                             $bidder = 'Active: ' . $items->first()->name;
 
                             if (isset($items->first()->bid_order)){
-                            $bidder = $bidder . ' (Order: ' . $items->first()->bid_order . ')';
+                                $bidder = $bidder . ' (Order: ' . $items->first()->bid_order . ')';
                             } else {
                                 $bidder = $bidder . ' <span style="color:red;">(ERROR: Bid order number is missing!)</span>';
                             }
@@ -107,7 +122,7 @@
                             $bidder = '<span style="color:red;">ERROR: More than one "Active Bidder"!</span> CHECK:';
                             $first = true;
                             foreach($items as $item){
-                                if($first == true){
+                                if ($first == true){
                                     $bidder = $bidder . ' ' . $item->name . ',';
                                     $first = false;
                                 } else {
@@ -116,7 +131,12 @@
                             }
                         }
                     }
-                    echo '<div class="card-body my-squish">' . $state . '<br>' . $bidder . '</div>';
+                    echo '<div class="card-body squash">' . $state . '<br>' . $bidder;
+                    if (strlen($next_next_name)>0){
+                        echo '<br>' . $next_next_name;
+                    } else {
+                        echo '</div>';
+                    }
                 @endphp
 
             </div>
