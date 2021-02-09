@@ -138,8 +138,30 @@
                         echo '</div>';
                     }
                 @endphp
-
-            </div>
+                </div>
+                <div class="card-body my-squash">
+                    <!-- Progress bar HTML -->
+                    <div class="progress">
+                        <div class="progress-bar" style="min-width: 20px;"></div>
+                    </div>
+                        
+                    <!-- jQuery Script - shows progress bar - refreshes every 2 minutes -->
+                    <script type="text/javascript">
+                        var i = 100;
+                        function makeProgress(){
+                            if(i < 400){
+                                i = i + 1;
+                                $(".progress-bar").css("width", i/4 + "%").text("Waitng for refresh...");
+                            } else {
+                                window.location.reload(true); 
+                            }
+                            // Wait for sometime before running this script again
+                            // 75 increments of 0.8 seconds
+                            setTimeout("makeProgress()", 400);
+                        }
+                        makeProgress();
+                    </script>
+                </div>
         </div>
     </div>
 </div>
