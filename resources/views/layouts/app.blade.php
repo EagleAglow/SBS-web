@@ -79,8 +79,7 @@
 --}} 
 
                     <!-- Left Side Of Navbar - show version -->
-                    <div class="navbar-nav ml-auto" style="font-size:0.6rem;margin-right:1rem;">Version: 8FEB2021-B</div>
-
+                    <div class="navbar-nav ml-auto" style="font-size:0.6rem;margin-right:1rem;">Version: 9FEB2021</div>
 
 
                     <!-- Right Side Of Navbar -->
