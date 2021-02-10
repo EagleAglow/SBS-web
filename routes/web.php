@@ -169,8 +169,9 @@ Route::prefix('admins')->group(function () {
     Route::get('settings/nextbiddertexton', 'SettingController@nextbiddertexton')->name('admins.settings.nextbiddertexton');
     Route::get('settings/nextbiddertextoff', 'SettingController@nextbiddertextoff')->name('admins.settings.nextbiddertextoff');
 
-    // bulk texting
+    // bulk text/mail
     Route::post('settings/sendbulktext', 'SettingController@sendbulktext')->name('admins.settings.sendbulktext');
+    Route::post('settings/sendbulkmail', 'SettingController@sendbulkmail')->name('admins.settings.sendbulkmail');
 
     // control auto bidding
     Route::get('settings/autobidon', 'SettingController@autobidon')->name('admins.settings.autobidon');

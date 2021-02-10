@@ -25,6 +25,7 @@
 
 					$param_auto_bid_on_or_off = App\Param::where('param_name','autobid-on-or-off')->first()->string_value;
 
+					$bulkmailmsg = '';
 					$bulktextmsg = '';
 				@endphp
 
@@ -68,6 +69,27 @@
 									<input class="btn btn-primary btn-settings float-right" type="submit" value="SET">
 									<input type="hidden" name="action" value="set">
 								@endif
+							</div>
+						</div>
+                    </form>
+				</div>
+
+				<div class="card-body setting-squash2">
+					<form method="POST" action="{{ route('admins.settings.sendbulkmail') }}" accept-charset="UTF-8">
+                        @csrf
+                        @method('POST')
+						<div class="form-group setting-squash row">
+							<label for="bulkmailmsg" class="col-md-3 col-form-label text-md-right">Hello LASTNAME, Firstname -</label>
+							<div class="col-md-6 float-right">
+								<textarea id="bulkmailmsg" type="text" class="form-control @error('bulkmailmsg') is-invalid @enderror" name="bulkmailmsg" autocomplete="bulkmailmsg">{{ old('bulkmailmsg') }}</textarea>
+								@error('bulkmailmsg')
+								<span class="invalid-feedback" role="alert">
+									<strong>{{ $message }}</strong>
+								</span>
+								@enderror
+							</div>
+							<div class="col-sm-3">
+								<input class="btn btn-primary btn-settings float-right" type="submit" value="SEND" onclick="javascript:if(confirm('Take a moment to review and proof-read the message:\n\nHello LASTNAME, Firstname -\n'+document.getElementById('bulkmailmsg').value+'\nRegards,\nSchedule Bid System\n\nAre you sure you want to send this?')){return true;}else{return false;}">
 							</div>
 						</div>
                     </form>

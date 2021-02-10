@@ -11,10 +11,11 @@ use Session;
 use App\User;
 use Notification;
 use Illuminate\Notifications\Notifiable;
-use App\Notifications\NextBidderMail;
-use App\Notifications\BidSelectionMail;
 
 use Dotunj\LaraTwilio\Facades\LaraTwilio;  // SMS messaging
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BulkTestMail;
+use App\Mail\BulkMail;
 
 use App\Rules\DummyFail;
 
@@ -528,6 +529,51 @@ class SettingController extends Controller {
                     $flash_msg = 'Error: No text sent to users!';
                 } else {
                     $flash_msg = $count . ' texts sent to users!';
+                }
+            }
+            if (strpos($flash_msg,'Error')>0){
+                flash($flash_msg)->warning()->important();
+            } else {
+                flash($flash_msg)->success();
+            }
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+
+    public function sendbulkmail(Request $request) {
+        if (Auth::user()->hasRole('admin')){
+
+            $this->validate($request, [
+                'bulkmailmsg'=>'required',
+            ]);
+            $bulkmailmsg = $request->bulkmailmsg;
+            $count = 0;
+            $flash_msg = 'Error: No mail sent!';
+            // send conditions
+            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+            if($param_all_email_to_test_address_on_or_off == 'on'){
+                $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                if(isset($param_email_test_address)){
+                    if(strlen($param_email_test_address) > 0){
+                        // send mail to test address
+                        Mail::to($param_email_test_address)->send(new BulkTestMail('LASTNAME, Firstname', $bulkmailmsg));
+                        $flash_msg = 'Mail sent to test address!';
+                    }
+                }
+            } else {
+                // send to each user, guaranteed to have an address
+                $users = User::select('name','email')->get();
+                foreach ($users as $user){
+                    Mail::to($user->email)->send(new BulkMail($user->name, $bulkmailmsg));
+                    $count = $count +1;
+                }
+                if ($count == 0){
+                    $flash_msg = 'Error: No mail sent to users!';
+                } else {
+                    $flash_msg = $count . ' emails sent to users!';
                 }
             }
             if (strpos($flash_msg,'Error')>0){
