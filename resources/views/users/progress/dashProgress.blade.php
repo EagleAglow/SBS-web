@@ -41,7 +41,10 @@
                         if (count($next_bidder_in_order) == 0){
                             $next_name = 'CURRENT BIDDER NOT FOUND!';
                         } else {
-                            $next_name = $next_bidder_in_order->first()->name;
+                            $next_bidder_in_order = $next_bidder_in_order->first();
+                            $next_phone = $next_bidder_in_order->phone;
+                            $next_email = $next_bidder_in_order->email;
+                            $next_name = $next_bidder_in_order->name;
                             if (!isset($next_name)){
                                 $next_name = 'CURRENT BIDDER HAS NO NAME!';
                             } 
@@ -50,9 +53,11 @@
                             if (count($bidder_next_next) == 0){
                                 $next_next_name = 'Current Bidder Is Last Bidder';
                             } else {
+                                $next_next_phone = $bidder_next_next->first()->phone_number;
+                                $next_next_email = $bidder_next_next->first()->email;
                                 $next_next_name = $bidder_next_next->first()->name;
                                 if (isset($next_name)){
-                                    $next_next_name = 'Next After Current Bidder: ' . $next_next_name . ' (Order: ' . ($bidding_next +1) . ')';
+                                    $next_next_name = 'Next: ' . ($bidding_next +1) . ' - ' . $next_next_name . ' ( ' . $next_next_email . ' ' . $next_next_phone . ' )';
                                 } else {
                                     $next_next_name = 'BIDDER FOLLOWING CURRENT BIDDER HAS NO NAME!';
                                 }
@@ -68,13 +73,13 @@
                             $state = '<b><span style="color:red;">In Progress</span></b>';
                             $state = $state . '<br>Bidders: ' . App\User::select('id')->where('bid_order','>',0)->get()->count();
                             if(isset($bidding_next)){
-                                $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
-                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                    $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -87,7 +92,7 @@
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
                                                 if($bidding_next == 1){
-                                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                                    $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
                                                 } else {
                                                     $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
                                                 }
@@ -104,34 +109,7 @@
 
                         }
                     }
-
-                    // get active bidder
-                    $items = App\User::role('bidder-active')->get();  // should be only one bidder
-                    if (count($items) == 0){
-                        $bidder = 'No Active Bidder';
-                    } else {
-                        if (count($items) == 1){
-                            $bidder = 'Active: ' . $items->first()->name;
-
-                            if (isset($items->first()->bid_order)){
-                                $bidder = $bidder . ' (Order: ' . $items->first()->bid_order . ')';
-                            } else {
-                                $bidder = $bidder . ' <span style="color:red;">(ERROR: Bid order number is missing!)</span>';
-                            }
-                        } else {
-                            $bidder = '<span style="color:red;">ERROR: More than one "Active Bidder"!</span> CHECK:';
-                            $first = true;
-                            foreach($items as $item){
-                                if ($first == true){
-                                    $bidder = $bidder . ' ' . $item->name . ',';
-                                    $first = false;
-                                } else {
-                                    $bidder = $bidder . ' ' . $item->name;
-                                }
-                            }
-                        }
-                    }
-                    echo '<div class="card-body squash">' . $state . '<br>' . $bidder;
+                    echo '<div class="card-body squash">' . $state;
                     if (strlen($next_next_name)>0){
                         echo '<br>' . $next_next_name;
                     } else {

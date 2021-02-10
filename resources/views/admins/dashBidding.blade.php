@@ -53,13 +53,13 @@
                         if($bidding_state_param == 'running'){
                             $state = '<b><span style="color:red;">In Progress</span></b>';
                             if(isset($bidding_next)){
-                                $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                $state = $state . '<br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
-                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -72,12 +72,12 @@
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
                                                 if($bidding_next == 1){
-                                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
+                                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                                 } else {
-                                                    $state = $state . ' &#9724; Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
+                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
                                                 }
                                             } else {
-                                                $state = $state . ' &#9724; Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
+                                                $state = $state . ' <br> Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported
@@ -117,7 +117,7 @@
                         }
                     }
                     echo '<div class="card-body my-squish"><b>Bidding</b>';
-                    echo '<br>' . $state . ' &#9724; ' . $bidder . '</div>';
+                    echo '<br>' . $state . ' <br> ' . $bidder . '</div>';
 
                     // see if all users have consistent bidding groups and bidding roles
                     $problem_count = 0;
