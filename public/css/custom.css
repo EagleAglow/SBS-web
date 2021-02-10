@@ -58,6 +58,10 @@ button#submit {
     border-color: #3490dc;
     padding: 0.375rem 0.75rem;
   }
+a.btn-settings { padding:0.1rem 0.4rem;}
+/*
+input.btn-settings { padding:0.1rem 0.4rem;}
+*/
 
 
 
@@ -81,6 +85,8 @@ div.card-body.my-squish {border-bottom:none; padding-bottom: 0;}
 
 div.card-body.setting-squash {padding-top: 1rem;padding-bottom:1rem;}
 div.card-body.setting-squash2 {padding-top: 0;padding-bottom:1rem;}
+div.card-body.setting-squish {border-bottom:none; padding-bottom: 0;}
+div.form-group.setting-squash {margin-bottom:0;}
 
 ul.pagination {margin-bottom:0.5rem; margin-top:0.5rem;}
 

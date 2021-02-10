@@ -8,12 +8,13 @@ use App\Param;
 
 use Session;
 
-
 use App\User;
 use Notification;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\NextBidderMail;
 use App\Notifications\BidSelectionMail;
+
+use Dotunj\LaraTwilio\Facades\LaraTwilio;  // SMS messaging
 
 use App\Rules\DummyFail;
 
@@ -485,6 +486,55 @@ class SettingController extends Controller {
             $param->save();
     
             flash('Texting to next bidder is OFF!')->success();
+            return view('admins.settings.index');
+        } else {
+            abort('401');
+        }
+    }
+
+
+    public function sendbulktext(Request $request) {
+        if (Auth::user()->hasRole('admin')){
+
+            $this->validate($request, [
+                'bulktextmsg'=>'required',
+            ]);
+            $bulktextmsg = $request->bulktextmsg;
+            $count = 0;
+            $flash_msg = 'Error: No text sent!';
+            // send conditions
+            $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+            if($param_all_text_to_test_phone_on_or_off == 'on'){
+                $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                if(isset($param_text_test_phone)){
+                    if(strlen($param_text_test_phone) > 0){
+                        // send text to test phone number
+                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello LASTNAME, Firstname - ' . $bulktextmsg);
+                        $flash_msg = 'Text sent to test phone!';
+                    }
+                }
+            } else {
+                // send to each user, if they have a number
+                $users = User::select('name','phone_number')->where('phone_number','>','0')->get();
+                foreach ($users as $user){
+                    if (isset($user->phone_number)){
+                        if (strlen($user->phone_number)>0){
+                            LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - ' . $bulktextmsg);
+                            $count = $count +1;
+                        }
+                    }
+                }
+                if ($count == 0){
+                    $flash_msg = 'Error: No text sent to users!';
+                } else {
+                    $flash_msg = $count . ' texts sent to users!';
+                }
+            }
+            if (strpos($flash_msg,'Error')>0){
+                flash($flash_msg)->warning()->important();
+            } else {
+                flash($flash_msg)->success();
+            }
             return view('admins.settings.index');
         } else {
             abort('401');

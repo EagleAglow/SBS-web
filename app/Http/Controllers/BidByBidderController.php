@@ -10,7 +10,7 @@ use App\ScheduleLine;
 use App\LineGroup;
 use App\BidderGroup;
 use App\Schedule; 
-use App\User;
+use App\User; 
 use App\Param;
 use App\Pick;
 use App\LogItem;
