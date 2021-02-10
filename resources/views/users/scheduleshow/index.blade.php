@@ -75,7 +75,7 @@
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="tnon">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable TNON</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Traffic Only</button>
                                         </form>
                                     @else
                                         @if($my_sort == 'tnon')
@@ -85,7 +85,7 @@
                                                 <input type="hidden" name="page" value="1">
                                                 <input type="hidden" name="my_sort" value="tcom">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable TCOM</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Commercial Only</button>
                                             </form>
                                         @else
                                             @if($my_sort == 'tcom')
@@ -95,7 +95,7 @@
                                                     <input type="hidden" name="page" value="1">
                                                     <input type="hidden" name="my_sort" value="filter">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Biddable</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Available Only</button>
                                                 </form>
                                             @else
                                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
@@ -104,7 +104,7 @@
                                                     <input type="hidden" name="page" value="1">
                                                     <input type="hidden" name="my_sort" value="all">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">All Lines</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">Show All Lines</button>
                                                 </form>
                                             @endif
                                         @endif
@@ -117,7 +117,7 @@
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="all">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All Lines</button>
                                         </form>
                                     @else
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
@@ -126,7 +126,7 @@
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="filter">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">Show Available</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">Show Available Only</button>
                                         </form>
                                     @endif
                                 @endif
