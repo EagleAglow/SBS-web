@@ -34,6 +34,7 @@
                     $bidder_next_next = '';
                     $next_next_name = '';
 
+                    $next_phone = '';
                     if ($bidding_next == 0){
                         $next_name = 'CURRENT BIDDER NOT YET SET!';
                     } else {
@@ -42,7 +43,7 @@
                             $next_name = 'CURRENT BIDDER NOT FOUND!';
                         } else {
                             $next_bidder_in_order = $next_bidder_in_order->first();
-                            $next_phone = $next_bidder_in_order->phone;
+                            $next_phone = $next_bidder_in_order->phone_number;
                             $next_email = $next_bidder_in_order->email;
                             $next_name = $next_bidder_in_order->name;
                             if (!isset($next_name)){
@@ -94,7 +95,7 @@
                                                 if($bidding_next == 1){
                                                     $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
                                                 } else {
-                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
+                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not First</span>)';
                                                 }
                                             } else {
                                                 $state = $state . ' <br> Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
