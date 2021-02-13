@@ -31,7 +31,7 @@
         </div>
     </div>
     @php
-     echo phpinfo();
+//     echo phpinfo();
     @endphp
 </div>
 @endsection

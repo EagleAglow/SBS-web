@@ -54,7 +54,7 @@
                 @else
                     <div class="card-header">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 {{ __('Schedule: ') }}{{ $schedule->title }}
                                 @if(Auth::user()->hasRole('supervisor')) 
                                     @if( count(App\User::role('bidder-active')->get('id')) > 0 )
@@ -62,72 +62,91 @@
                                     @endif
                                 @endif
                             </div>
-                            <div class="col">
+                            <div class="col-md-6">
 {{--
                                 cycle $my_sort between 'filter', 'tnon', 'tcom', all', but only use 'tnon' and 'tcom' if both are in $list
                                 $traffic is 'yes' if both are in sequence
 --}}                            
                                 @if($traffic == 'yes')
                                     @if($my_sort == 'all')
+                                        <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing all commercial and traffic lines</div>
+                                        <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                             <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="tnon">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Traffic Only</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Traffic Lines You Can Bid</button>
                                         </form>
+                                        </div>
                                     @else
                                         @if($my_sort == 'tnon')
+                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing traffic lines you can bid</div>
+                                            <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
                                                 <input type="hidden" name="my_sort" value="tcom">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Commercial Only</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Commercial Lines You Can Bid</button>
                                             </form>
+                                            </div>
                                         @else
                                             @if($my_sort == 'tcom')
+                                                <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing commercial lines you can bid</div>
+                                                <div>
                                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                     <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                     <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                     <input type="hidden" name="page" value="1">
                                                     <input type="hidden" name="my_sort" value="filter">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Available Only</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Commercial And Traffic Lines You Can Bid</button>
                                                 </form>
+                                                </div>
                                             @else
+                                                <!-- "filter" -->
+                                                <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing commecial and traffic lines you can bid</div>
+                                                <div>
                                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                     <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                     <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                     <input type="hidden" name="page" value="1">
                                                     <input type="hidden" name="my_sort" value="all">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">Show All Lines</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right">Show All Commercial And Traffic Lines</button>
                                                 </form>
+                                                </div>
                                             @endif
                                         @endif
                                     @endif
                                 @else
                                     @if($my_sort == 'filter')
+                                        <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing lines you can bid</div>
+                                        <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                             <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="all">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All Lines</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show All Your Group Lines</button>
                                         </form>
+                                        </div>
                                     @else
+                                        <div style="text-align:right;font-size:0.8rem;font-weight:500;">Showing all your group lines</div>
+                                        <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                             <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_sort" value="filter">
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right">Show Available Only</button>
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right">Show Lines You Can Bid</button>
                                         </form>
+                                        </div>
                                     @endif
                                 @endif
                             </div>
