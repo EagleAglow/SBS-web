@@ -1,5 +1,6 @@
 @if ($paginator->hasPages())
     <nav>
+        <div class="my-nav">
         <ul class="pagination">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
@@ -42,5 +43,6 @@
                 </li>
             @endif
         </ul>
+        </div>
     </nav>
 @endif

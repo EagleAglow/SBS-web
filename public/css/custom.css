@@ -98,20 +98,40 @@ div.pagination-text { font-size:1.05rem; font-weight: 600; color:#3490dc; paddin
 div.alert {border: solid 1px #000000;}
 div.modal-content  {border: solid 1px #3490dc;}
 
+
+/* 
+display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px; */
+
+
 /* reverse blue/white colors on pagination block */
 
 .pagination {
   display: flex;
-  padding-left: 0;
   list-style: none;
   border-radius: 0.5rem;
+} 
+/*  make pagination scroll, but not mess up other navigation,
+    e.g., drop-down at top 
+*/    
+div.my-nav {
+  display:block;
+  flex-wrap: nowrap;
+  list-style: none;
+  overflow: auto;
+  padding-left: 1rem;
+  margin-right: 1rem;
 }
 
 .page-link {
   position: relative;
   display: block;
   padding: 0.4rem 0.4rem;
-  margin-left: -1px;
   line-height: 1.2;
   border: 1px solid #dee2e6;
   color: #fff;
@@ -134,7 +154,7 @@ div.modal-content  {border: solid 1px #3490dc;}
 }
 
 .page-item:first-child .page-link {
-  margin-left: 0;
+  margin-left: -1rem;
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
 }

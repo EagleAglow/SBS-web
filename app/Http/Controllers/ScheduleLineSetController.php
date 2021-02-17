@@ -40,7 +40,7 @@ class ScheduleLineSetController extends Controller {
 
         $schedule = Schedule::where('id',$schedule_id)->first();
 
-        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->paginate(5); //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
 
         return view('admins.schedulelineset.index',
             ['schedule_lines'=>$schedule_lines,
@@ -63,7 +63,7 @@ class ScheduleLineSetController extends Controller {
             $schedule_id = session('schedule_id');
         }
    
-        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->paginate(5); //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
 
         $schedule_title = $request['schedule_title'];
         if (!isset($schedule_title)){
