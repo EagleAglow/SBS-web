@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <!-- use the following line to force new favicon -->
-    <link rel="shortcut icon" href="/favicon.ico?v=4" />
+    <link rel="shortcut icon" href="/favicon.ico?v=5" />
 <!-- maybe use this, but needs IP address or domain name -->
 <!--        <link rel="icon" href="http://192.168.1.31/favicon.ico?v=3" />
 -->  
@@ -55,7 +55,7 @@
                 font-weight:300;
                 margin-left:10%;
                 margin-right:10%;
-                padding:15px 20px 20px 20px;
+                padding:15px 20px 5px 20px;
                 border: 1px solid red;
                 border-radius: 15px;
             }
@@ -138,7 +138,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Schedule Bid System
+                    <img src="/img/SBS_WebLogo.png" width="258" height="70" alt="">
                 </div>
 
                 @if (Route::has('login'))
@@ -159,7 +159,7 @@
                 @if(config('app.debug'))
                     <div><h4 style="color:red;">WARNING - This site is in DEBUG MODE!</h4></div>
                 @endif 
-                <h5 style="padding:0;margin:0 10%;margin-block-start:0;margin-block-end:0;">Users can have a role of bidder, supervisor (who can submit a bid for a bidder),
+                <h5 style="padding:0;margin:0 10%;margin-block-start:0;margin-block-end:0;"><br>Users can have a role of bidder, supervisor (who can submit a bid for a bidder),
                     admin (who manages schedules and users), and/or superuser (who can manage users and roles).  Most users will be bidders, 
                     some users may be both bidder and supervisor.  Superuser is only needed if there is no user with the admin role.
                     Developer (dev@demo.com) login has all roles, but is not suitable for testing single roles.

@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <!-- use the following line to force new favicon -->
-        <link rel="shortcut icon" href="/favicon.ico?v=3" />
+        <link rel="shortcut icon" href="/favicon.ico?v=5" />
         <!-- maybe use this, but needs IP address or domain name -->
 <!--        <link rel="icon" href="http://192.168.1.31/favicon.ico?v=3" />
 -->  
@@ -47,6 +47,7 @@
 
             .content {
                 text-align: center;
+                width:93%;
             }
 
             .title {
@@ -55,7 +56,7 @@
                 font-weight:300;
                 margin-left:10%;
                 margin-right:10%;
-                padding:15px 20px 20px 20px;
+                padding:15px 20px 5px 20px;
                 border: 1px solid red;
                 border-radius: 15px;
             }
@@ -138,7 +139,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Schedule Bid System
+                    <img src="/img/SBS_WebLogo.png" width="258" height="70" alt="">
                 </div>
 
                 @if (Route::has('login'))

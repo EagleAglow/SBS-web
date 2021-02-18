@@ -31,8 +31,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="/img/leaf-transparent.png" width="40" height="40" class="d-inline-block align-top" alt="">
-                    Schedule Bid System
+                    <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     @if(config('app.debug'))
                         <span style="color:red;"> &nbsp;DEBUG MODE!</span>
                     @endif 

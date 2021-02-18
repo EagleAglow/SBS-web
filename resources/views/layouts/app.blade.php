@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <!-- use the following line to force new favicon -->
-    <link rel="shortcut icon" href="/favicon.ico?v=4" />
+    <link rel="shortcut icon" href="/favicon.ico?v=5" />
 <!-- maybe use this, but needs IP address or domain name -->
 <!--        <link rel="icon" href="http://192.168.1.31/favicon.ico?v=3" />
 -->  
@@ -37,8 +37,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="/img/leaf-transparent.png" width="40" height="40" class="d-inline-block align-top" alt="">
-                    Schedule Bid System
+                    <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     @if(config('app.debug'))
                         <span style="color:red;"> &nbsp;DEBUG MODE!</span>
                     @endif 
