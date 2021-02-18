@@ -51,14 +51,3 @@ class HomeController extends Controller
         }
     }
 }
-// original
-//     public function index()
-//     {
-//         // reroute to different dashboards
-//         if ( Auth::user()->Role('admin')) {
-//             return view('admins.dash');
-//         }
-//         else {
-//             return view('bidders.dash');
-//         }
-//     }

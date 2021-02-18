@@ -56,6 +56,8 @@ Auth::routes(['login' => true, 'reset' => true, 'register' => false,]);
 //  see HomeController for how to use middleware check
 // ---------------------------------------------------------------------
 
+// set language
+Route::get('/lang/{lang}', 'LocalizationController@index')->name('lang');
 
 // download ICS file
 Route::get('/bidders/dash/ics/{id}', 'BidderDashController@ics')->name('bidders.dash.ics');

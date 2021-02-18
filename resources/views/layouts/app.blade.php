@@ -78,6 +78,27 @@
 
 --}} 
 
+{{--       localization - needs work
+
+
+                    <div class="navbar-nav ml-auto">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle btn-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ __('pig') }}{{ __('Language') }}</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="/lang/fr">French</a>
+                                <a class="dropdown-item" href="/lang/en">English</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    --}}
+
+
+
+
                     <!-- Left Side Of Navbar - show version -->
                     <div class="navbar-nav ml-auto" style="font-size:0.6rem;margin-right:1rem;">Version: 17FEB2021</div>
 
