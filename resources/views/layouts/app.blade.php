@@ -38,7 +38,7 @@
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
-                    @if(config('app.debug'))
+                    @if(config('app.debxug'))
                         <span style="color:red;"> &nbsp;DEBUG MODE!</span>
                     @endif 
                 </a>
@@ -67,47 +67,24 @@
                             </div>
                         @endif
                     </div>
---}}                    
+--}}  
+
                 @else
-{{--               
-                    <!-- Left Side Of Navbar - not used now -->
-                    <div class="navbar-nav ml-auto">
-                        <div style="margin-left:2rem;">User: {{ Auth::user()->name }}</div>
-                    </div>
-
---}} 
-
-{{--       localization - needs work
-
-
-                    <div class="navbar-nav ml-auto">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle btn-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{ __('pig') }}{{ __('Language') }}</button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="/lang/fr">French</a>
-                                <a class="dropdown-item" href="/lang/en">English</a>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                    --}}
-
-
-
-
                     <!-- Left Side Of Navbar - show version -->
-                    <div class="navbar-nav ml-auto" style="font-size:0.6rem;margin-right:1rem;">Version: 18FEB2021</div>
-
-
-                    <!-- Right Side Of Navbar -->
                     <div class="navbar-nav ml-auto">
-                        <!-- Role/Permission Links -->
+                        <div style="font-size:0.6rem;margin-right:1rem;margin-top:0.43rem;">Version: 18FEB2021</div>
+
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle btn-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User: {{ Auth::user()->name }}</button>
                             <div class="dropdown-menu dropdown-menu-right">
+{{--
+                                @if ( Config::get('app.locale') == 'en')
+                                    <a class="dropdown-item" href="/lang/fr">French</a>
+                                @endif
+                                @if ( Config::get('app.locale') == 'fr')
+                                    <a class="dropdown-item" href="/lang/en">English</a>
+                                @endif
+--}}
                                 @hasanyrole('bidder-demo|bidder-oidp|bidder-tsu|bidder-irpa|bidder-traffic')
                                     @if( !Request::is('bidders/dash'))
                                         <a class="dropdown-item" href="{{ route('bidders.dash') }}">Bidder</a>
