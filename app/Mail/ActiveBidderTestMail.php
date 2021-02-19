@@ -19,8 +19,8 @@ class ActiveBidderTestMail extends Mailable
     public function __construct($name)
     {
         $this->name = $name;
-//      $this->url = $_SERVER['SERVER_ADDR'];
-        $this->url = 'https://Bid.453amb.ca/login';
+        $this->url = config('extra.login_url');
+        $this->from_name = config('mail.from.name');
     }
 
     /**
@@ -32,11 +32,13 @@ class ActiveBidderTestMail extends Mailable
     {
         $name = $this->name;
         $url = $this->url;
+        $from_name = $this->from_name;
         return $this->subject('Active Bidder Test Mail')
             ->markdown('mailtemplates.activebiddertest')
             ->with([
                 'name' => $name,
                 'url' =>  $url,
+                'from_name' => $from_name,
             ]);
     }
 }

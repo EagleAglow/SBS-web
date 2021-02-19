@@ -19,9 +19,9 @@ class BulkTestMail extends Mailable
     public function __construct($name, $bulkmailmsg)
     {
         $this->name = $name;
-//      $this->url = $_SERVER['SERVER_ADDR'];
-        $this->url = 'https://Bid.453amb.ca/login';
+        $this->url = config('extra.login_url');
         $this->bulkmailmsg = $bulkmailmsg;
+        $this->from_name = config('mail.from.name');
     }
 
     /**
@@ -34,12 +34,14 @@ class BulkTestMail extends Mailable
         $name = $this->name;
         $url = $this->url;
         $bulkmailmsg = $this->bulkmailmsg;
-        return $this->subject('Schedule Bid System Test Mail')
+        $from_name = $this->from_name;
+        return $this->subject(config('mail.from.name') . ' Test Mail')   
             ->markdown('mailtemplates.bulktestmail')
             ->with([
                 'name' => $name,
                 'url' =>  $url,
                 'bulkmailmsg' => $bulkmailmsg,
+                'from_name' => $from_name,
             ]);
     }
 }

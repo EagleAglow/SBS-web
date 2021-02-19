@@ -19,8 +19,8 @@ class NextBidderTestMail extends Mailable
     public function __construct($name)
     {
         $this->name = $name;
-//      $this->url = $_SERVER['SERVER_ADDR'];
-        $this->url = 'https://Bid.453amb.ca/login';
+        $this->url = config('extra.login_url');
+        $this->from_name = config('mail.from.name');
     }
 
     /**
@@ -37,6 +37,7 @@ class NextBidderTestMail extends Mailable
             ->with([
                 'name' => $name,
                 'url' =>  $url,
+                'from_name' => $from_name,
             ]);
     }
 }

@@ -7,7 +7,7 @@ Login Here
 @endcomponent
 
 Regards,  {{-- use double space for line break --}}
-Schedule Bid System  {{-- use double space for line break --}}
+{{$from_name}}  {{-- use double space for line break --}}
 
 If you’re having trouble clicking the \"Login Here\" button,
 copy and paste the URL below into your web browser:

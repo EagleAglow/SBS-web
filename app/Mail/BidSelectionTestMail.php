@@ -25,6 +25,7 @@ class BidSelectionTestMail extends Mailable
         $this->name = $name;
         $this->schedule_line_id = $schedule_line_id;
         $this->ics = '';  // use this later to attach ics file
+        $this->from_name = config('mail.from.name');
     }
 
     /**
@@ -174,6 +175,7 @@ class BidSelectionTestMail extends Mailable
                 'line_number' => $line_number,
                 'comment' => $comment,
                 'table_rows' => $table_rows,
+                'from_name' => $from_name,
             ]);
     }
 }

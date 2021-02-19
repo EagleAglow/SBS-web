@@ -3,7 +3,7 @@ Hello **{{$name}}**,  {{-- use double space for line break or <br> --}}
 You have completed bidding.  Your schedule is shown below,  {{-- use double space for line break --}}
 and it is also in the attached "ics" file.  {{-- use double space for line break --}}
 Regards,  {{-- use double space for line break --}}
-Schedule Bid System  {{-- use double space for line break --}}
+{{$from_name}}  {{-- use double space for line break --}}
 <br><span style="color:red">**Admin:** Email is working.
 <br>NOTE: If you receive this, the bidder did not!
 <br>You can change this configuration at "Settings".</span>
