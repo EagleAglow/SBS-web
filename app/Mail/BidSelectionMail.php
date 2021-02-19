@@ -163,6 +163,7 @@ class BidSelectionMail extends Mailable
         // wrap up file
         $ics = $ics . 'END:VCALENDAR' . $linefeed;
         $this->ics = $ics;
+        $from_name = $this->from_name;
 
         return $this->subject('Bid Selection Mail')
             ->markdown('mailtemplates.bidselection')

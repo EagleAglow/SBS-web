@@ -32,6 +32,7 @@ class NextBidderMail extends Mailable
     {
         $name = $this->name;
         $url = $this->url;
+        $from_name = $this->from_name;
         return $this->subject('Next Bidder Mail')
             ->markdown('mailtemplates.nextbidder')
             ->with([
