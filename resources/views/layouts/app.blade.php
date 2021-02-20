@@ -72,7 +72,7 @@
                 @else
                     <!-- Left Side Of Navbar - show version -->
                     <div class="navbar-nav ml-auto">
-                        <div style="font-size:0.6rem;margin-right:1rem;margin-top:0.43rem;">Version: 19FEB2021</div>
+                        <div style="font-size:0.6rem;margin-right:1rem;margin-top:0.43rem;">Version: 19FEB2021-B</div>
 
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle btn-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User: {{ Auth::user()->name }}</button>
