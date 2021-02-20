@@ -131,7 +131,7 @@ class UserScheduleShowController extends Controller {
                     $tcount = $tcount +1;
                 }
                 if ($who->hasRole('bidder-tnon')){
-                    $tnon_id[] = LineGroup::where('code','TNON')->first()['id'];
+                    $tnon_id = LineGroup::where('code','TNON')->first()['id'];
                     $list[] = $tnon_id;
                     $tcount = $tcount +1;
                 }
