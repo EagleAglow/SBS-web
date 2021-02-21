@@ -34,24 +34,18 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white shadow">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
-                    @if(config('app.debxug'))
-                        <span style="color:red;"> &nbsp;DEBUG MODE!</span>
-                    @endif 
-                </a>
-
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-
-
-
+                <div>            
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                        <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
+                    </a>
+                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 20FEB2021-B
+                        @if(config('app.debug'))
+                            <span style="color:red;"><b> &nbsp; DEBUG MODE!</b></span>
+                        @endif 
+                    </div>
+                </div>
 
                 @guest
 {{--
@@ -71,11 +65,11 @@
 
                 @else
                     <!-- Left Side Of Navbar - show version -->
-                    <div class="navbar-nav ml-auto">
-                        <div style="font-size:0.6rem;margin-right:1rem;margin-top:0.43rem;">Version: 20FEB2021-B</div>
+
 
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle btn-user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User: {{ Auth::user()->name }}</button>
+
                             <div class="dropdown-menu dropdown-menu-right">
 {{--
                                 @if ( Config::get('app.locale') == 'en')
@@ -152,9 +146,9 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
+
                 @endguest
-                </div>
+
             </div>
         </nav>
         <main class="py-4">
