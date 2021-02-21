@@ -31,7 +31,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="/img/SBS_Logo.png" width="161" height="44" class="d-inline-block align-top" alt="">
+                    <img src="/img/SBS_WebLogoOriginal.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     @if(config('app.debug'))
                         <span style="color:red;"> &nbsp;DEBUG MODE!</span>
                     @endif 
