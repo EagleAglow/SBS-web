@@ -138,7 +138,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    <img src="/img/SBS_WebLogo.png" width="258" height="70" alt="">
+                    <img src="/img/SBS_Logo.png" width="258" height="70" alt="">
                 </div>
 
                 @if (Route::has('login'))

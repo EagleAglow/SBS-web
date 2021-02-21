@@ -112,8 +112,9 @@ img {
 /* Logo */
 
 .logo {
-    height: 155px;
-    width: 565px;
+    height: auto;
+    width: 570px;
+    max-width: 100%;
 }
 
 /* Body */
