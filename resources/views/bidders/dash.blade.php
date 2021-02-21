@@ -72,8 +72,8 @@
                     </table>
                     </div>
                     <div class="card-body my-squash d-print-none">
-                        <a href="#"><button type="button" class="btn btn-primary btn-my-edit" onclick="window.print();">Print This Schedule Bid</button></a>
-                        <a href="{{ url('bidders/dash/ics/' . $schedule_line->id ) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Download ICS Calendar File</button></a>
+                        <a href="#"><button type="button" class="btn btn-primary btn-my-edit" onclick="window.print();">Print Schedule</button></a>
+                        <a href="{{ url('bidders/dash/ics/' . $schedule_line->id ) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Download Schedule</button></a>
                     </div>
                     <hr class="d-print-none">
 
