@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\BidderGroup;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserMail;
 
 //class User extends Authenticatable
 // changed for verify email address
@@ -55,5 +57,38 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(ScheduleLine::class,'picks');
     }
 
-}
 
+  public static function generatePassword()
+    {
+      // Generate random 25 character string - it is hashed elsewhere 
+      // from: https://thisinterestsme.com/php-random-password/
+      $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!-.[]?*()';
+      //Create a blank string.
+      $password = '';
+      //Get the index of the last character in our $characters string.
+      $characterListLength = mb_strlen($characters, '8bit') - 1;
+      //Loop from 1 to the $length that was specified.
+      foreach(range(1, 25) as $i){
+          $password .= $characters[random_int(0, $characterListLength)];
+      }
+      return $password;
+    }
+
+    public static function sendWelcomeEmail($user)
+    {
+      // Generate a new reset password token
+      $token = app('auth.password.broker')->createToken($user);
+      
+      // Send email
+      Mail::to($user->email)->send(new NewUserMail($user->name, $token));
+
+/* 
+      Mail::send('emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user) {
+        $m->from('hello@appsite.com', 'Your App Name');
+
+        $m->to($user->email, $user->name)->subject('Welcome to APP');
+      });
+
+*/
+    }
+}

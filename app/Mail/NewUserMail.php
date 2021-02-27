@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+
+class NewUserMail extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct($name, $token)
+    {
+        $this->name = $name;
+        $this->url = config('url');
+        $this->from_name = config('mail.from.name');
+        $this->token = $token;
+}
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {
+        $name = $this->name;
+        $url = $this->url;
+
+//        $url = url(route('password.reset', [ 'token' => $this->token,
+
+
+        $from_name = $this->from_name;
+        $token = $this->token;
+        return $this->subject('New User')
+            ->markdown('mailtemplates.newuser')
+            ->with([
+                'name' => $name, 
+                'url' =>  $url,
+                'from_name' => $from_name,
+                'token' => $token,
+
+
+            ]);
+    }
+}

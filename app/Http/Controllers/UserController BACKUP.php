@@ -70,6 +70,7 @@ class UserController extends Controller {
         $this->validate($request, [
             'name'=>'required|max:120',
             'email'=>'required|email|unique:users',
+            'password'=>'required|min:6|confirmed'
         ]);
 
         //Validate phone number for ten digits - error if not
@@ -90,10 +91,9 @@ class UserController extends Controller {
 
         $bidder_group_id = $request['bidder_group_id'];
 
-        //generate a password for the new users
-        $pw = User::generatePassword();
+        $pwd_in_request = $request->password;
         // hash password for storage
-        $request['password'] = Hash::make($pw);
+        $request['password'] = Hash::make($pwd_in_request);
 
         // use name, email, bidder_group_id and password data from request
         $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id', 'phone_number')); 
@@ -128,11 +128,8 @@ class UserController extends Controller {
             }
         }
 
-        User::sendWelcomeEmail($user);
-
         //Redirect to the users.index view and display message
-        flash('OK:' . $request['welcome'])->success()->important();
-//        flash('User successfully added.')->success();
+        flash('User successfully added.')->success();
         return redirect()->route('users.index');
     }
 

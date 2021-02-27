@@ -39,7 +39,7 @@
 
                         <!-- bidder_group dropdown  -->
                         <div class="form-group row">
-                            <label for="bidder_group_id" class="col-md-4 col-form-label text-md-right">{{ __('Group') }}</label>
+                            <label for="bidder_group_id" class="col-md-4 col-form-label text-md-right">{{ __('Bidder Group') }}</label>
                             <div class="col-md-4">
                                 <select required class="form-control" name="bidder_group_id" id="bidder_group_id" >
                                     @foreach($groups as $group)
@@ -85,6 +85,21 @@
                                 @enderror
                             </div>
                         </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Welcome E-Mail?') }}</label>
+                            <div class="col-md-6 my-group">   
+                                <div>
+                                    <input type="checkbox" name="welcome" value="welcome" checked="checked">
+                                    &nbsp;<label for="welcome">Send password reset</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
                         <input class="btn btn-primary float-right" type="submit" value="Add">
                     </form>
                 </div>

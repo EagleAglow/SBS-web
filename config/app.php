@@ -238,6 +238,11 @@ return [
          */
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+        /*
+         * for new user email
+         * From: https://medium.com/@tjefford/sending-password-reset-to-new-users-in-laravel-5-3-e8548a80c267
+         */
+         'auth.password.tokens' => Illuminate\Auth\Passwords\TokenRepositoryInterface::class,
 
     ],
 
