@@ -29,6 +29,8 @@
                             if ($schedule_line->offsite==1){ $note = $note . ', Offsite'; }
                             if ($schedule_line->blackout==1){ $note = $note . ', Blackout (This line can not be bid and this text should never appear.)'; }
                             if ($note == 'Note: '){ $note = 'Note: None';}
+                            // following used for confirmation message
+                            $confirm_this = 'This bid assigns Schedule Line/Group: ' . $schedule_line->line . '/' . $line_group->code . ' to: ' . $who;
                         @endphp
                     </div>
                     <div class="card-body my-squash">{{$note}}</div>
@@ -85,7 +87,7 @@
                     <form method="POST" action="{{ route('supervisor.setbidfor', $schedule_line->id) }}" accept-charset="UTF-8">
                         @csrf
                         @method('POST')
-                        <input class="btn btn-primary float-right" type="submit" value="Confirm Bid" onclick="return confirm('This action is NOT reversible! Are you sure you want this line?')" >
+                        <input class="btn btn-primary float-right" type="submit" value="Confirm Bid" onclick="if(confirm('{{$confirm_this }} \n\nThis action is NOT reversible! Are you sure you want this line?')){return true;}else{return false;}" >
                     </form>
                     </div>
                 </div>
