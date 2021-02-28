@@ -16,9 +16,10 @@ class NewUserMail extends Mailable
      *
      * @return void
      */
-    public function __construct($name, $token)
+    public function __construct($name, $email, $token)
     {
         $this->name = $name;
+        $this->email = $email;
         $this->url = config('url');
         $this->from_name = config('mail.from.name');
         $this->token = $token;
@@ -37,8 +38,9 @@ class NewUserMail extends Mailable
 //        $url = url(route('password.reset', [ 'token' => $this->token,
 
         $from_name = $this->from_name;
+        $email = $this->email;
         $token = $this->token;
-        $url= url(config('url').route('password.reset', $token));
+        $url= url(config('url').route('password.reset', ['email' => $email, $token ]));
 
         return $this->subject('New User Mail')
             ->markdown('mailtemplates.newuser')

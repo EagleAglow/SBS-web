@@ -80,7 +80,7 @@ class User extends Authenticatable implements MustVerifyEmail
       $token = app('auth.password.broker')->createToken($user);
       
       // Send email
-      Mail::to($user->email)->send(new NewUserMail($user->name, $token));
+      Mail::to($user->email)->send(new NewUserMail($user->name, $user->email, $token));
 
 /* 
       Mail::send('emails.welcome', ['user' => $user, 'token' => $token], function ($m) use ($user) {
