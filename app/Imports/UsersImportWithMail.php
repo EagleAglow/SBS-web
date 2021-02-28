@@ -55,27 +55,79 @@ class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
         // new users get random password, don't change password for others
         if (!$admin_flag){
             if (!$new_user){
-                // keep old password hash
-                return new User([
+                // existing user
+                $bg_code = $row['group'];
+                $bidder_group_id = BidderGroup::select('id')->where('code','=', $bg_code)->first()->id;
+
+                $this_user = new User([
                     'name'     => $row['name'],
                     'email'    => $row['email'],
                     'phone_number'    => $phone,
+                    // existing user - keep old password hash
                     'password' => $user->password,
                     'bidder_primary_order' => $row['seniority'],
-                    'bidder_group_id' => BidderGroup::select('id')->where('code','=', $row['group'])->first()->id,
+                    'bidder_group_id' => $bidder_group_id,
                 ]);
+
+                // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC
+                if (isset($bg_code)){
+                    $bidder_groups = BidderGroup::all();
+                    foreach($bidder_groups as $bidder_group){
+                        // remove any existing bidding role
+                        if(!$bidder_group->code == 'NONE'){
+                            $this_user->removeRole('bidder-' . strtolower($bidder_group->code));
+                        }
+                        if($bidder_group->code == $bg_code){
+                            if($bidder_group->code == 'TRAFFIC'){
+                                // assign both TNON and TCOM
+                                $this_user->assignRole('bidder-tcom');
+                                $this_user->assignRole('bidder-tnon');
+                            } else {
+                                if($bidder_group->code == 'NONE'){
+                                    // do nothing
+                                } else {
+                                    $this_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                }
+                            }
+                        }
+                    }
+                }
+                return $this_user;
+
             } else {
-                //generate a password for the new users
+                //new user - generate a dummy password
                 $pw = User::generatePassword();
-//                return new User([
+                $bg_code = $row['group'];
+                $bidder_group_id = BidderGroup::select('id')->where('code','=', $bg_code)->first()->id;
+
                 $new_user = new User([
                     'name'     => $row['name'],
                     'email'    => $row['email'],
                     'phone_number'    => $phone,
                     'password' => \Hash::make($pw),
                     'bidder_primary_order' => $row['seniority'],
-                    'bidder_group_id' => BidderGroup::select('id')->where('code','=', $row['group'])->first()->id,
+                    'bidder_group_id' => $bidder_group_id,
                 ]);
+
+                // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC
+                if (isset($bg_code)){
+                    $bidder_groups = BidderGroup::all();
+                    foreach($bidder_groups as $bidder_group){
+                        if($bidder_group->code == $bg_code){
+                            if($bidder_group->code == 'TRAFFIC'){
+                                // assign both TNON and TCOM
+                                $new_user->assignRole('bidder-tcom');
+                                $new_user->assignRole('bidder-tnon');
+                            } else {
+                                if($bidder_group->code == 'NONE'){
+                                    // do nothing
+                                } else {
+                                    $new_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // send mail
                 User::sendWelcomeEmail($new_user);

@@ -94,6 +94,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Welcome SMS?') }}</label>
+                            <div class="col-md-6 my-group">   
+                                <div>
+                                    <input type="checkbox" name="SMS" value="SMS" checked="checked">
+                                    &nbsp;<label for="SMS">Send password reset</label>
+                                </div>
+                            </div>
+                        </div>
                         <input class="btn btn-primary float-right" type="submit" value="Add">
                     </form>
                 </div>
