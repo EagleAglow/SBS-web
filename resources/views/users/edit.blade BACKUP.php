@@ -85,24 +85,33 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="bidder_secondary_order" class="col-md-4 col-form-label text-md-right">{{ __('Tie Breaker') }}</label>
+                            <div class="col-md-6">
+                                <input id="bidder_secondary_order" type="text" class="form-control @error('bidder_secondary_order') is-invalid @enderror" name="bidder_secondary_order" value="{{ old('bidder_secondary_order') ? old('bidder_secondary_order') : $user->bidder_secondary_order }}" autocomplete="bidder_secondary_order" autofocus>
+                                @error('bidder_secondary_order')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label class="col-md-4 col-form-label text-md-right">{{ __('Roles') }}<br>
-                                <span style="font-size:0.75rem;color:red;line-height:1;">
-                                    TRAFFIC is TCOM and TNON (both commercial and non-commercial)</span></label>
+                                <span style="font-size:0.75rem;color:red;line-height:1;">Make sure role matches group!
+                                TRAFFIC normally gets both commercial and non-commercial</span></label>
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
-                                @if(strpos($role->name, 'bidder-') === false )
                                 <div>
-                                <input type="checkbox" name="roles[]" value="{{ $role->id }}"
+                                    <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                                     @php 
                                     if ($user->hasRole($role->name)){ echo ' checked="checked">'; } else { echo '>'; }
                                     @endphp
                                     &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
                                 </div>
-                                @endif
                             @endforeach                        
                             </div>
                         </div>
-
 {{--  not using password entry fields
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('New Password') }}</label>

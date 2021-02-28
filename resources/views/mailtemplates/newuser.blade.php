@@ -1,9 +1,9 @@
 @component('mail::message')
 Hello **{{$name}}**,  {{-- use double space for line break --}}
-You are a new user of this system,  {{-- use double space for line break --}}
-and you should set your initial password. {{-- use double space for line break --}}
+You have just been added to this system, and in order to use it, {{-- use double space for line break --}}
+you need to set your password. {{-- use double space for line break --}}
 
-@component('mail::button', ['url' => $url, 'token' => $token,])
+@component('mail::button', ['url' => $url,])
 Set Password
 @endcomponent
 

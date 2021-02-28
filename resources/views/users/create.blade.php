@@ -36,7 +36,6 @@
                             </div>
                         </div>
 
-
                         <!-- bidder_group dropdown  -->
                         <div class="form-group row">
                             <label for="bidder_group_id" class="col-md-4 col-form-label text-md-right">{{ __('Bidder Group') }}</label>
@@ -62,7 +61,7 @@
                             @endforeach                        
                             </div>
                         </div>
-
+{{--  not using password entry fields
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('New Password') }}</label>
                             <div class="col-md-6">
@@ -85,8 +84,7 @@
                                 @enderror
                             </div>
                         </div>
-
-
+--}}
                         <div class="form-group row">
                             <label class="col-md-4 col-form-label text-md-right">{{ __('Welcome E-Mail?') }}</label>
                             <div class="col-md-6 my-group">   
@@ -96,10 +94,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
-
                         <input class="btn btn-primary float-right" type="submit" value="Add">
                     </form>
                 </div>

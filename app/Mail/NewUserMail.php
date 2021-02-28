@@ -32,22 +32,20 @@ class NewUserMail extends Mailable
     public function build()
     {
         $name = $this->name;
-        $url = $this->url;
+//        $url = $this->url;
 
 //        $url = url(route('password.reset', [ 'token' => $this->token,
 
-
         $from_name = $this->from_name;
         $token = $this->token;
-        return $this->subject('New User')
+        $url= url(config('url').route('password.reset', $token));
+
+        return $this->subject('New User Mail')
             ->markdown('mailtemplates.newuser')
             ->with([
                 'name' => $name, 
                 'url' =>  $url,
                 'from_name' => $from_name,
-                'token' => $token,
-
-
             ]);
     }
 }
