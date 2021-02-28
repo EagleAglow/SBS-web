@@ -18,6 +18,8 @@ use App\Http\Controllers\ExportBidsController;
 
 Route::get('/', function () {
 
+/*   // commented out - remove later, along with demo blade
+
     // this should probably be in a controller or middleware??
     $demoDev = DB::table('users')->select('email')->where('email','=','dev@demo.com')->first('id');
     $demoSuperuser = DB::table('users')->select('email')->where('email','=','superuser@demo.com')->first('id');
@@ -33,6 +35,10 @@ Route::get('/', function () {
     } else {
         return view('demo');
     }
+
+ */
+
+    return view('welcome');
 });
 
 // original
