@@ -12,7 +12,10 @@ use Maatwebsite\Excel\Concerns\WithUpserts;
 //use Auth;
 //use Spatie\Permission\Models\Role;
      
-class UsersImport implements ToModel, WithHeadingRow, WithUpserts
+// ===================================================================
+//   Sends welcome mail to new users
+// ===================================================================
+class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
 {
     /**
     * @param array $row
@@ -64,7 +67,8 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
             } else {
                 //generate a password for the new users
                 $pw = User::generatePassword();
-                return new User([
+//                return new User([
+                $new_user = new User([
                     'name'     => $row['name'],
                     'email'    => $row['email'],
                     'phone_number'    => $phone,
@@ -72,6 +76,12 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     'bidder_primary_order' => $row['seniority'],
                     'bidder_group_id' => BidderGroup::select('id')->where('code','=', $row['group'])->first()->id,
                 ]);
+
+                // send mail
+                User::sendWelcomeEmail($new_user);
+
+                // return new user
+                return $new_user;
             }
         }
     }

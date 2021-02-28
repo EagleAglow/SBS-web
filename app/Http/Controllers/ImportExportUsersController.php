@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Exports\UsersExport;
  
 use App\Imports\UsersImport;
+use App\Imports\UsersImportWithMail;
  
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -41,8 +42,21 @@ class ImportExportUsersController extends Controller
             $validatedData = $request->validate([
             'file' => 'required',
             ]);
-            Excel::import(new UsersImport,$request->file('file'));
-            return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported.');
+            $welcome = $request['welcome'];
+            if (isset($welcome)){
+                if ($welcome == 'welcome'){
+                    // import and send emails
+                    Excel::import(new UsersImportWithMail,$request->file('file'));
+                    return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported, with mail to new users.');
+                } else {
+                    flash('Sorry, no import - unexpected condition!')->warning()->important();
+                    return redirect('admins/excel-csv-file-users');
+                }
+            } else {
+                // import and send emails
+                Excel::import(new UsersImport,$request->file('file'));
+                return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported.');
+            }
         } else {
             abort('401');
         }

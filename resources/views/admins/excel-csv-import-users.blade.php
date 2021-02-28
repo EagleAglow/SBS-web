@@ -38,15 +38,22 @@
 
                 <hr>
                 <div class="card-body my-squash">
-                    Import file must use the format of the export file, including header row. Do not use codes/names for groups/roles that are not already in the system.
-                    Email address is the index key. Existing admin users are not modified. Other existing entries are updated. No users are deleted. For password reset of
-                    existing users, or to add new users, there must be text (6 or more characters) in the fifth column, with a heading of "PASSWORD". Otherwise, Passwords
-                    won't change, nor new users be added. For names/email with extended ASCII characters, use the CSV format! 
+                    Import file must use the format of the export file, including header row. Do not use codes/names for groups/roles that are not already in the
+                    system. Email address is the index key. Existing admin users are not modified. Other existing entries are updated. No users are deleted. New
+                    users get a random password (and password reset email if the box is checked). For names/email with extended ASCII characters, use the CSV format! 
                 </div>
 
                 <div class="card-body my-squash">
                 <form id="excel-csv-import-form" method="POST"  action="{{ url('admins/import-excel-csv-file-users') }}" accept-charset="utf-8" enctype="multipart/form-data">
                     @csrf
+
+                    <div class="row">
+                        <div class="col">
+                            <input type="checkbox" name="welcome" value="welcome" >
+                                    &nbsp;<label for="welcome">Send password reset email for new users. <span style="color:red"><b>Are the addresses correct?</b></span></label>
+                        </div>
+                    </div>    
+
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
@@ -60,8 +67,8 @@
 
                     <div class="row">
                     <div class="col-md-9">
-                            First, choose a "csv" or "xls" file for import. Wait for the filename to appear, then submit.
-                        </div>          
+                            Check box to send email to new users, choose "csv" or "xls" file for import. Wait for the filename to appear, then submit.
+                        </div>    
                         <div class="col justify-content-end">
                             <button type="submit" class="btn btn-primary" id="submit" onclick="$('#cover-spin').show(0)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
                         </div>
@@ -74,8 +81,8 @@
                 <div class="card-body my-squash">
                     <div class="row">
                         <div class="col-md-9">
-                            For major changes to the user list, you can remove all users, except those with admin/superuser roles, then import new users. 
-                            BEFORE you do this, MAKE SURE to export a CSV file to build the replacement list with the correct format.
+                            For major changes to the user list (e.g., reset all passwords), this removes all users except those with admin/superuser roles. 
+                            BEFORE you do this, MAKE SURE to export a CSV file to build the replacement import list with the correct format.
                         </div>
                         <div class="col justify-content-end">
                             <a href="{{ url('admins/userpurge') }}" class="btn btn-danger" onclick="$('#cover-spin').show(0)">Purge Users</a>
