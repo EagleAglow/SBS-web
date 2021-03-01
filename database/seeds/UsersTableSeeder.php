@@ -124,11 +124,6 @@ $newUser = User::create([
 
         ]);
         $newUser->assignRole('bidder-demo');
-        $newUser->assignRole('bidder-tsu');
-        $newUser->assignRole('bidder-oidp');
-        $newUser->assignRole('bidder-irpa');
-        $newUser->assignRole('bidder-tcom');
-        $newUser->assignRole('bidder-tnon');
         $newUser->assignRole('supervisor');
         $newUser->assignRole('admin');
         $newUser->assignRole('superuser');
