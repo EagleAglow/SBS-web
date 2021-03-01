@@ -29,10 +29,6 @@
 							<th class="text-left compact" scope="col">Log Items</th>
 							</tr>
 						</thead>
-						@php
-						$log_items = App\LogItem::all();
-
-						@endphp
 						<tbody>
 							@foreach ($log_items as $log_item)
 							<tr>

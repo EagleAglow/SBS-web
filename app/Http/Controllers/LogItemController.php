@@ -27,7 +27,8 @@ class LogItemController extends Controller {
     public function index()
     {
         if (Auth::user()->hasRole('admin')){
-            return view('admins.logitems.index');
+            $log_items = LogItem::orderBy('created_at','DESC')->get();
+            return view('admins.logitems.index',['log_items' => $log_items,]);
         } else {
             abort('401');
         }
@@ -62,7 +63,12 @@ class LogItemController extends Controller {
      */
     public function show()
     {
-        //
+        if (Auth::user()->hasRole('admin')){
+            $log_items = LogItem::orderBy('created_at','DESC')->get();
+            return view('admins.logitems.index',['log_items' => $log_items,]);
+        } else {
+            abort('401');
+        }
     }
 
     /**
