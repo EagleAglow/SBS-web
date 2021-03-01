@@ -3,6 +3,7 @@ namespace App\Imports;
     
 
 // need to move models into their own folder  - FIX ME LATER
+use DB;
 use App\User;
 use App\BidderGroup;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -53,12 +54,13 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
         if (!$admin_flag){
             if (!$new_user){
                 // existing user
+                $email = $row['email'];
                 $bg_code = $row['group'];
                 $bidder_group_id = BidderGroup::select('id')->where('code','=', $bg_code)->first()->id;
 
                 $this_user = new User([
                     'name'     => $row['name'],
-                    'email'    => $row['email'],
+                    'email'    => $email,
                     'phone_number'    => $phone,
                     // existing user - keep old password hash
                     'password' => $user->password,
@@ -68,67 +70,110 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
 
                 // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC
                 if (isset($bg_code)){
+                    // stupid way to do this, but $this_user does not play well with roles
+                    $clone_user = User::where('email',$email)->get()->first();
+                    // remove any existing bidding role
+                    $bidder_roles = DB::table('roles')->where('name','like', 'bidder-%')->get('name');
+                    foreach($bidder_roles as $bidder_role){
+                        if ($clone_user->hasRole($bidder_role->name)){
+                            $clone_user->removeRole($bidder_role->name);
+                        }
+                    }
+
+                    // set bidding role based on bidding group
                     $bidder_groups = BidderGroup::all();
                     foreach($bidder_groups as $bidder_group){
-                        // remove any existing bidding role
-                        if(!$bidder_group->code == 'NONE'){
-                            $this_user->removeRole('bidder-' . strtolower($bidder_group->code));
-                        }
                         if($bidder_group->code == $bg_code){
                             if($bidder_group->code == 'TRAFFIC'){
                                 // assign both TNON and TCOM
-                                $this_user->assignRole('bidder-tcom');
-                                $this_user->assignRole('bidder-tnon');
+                                $clone_user->assignRole('bidder-tcom');
+                                $clone_user->assignRole('bidder-tnon');
                             } else {
                                 if($bidder_group->code == 'NONE'){
                                     // do nothing
                                 } else {
-                                    $this_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                    $clone_user->assignRole('bidder-' . strtolower($bidder_group->code));
                                 }
                             }
                         }
                     }
                 }
+
                 return $this_user;
 
             } else {
                 //new user - generate a dummy password
                 $pw = User::generatePassword();
+                $pw_hash = \Hash::make($pw);
+                $name = $row['name'];
+                $email = $row['email'];
                 $bg_code = $row['group'];
                 $bidder_group_id = BidderGroup::select('id')->where('code','=', $bg_code)->first()->id;
 
                 $new_user = new User([
-                    'name'     => $row['name'],
-                    'email'    => $row['email'],
+                    'name'     => $name,
+                    'email'    => $email,
                     'phone_number'    => $phone,
-                    'password' => \Hash::make($pw),
+                    'password' => $pw_hash,
                     'bidder_primary_order' => $row['seniority'],
                     'bidder_group_id' => $bidder_group_id,
                 ]);
 
+                // at this point, $new_user is not yet a record in the users table, so can't assign roles
+                // so, make a new user record....
+                // stupid way to do this, but $new_user does not play well with roles
+                // future - put this in User model
+                $clone_user = User::create(['email'=>$email, 'name'=>$name, 'password'=>$pw_hash, 'bidder_group_id'=>$bidder_group_id, 'phone_number'=>$phone,]); 
+
                 // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC
                 if (isset($bg_code)){
+                    $clone_user = User::where('email',$email)->get()->first();
+                    // remove any existing bidding role
+                    $bidder_roles = DB::table('roles')->where('name','like', 'bidder-%')->get('name');
+                    foreach($bidder_roles as $bidder_role){
+                        if ($clone_user->hasRole($bidder_role->name)){
+                            $clone_user->removeRole($bidder_role->name);
+                        }
+                    }
+
+                    // set bidding role based on bidding group
                     $bidder_groups = BidderGroup::all();
                     foreach($bidder_groups as $bidder_group){
                         if($bidder_group->code == $bg_code){
                             if($bidder_group->code == 'TRAFFIC'){
                                 // assign both TNON and TCOM
-                                $new_user->assignRole('bidder-tcom');
-                                $new_user->assignRole('bidder-tnon');
+                                $clone_user->assignRole('bidder-tcom');
+                                $clone_user->assignRole('bidder-tnon');
                             } else {
                                 if($bidder_group->code == 'NONE'){
                                     // do nothing
                                 } else {
-                                    $new_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                    $clone_user->assignRole('bidder-' . strtolower($bidder_group->code));
                                 }
                             }
                         }
                     }
                 }
 
-                // don'tsend mail
-//                User::sendWelcomeEmail($new_user);
+/*    don't....             
+                // send mail
+                User::sendWelcomeEmail($new_user);
 
+                // send SMS, if they have a number
+                if (isset($new_user->phone_number)){
+                    if (strlen($new_user->phone_number)>0){
+                        // Generate a new reset password token
+                        $token = app('auth.password.broker')->createToken($new_user);
+                        $url= url(config('url').route('password.reset', ['email' => $new_user->email, $token ]));
+                        $msg =  'Hello '. $new_user->name . '- You have just been added to this system, and in order to use it, ';
+                        $msg = $msg . 'you need to set your password at this link: ';
+                        $msg = $msg . $url;
+                        LaraTwilio::notify($new_user->phone_number, $msg);
+                        flash('SMS sent.')->success();
+                    }
+                }
+    
+ */
                 // return new user
                 return $new_user;
             }

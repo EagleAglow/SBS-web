@@ -12,11 +12,16 @@ use Maatwebsite\Excel\Concerns\WithUpserts;
 
 // SMS messaging
 use Dotunj\LaraTwilio\Facades\LaraTwilio;  
+
+// welcome mail
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserMail;
+
      
 // ===================================================================
 //   Sends welcome mail to new users
 // ===================================================================
-class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
+class UsersImportWithMailSMS implements ToModel, WithHeadingRow, WithUpserts
 {
     /**
     * @param array $row
@@ -158,24 +163,25 @@ class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
                     }
                 }
 
-                // send mail
-                User::sendWelcomeEmail($new_user);
+                // send mail - can't use this, need to reuse token
+                //User::sendWelcomeEmail($new_user);
+                // Generate a new reset password token
+                $token = app('auth.password.broker')->createToken($new_user);
+                
+                // Send email
+                Mail::to($new_user->email)->send(new NewUserMail($new_user->name, $new_user->email, $token));
 
-/* don't...
                 // send SMS, if they have a number
                 if (isset($new_user->phone_number)){
                     if (strlen($new_user->phone_number)>0){
-                        // Generate a new reset password token
-                        $token = app('auth.password.broker')->createToken($new_user);
                         $url= url(config('url').route('password.reset', ['email' => $new_user->email, $token ]));
                         $msg =  'Hello '. $new_user->name . '- You have just been added to this system, and in order to use it, ';
                         $msg = $msg . 'you need to set your password at this link: ';
                         $msg = $msg . $url;
                         LaraTwilio::notify($new_user->phone_number, $msg);
-                        flash('SMS sent.')->success();
                     }
                 }
-*/
+    
                 // return new user
                 return $new_user;
             }

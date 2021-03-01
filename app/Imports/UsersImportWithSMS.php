@@ -16,7 +16,7 @@ use Dotunj\LaraTwilio\Facades\LaraTwilio;
 // ===================================================================
 //   Sends welcome mail to new users
 // ===================================================================
-class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
+class UsersImportWithSMS implements ToModel, WithHeadingRow, WithUpserts
 {
     /**
     * @param array $row
@@ -158,10 +158,9 @@ class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
                     }
                 }
 
-                // send mail
-                User::sendWelcomeEmail($new_user);
+                // don't send mail
+//                User::sendWelcomeEmail($new_user);
 
-/* don't...
                 // send SMS, if they have a number
                 if (isset($new_user->phone_number)){
                     if (strlen($new_user->phone_number)>0){
@@ -172,10 +171,9 @@ class UsersImportWithMail implements ToModel, WithHeadingRow, WithUpserts
                         $msg = $msg . 'you need to set your password at this link: ';
                         $msg = $msg . $url;
                         LaraTwilio::notify($new_user->phone_number, $msg);
-                        flash('SMS sent.')->success();
                     }
                 }
-*/
+    
                 // return new user
                 return $new_user;
             }

@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Exports\UsersExport;
  
 use App\Imports\UsersImport;
+use App\Imports\UsersImportWithSMS;
 use App\Imports\UsersImportWithMail;
+use App\Imports\UsersImportWithMailSMS;
  
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -42,20 +44,31 @@ class ImportExportUsersController extends Controller
             $validatedData = $request->validate([
             'file' => 'required',
             ]);
+            $choice = 0;
             $welcome = $request['welcome'];
-            if (isset($welcome)){
-                if ($welcome == 'welcome'){
+            $sms = $request['sms'];
+            if ($welcome == 'welcome'){ $choice = $choice +1;}
+            if ($sms == 'sms'){ $choice = $choice +2;}
+            switch ($choice){
+                case 1:
                     // import and send emails
                     Excel::import(new UsersImportWithMail,$request->file('file'));
                     return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported, with mail to new users.');
-                } else {
-                    flash('Sorry, no import - unexpected condition!')->warning()->important();
-                    return redirect('admins/excel-csv-file-users');
-                }
-            } else {
-                // import and send emails
-                Excel::import(new UsersImport,$request->file('file'));
-                return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported.');
+                    break;
+                case 2:
+                    // import and send SMS
+                    Excel::import(new UsersImportWithSMS,$request->file('file'));
+                    return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported, with SMS to new users.');
+                    break;
+                case 3:
+                    // import and send both emails and SMS
+                    Excel::import(new UsersImportWithMailSMS,$request->file('file'));
+                    return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported, with mail and SMS to new users.');
+                    break;
+                default:
+                    // import only
+                    Excel::import(new UsersImport,$request->file('file'));
+                    return redirect('admins/excel-csv-file-users')->with('status', 'The users excel/csv file has been imported.');
             }
         } else {
             abort('401');

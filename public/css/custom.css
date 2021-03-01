@@ -88,6 +88,10 @@ div.card-body.setting-squash2 {padding-top: 0;padding-bottom:1rem;}
 div.card-body.setting-squish {border-bottom:none; padding-bottom: 0;}
 div.form-group.setting-squash {margin-bottom:0;}
 
+div.form-group.squash {margin-bottom: 0;}
+
+
+
 ul.pagination {margin-bottom:0.5rem; margin-top:0.5rem;}
 
 div.pagination-text { font-size:1.05rem; font-weight: 600; color:#3490dc; padding:0.7rem 0.5rem 0 0.5rem; float:left;}

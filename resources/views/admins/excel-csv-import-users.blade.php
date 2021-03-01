@@ -56,6 +56,13 @@
 
                     <div class="row">
                         <div class="col">
+                            <input type="checkbox" name="sms" value="sms" >
+                                    &nbsp;<label for="sms">Send password reset SMS for new users. <span style="color:red"><b>Are the phone numbers correct?</b></span></label>
+                        </div>
+                    </div>    
+
+                    <div class="row">
+                        <div class="col">
                             <div class="form-group">
                                 <input type="file" name="file" placeholder="Choose file">
                             </div>

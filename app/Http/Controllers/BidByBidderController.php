@@ -23,7 +23,8 @@ use App\Mail\ActiveBidderTestMail;
 use App\Mail\BidSelectionMail;
 use App\Mail\BidSelectionTestMail;
 
-use Dotunj\LaraTwilio\Facades\LaraTwilio;  // SMS messaging
+// SMS messaging
+use Dotunj\LaraTwilio\Facades\LaraTwilio;  
 
 class BidByBidderController extends Controller
 {

@@ -17,6 +17,9 @@ use Spatie\Permission\Models\Permission;
 //Enables us to output flash messaging
 use Session;
 
+// SMS messaging
+use Dotunj\LaraTwilio\Facades\LaraTwilio;
+
 // ad lib validaton
 use App\Rules\DummyFail;
 
@@ -128,17 +131,29 @@ class UserController extends Controller {
             }
         }
 
-        // send password reset email? default is yese, box checked, value 'welcome'
+        // send password reset email? default is yes, box checked, value 'welcome'
         if ($request['welcome'] == 'welcome'){
             User::sendWelcomeEmail($user);
-            //Redirect to the users.index view and display message
-            flash('User successfully added, email sent.')->success();
-            return redirect()->route('users.index');
-        } else {
-            //Redirect to the users.index view and display message
-            flash('User successfully added, email NOT sent.')->success()->important();
-            return redirect()->route('users.index');
+            flash('Email sent.')->success();
         }
+        if ($request['SMS'] == 'SMS'){
+            // send to bidder, if they have a number
+            if (isset($user->phone_number)){
+                if (strlen($user->phone_number)>0){
+                    // Generate a new reset password token
+                    $token = app('auth.password.broker')->createToken($user);
+                    $url= url(config('url').route('password.reset', ['email' => $user->email, $token ]));
+                    $msg =  'Hello '. $user->name . '- You have just been added to this system, and in order to use it, ';
+                    $msg = $msg . 'you need to set your password at this link: ';
+                    $msg = $msg . $url;
+                    LaraTwilio::notify($user->phone_number, $msg);
+                    flash('SMS sent.')->success();
+                }
+            }
+        }
+        //Redirect to the users.index view and display message
+        flash('User successfully added.')->success();
+        return redirect()->route('users.index');
     }
 
     /**
