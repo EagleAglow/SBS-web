@@ -221,54 +221,58 @@ class UserScheduleShowController extends Controller {
 
         // deal with tag/untag requests
         $pick = $request['pick'];
+        $uid = $user->id;
         $schedule_line_id = $request['schedule_line_id'];
         if (isset($schedule_line_id)){
             if (isset($pick)){
                 if ($user->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
                     if ($pick == 'tag'){
-                        // attempt to tag
-                        $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
-                        $uid = $user->id;
-                        // get highest rank, for lines in the same schedule, if already set
-                        $picks = Pick::join('schedule_lines','schedule_line_id','=','schedule_lines.id')
-                                ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->where('picks.user_id',$uid)->orderBy('picks.rank','DESC')->get();
+                        // if already tagged, this is a page refresh
+                        if (!Pick::where('schedule_line_id',$schedule_line_id)->where('picks.user_id',$uid)->get()->count() > 0){
+                            // attempt to tag
+                            $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
+                            // get highest rank, for lines in the same schedule, if already set
+                            $picks = Pick::join('schedule_lines','schedule_line_id','=','schedule_lines.id')
+                                    ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->where('picks.user_id',$uid)->orderBy('picks.rank','DESC')->get();
 
-                                if (count($picks) == 0){
-                            $rank = 1;
-                        } else {
-                            $rank = $picks->first()->rank +1;
-                        }
-                        // set this user id for this schedule line
-                        $pick = new Pick();
-                        $pick->schedule_line_id = $schedule_line->id;
-                        $pick->user_id = $uid;
-                        $pick->rank = $rank;
-                        $pick->save();
+                                    if (count($picks) == 0){
+                                $rank = 1;
+                            } else {
+                                $rank = $picks->first()->rank +1;
+                            }
+                            // set this user id for this schedule line
+                            $pick = new Pick();
+                            $pick->schedule_line_id = $schedule_line->id;
+                            $pick->user_id = $uid;
+                            $pick->rank = $rank;
+                            $pick->save();
+                        };
                     }
 
                     if ($pick == 'untag'){
-                        // attempt to untag
-                        $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
-                        $uid = $user->id;
-                        $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
-                        if (isset($pick)){
-                            $pick->delete();
-                            // re-rank remaining picks in same schedule
-                            $pick_ids = Pick::select('picks.id')->where('picks.user_id',$uid)->join('schedule_lines','schedule_line_id','=','schedule_lines.id')
-                                    ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->orderBy('picks.rank')->get()->toArray();
-                            $rank = count($pick_ids);
-                            if ($rank > 0){
-                                $rank = 0;
-                                foreach($pick_ids as $pick_id){
-                                    $pick = Pick::where('id','=',$pick_id)->get()->first();
-                                    $rank = $rank +1;
-                                    $pick->rank = $rank;
-                                    $pick->update();
+                        // if not already tagged, this is a page refresh
+                        if (!Pick::where('schedule_line_id',$schedule_line_id)->where('picks.user_id',$uid)->get()->count() == 0){
+                            // attempt to untag
+                            $schedule_line = ScheduleLine::findOrFail($schedule_line_id);
+                            $pick = Pick::where('user_id',$uid)->where('schedule_line_id',$schedule_line_id)->get()->first();
+                            if (isset($pick)){
+                                $pick->delete();
+                                // re-rank remaining picks in same schedule
+                                $pick_ids = Pick::select('picks.id')->where('picks.user_id',$uid)->join('schedule_lines','schedule_line_id','=','schedule_lines.id')
+                                        ->where('schedule_lines.schedule_id',$schedule_line->schedule_id)->orderBy('picks.rank')->get()->toArray();
+                                $rank = count($pick_ids);
+                                if ($rank > 0){
+                                    $rank = 0;
+                                    foreach($pick_ids as $pick_id){
+                                        $pick = Pick::where('id','=',$pick_id)->get()->first();
+                                        $rank = $rank +1;
+                                        $pick->rank = $rank;
+                                        $pick->update();
+                                    }
                                 }
                             }
                         }
                     }
-
 
                     if ($pick == 'boost'){
                         // if rank 2 or greater, switch with next lower number rank, in same schedule
