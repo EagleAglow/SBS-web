@@ -108,7 +108,6 @@
                             </div>
                         </div>
 
-{{--  not using password entry fields
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('New Password') }}</label>
                             <div class="col-md-6">
@@ -133,7 +132,6 @@
                                 @enderror
                             </div>
                         </div>
---}}                        
                         <input class="btn btn-primary float-right" type="submit" value="Save">
                     </form>
 					</div>

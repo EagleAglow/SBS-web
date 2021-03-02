@@ -17,9 +17,6 @@ use Spatie\Permission\Models\Permission;
 //Enables us to output flash messaging
 use Session;
 
-// SMS messaging
-use Dotunj\LaraTwilio\Facades\LaraTwilio;
-
 // ad lib validaton
 use App\Rules\DummyFail;
 
@@ -73,6 +70,7 @@ class UserController extends Controller {
         $this->validate($request, [
             'name'=>'required|max:120',
             'email'=>'required|email|unique:users',
+            'password'=>'required|min:6|confirmed'
         ]);
 
         //Validate phone number for ten digits - error if not
@@ -93,10 +91,9 @@ class UserController extends Controller {
 
         $bidder_group_id = $request['bidder_group_id'];
 
-        //generate a password for the new users
-        $pw = User::generatePassword();
+        $pwd_in_request = $request->password;
         // hash password for storage
-        $request['password'] = Hash::make($pw);
+        $request['password'] = Hash::make($pwd_in_request);
 
         // use name, email, bidder_group_id and password data from request
         $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id', 'phone_number')); 
@@ -131,26 +128,6 @@ class UserController extends Controller {
             }
         }
 
-        // send password reset email? default is yes, box checked, value 'welcome'
-        if ($request['welcome'] == 'welcome'){
-            User::sendWelcomeEmail($user);
-            flash('Email sent.')->success();
-        }
-        if ($request['SMS'] == 'SMS'){
-            // send to bidder, if they have a number
-            if (isset($user->phone_number)){
-                if (strlen($user->phone_number)>0){
-                    // Generate a new reset password token
-                    $token = app('auth.password.broker')->createToken($user);
-                    $url= url(config('url').route('password.reset', ['email' => $user->email, $token ]));
-                    $msg =  'Hello '. $user->name . '- You have just been added to this system, and in order to use it, ';
-                    $msg = $msg . 'you need to set your password at this link: ';
-                    $msg = $msg . $url;
-                    LaraTwilio::notify($user->phone_number, $msg);
-                    flash('SMS sent.')->success();
-                }
-            }
-        }
         //Redirect to the users.index view and display message
         flash('User successfully added.')->success();
         return redirect()->route('users.index');
@@ -189,35 +166,107 @@ class UserController extends Controller {
     public function update(Request $request, $id) {
         $user = User::findOrFail($id); //Get user specified by id
 
-        //Validate 
-        $this->validate($request, [
-            'name'=>'required|max:120',
-            'email'=>'required|email:rfc,filter|unique:users,email,'.$id,
-            'bid_order'=>'nullable|integer',
-            'bidder_primary_order'=>'nullable|integer',
-            'bidder_secondary_order'=>'nullable|integer',
-        ]);
-    
-        //Validate phone number for ten digits - error if not
-        $phone = $request['phone_number'];
-        if (isset($phone)){
-            if (strlen($phone)>0){
-                if(!preg_match("/\d{10}/",$phone)) {
-                    // dummy validation function - if called, just returns message
-                    $this->validate($request, [ 
-                        'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
-                    ]);
+        $pwd_in_request = $request->password;
+        if (isset($pwd_in_request)){
+            //Validate 
+            $this->validate($request, [
+                'name'=>'required|max:120',
+//                'email'=>'required|email|unique:users,email,'.$id,
+
+                'email'=>'required|email:rfc,filter|unique:users,email,'.$id,
+                'password'=>'required|min:6|confirmed',
+                'bid_order'=>'nullable|integer',
+                'bidder_primary_order'=>'nullable|integer',
+                'bidder_secondary_order'=>'nullable|integer',
+            ]);
+        
+            // hash password for storage
+            $request['password'] = Hash::make($pwd_in_request);
+
+            //Validate phone number for ten digits - error if not
+            $phone = $request['phone_number'];
+            if (isset($phone)){
+                if (strlen($phone)>0){
+                    if(!preg_match("/\d{10}/",$phone)) {
+                        // dummy validation function - if called, just returns message
+                        $this->validate($request, [ 
+                            'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                        ]);
+                    }
                 }
+            } else {
+                $phone = '';
             }
+            $request['phone_number'] = $phone;
         } else {
-            $phone = '';
+            // password field was empty
+            // does a password hash for this email already exist?
+            $pwd = $user->password;
+            if(isset($pwd)){
+                //Validate - skip password
+                $this->validate($request, [
+                    'name'=>'required|max:120',
+                    'email'=>'required|email|unique:users,email,'.$id,
+                    'bid_order'=>'nullable|integer',
+                    'bidder_primary_order'=>'nullable|integer',
+                    'bidder_secondary_order'=>'nullable|integer',
+                ]);
+                // store it unchanged
+                $request['password'] = $pwd;
+
+                //Validate phone number for ten digits - error if not
+                $phone = $request['phone_number'];
+                if (isset($phone)){
+                    if (strlen($phone)>0){
+                        if(!preg_match("/\d{10}/",$phone)) {
+                            // dummy validation function - if called, just returns message
+                            $this->validate($request, [ 
+                                'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                            ]);
+                        }
+                    }
+                } else {
+                    $phone = '';
+                }
+                $request['phone_number'] = $phone;
+
+            } else {
+                // should fail validation - should not actually get to this code, anyway...
+                //Validate 
+                $this->validate($request, [
+                    'name'=>'required|max:120',
+                    'email'=>'required|email|unique:users,email,'.$id,
+                    'password'=>'required|min:6|confirmed',
+                    'bid_order'=>'nullable|integer',
+                    'bidder_primary_order'=>'nullable|integer',
+                    'bidder_secondary_order'=>'nullable|integer',
+                ]);
+        
+                // hash password for storage
+                $request['password'] = Hash::make($pwd_in_request);
+
+                //Validate phone number for ten digits - error if not
+                $phone = $request['phone_number'];
+                if (isset($phone)){
+                    if (strlen($phone)>0){
+                        if(!preg_match("/\d{10}/",$phone)) {
+                            // dummy validation function - if called, just returns message
+                            $this->validate($request, [ 
+                                'phone_number'=>new DummyFail( 'Number should be 10 digits or blank!')
+                            ]);
+                        }
+                    }
+                } else {
+                    $phone = '';
+                }
+                $request['phone_number'] = $phone;
+            }
         }
-        $request['phone_number'] = $phone;
 
         // count number of superusers in system - test later to avoid removing last superuser
         $superusers = User::role('superuser')->get()->count();
 
-        $input = $request->only(['name', 'email', 'bidder_group_id','bid_order', 'bidder_primary_order',
+        $input = $request->only(['name', 'email', 'password','bidder_group_id','bid_order', 'bidder_primary_order',
             'bidder_secondary_order', 'phone_number']); 
 
         $user->fill($input)->save();
@@ -258,26 +307,6 @@ class UserController extends Controller {
         }        
         else {
             $user->roles()->detach(); //If no role is selected remove existing role associated to a user
-        }
-        // assign bidding roles based on bidding groups, special handling for NONE and TRAFFIC
-        $bidder_group_id = $request['bidder_group_id'];
-        if (isset($bidder_group_id)){
-            $bidder_groups = BidderGroup::all();
-            foreach($bidder_groups as $bidder_group){
-                if($bidder_group->id == $bidder_group_id){
-                    if($bidder_group->code == 'TRAFFIC'){
-                        // assign both TNON and TCOM
-                        $user->assignRole('bidder-tcom');
-                        $user->assignRole('bidder-tnon');
-                    } else {
-                        if($bidder_group->code == 'NONE'){
-                            // do nothing
-                        } else {
-                            $user->assignRole('bidder-' . strtolower($bidder_group->code));
-                        }
-                    }
-                }
-            }
         }
 
         if ($superusers < '2'){ // we may have removed the last one
