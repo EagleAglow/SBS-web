@@ -30,7 +30,10 @@
                         // bidding not in progress - set it to 0 and refresh
                         DB::table('params')->insertOrIgnore([ 'param_name' => 'bidding-next', 'integer_value' => 0, ]);
                     }
-                    $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
+//                    $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
+                    $bidding_next = App\Param::where('param_name','bidding-next')->first();
+                    $bidding_next_began = $bidding_next->updated_at;
+                    $bidding_next = $bidding_next->integer_value;
                     $bidder_next_next = '';
                     $next_next_name = '';
 
@@ -74,7 +77,8 @@
                             $state = '<b><span style="color:red;">In Progress</span></b>';
                             $state = $state . '<br>Bidders: ' . App\User::select('id')->where('bid_order','>',0)->get()->count();
                             if(isset($bidding_next)){
-                                $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
+                                $state = $state . ' <br>Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
+                                $state = $state . ' <br>Bidder ' . $bidding_next . ' has been current bidder for ' . intval( (time() - strtotime($bidding_next_began))/60 ) . ' minutes.';                                 
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
@@ -126,17 +130,17 @@
                         
                     <!-- jQuery Script - shows progress bar until refresh -->
                     <script type="text/javascript">
-                        var i = 30;
+                        var i = 40;
                         function makeProgress(){
-                            if(i < 200){
+                            if(i < 100){
                                 i = i + 1;
-                                $(".progress-bar").css("width", i/2 + "%").text("Refresh...");
+                                $(".progress-bar").css("width", i + "%").text("30 Second Refresh Cycle...");
                             } else {
                                 window.location.reload(true); 
                             }
                             // Wait for sometime before running this script again
-                            // 75 increments of 0.8 seconds
-                            setTimeout("makeProgress()", 300);
+                            // 100-40 => 60 increments of 0.5 seconds => 30 second refresh
+                            setTimeout("makeProgress()", 500);
                         }
                         makeProgress();
                     </script>
