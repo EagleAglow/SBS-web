@@ -115,13 +115,13 @@ class UserController extends Controller {
                 if($bidder_group->id == $bidder_group_id){
                     if($bidder_group->code == 'TRAFFIC'){
                         // assign both TNON and TCOM
-                        $user->assignRole('bidder-tcom');
-                        $user->assignRole('bidder-tnon');
+                        $user->assignRole('bid-for-tcom');
+                        $user->assignRole('bid-for-tnon');
                     } else {
                         if($bidder_group->code == 'NONE'){
                             // do nothing
                         } else {
-                            $user->assignRole('bidder-' . strtolower($bidder_group->code));
+                            $user->assignRole('bid-for-' . strtolower($bidder_group->code));
                         }
                     }
                 }
@@ -159,7 +159,7 @@ class UserController extends Controller {
     /**
     * Update the specified resource in storage.
     *
-    * @param  \Illuminate\Http\Request  $request
+    * @param  \Illuminate\Http\Request  $request 
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
@@ -298,7 +298,7 @@ class UserController extends Controller {
         if ($block_msg == true){
             $msg = 'Change to active bidder was blocked. Active bidder is ';
             foreach($other_bidders as $other_bidder){
-                $msg = $msg . $other_bidder->name;
+                $msg = $msg . $other_bid-for->name;
             } 
         }
 

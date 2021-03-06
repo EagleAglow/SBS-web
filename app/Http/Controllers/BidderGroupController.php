@@ -54,11 +54,11 @@ class BidderGroupController extends Controller {
     */
     public function store(Request $request) {
         $this->validate($request, [
-            'code'=>'required|min:3|max:8|unique:bidder_groups,code',
+            'code'=>'required|min:3|max:8|alpha_dash|unique:bidder_groups,code',
             'order'=>'integer',
         ]);
 
-        $code = $request['code'];
+        $code = strtoupper($request['code']);
         $order = $request['order'];
         $name = $request['name'];
         $bidder_group = new BidderGroup();
@@ -90,8 +90,8 @@ class BidderGroupController extends Controller {
     */
     public function edit($id) {
         $bidder_group = BidderGroup::findOrFail($id);
-
-        return view('admins.biddergroups.edit', compact('bidder_group'));
+        $roles = Role::get(); //Get all roles
+        return view('admins.biddergroups.edit', compact('bidder_group', 'roles')); //pass group and roles data to view
     }
  
     /**
@@ -105,11 +105,24 @@ class BidderGroupController extends Controller {
         $bidder_group = BidderGroup::findOrFail($id);
 
         $this->validate($request, [
-            'code'=>'required|min:3|max:8|unique:bidder_groups,code,'.$id,
+            'code'=>'required|min:3|max:8|alpha_dash|unique:bidder_groups,code,'.$id,
         ]);
 
+        $code = strtoupper($request['code']);
+        $request['code'] = $code;
         $input = $request->only(['code', 'order', 'name', ]);
         $bidder_group->fill($input)->save();
+
+
+
+
+
+
+
+
+
+
+        
 
         flash('Bidder Group: '. $bidder_group->code.' updated!')->success();
         return redirect()->route('biddergroups.index'); 
@@ -126,21 +139,6 @@ class BidderGroupController extends Controller {
 
         if ($bidder_group->code == 'NONE'){
             flash('Group Code: NONE is used internally and CAN NOT BE DELETED!')->warning()->important();
-            return redirect()->route('biddergroups.index');
-        }
-        
-        if ($bidder_group->code == 'TCOM'){
-            flash('Group Code: TCOM is used internally and CAN NOT BE DELETED!')->warning()->important();
-            return redirect()->route('biddergroups.index');
-        }
-        
-        if ($bidder_group->code == 'TNON'){
-            flash('Group Code: TNON is used internally and CAN NOT BE DELETED!')->warning()->important();
-            return redirect()->route('biddergroups.index');
-        }
-        
-        if ($bidder_group->code == 'TRAFFIC'){
-            flash('Group Code: TNON is used internally and CAN NOT BE DELETED!')->warning()->important();
             return redirect()->route('biddergroups.index');
         }
         
