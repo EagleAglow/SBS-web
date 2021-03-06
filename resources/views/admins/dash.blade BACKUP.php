@@ -5,12 +5,13 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card shadow">
-                <div class="card-header">Admin - Bidders vs. Schedules<span style="color:red;"> A work in progress...</span></div>
+                <div class="card-header">Admin - Bidders vs. Schedules</div>
 
                 @include('flash::message')
 
                 <div class="card-body"><b>Bidders By Bidder Group</b><br>
-                   <span style="font-size:0.8rem;">Table shows bidder group code, bidder role and bidder count. Bidder roles control which line groups a user can bid. User bidding roles follow the roles of their bidding groups.</span>
+                   <span style="font-size:0.8rem;">TCOM is commercial traffic only, TNON is non-commercial traffic only, TRAFFIC is either commercial or non-commercial.
+                    TRAFFIC+TCOM and TRAFFIC+TNON are calculated for comparison with schedule lines.</span>
                 </div>
                 <div class="card-body my-squash">
                     <table class="table compact">
@@ -22,6 +23,10 @@
                                 foreach($groups as $group){
                                     $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
                                 }
+                                // add extra element for TRAFFIC+TCOM
+                                $bidders_by_group['TRAFFIC+TCOM'] = $bidders_by_group['TRAFFIC']+$bidders_by_group['TCOM'];
+                                // add extra element for TRAFFIC+TNON
+                                $bidders_by_group['TRAFFIC+TNON'] = $bidders_by_group['TRAFFIC']+$bidders_by_group['TNON'];
                                 
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<th class="text-center compact">' . $group_code . '</th>';
@@ -29,15 +34,6 @@
                                 echo '</tr></thead><tbody><tr>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact">' . $group_count . '</td>';
-                                }
-                                echo '</tr><tr>';
-                                foreach($bidders_by_group as $group_code=>$group_count){
-                                    echo '<td class="text-center compact">';
-                                    $role_names = App\BidderGroup::where('code',$group_code)->first()->getRoleNames();
-                                    foreach ($role_names as $role_name){
-                                        echo '<div>' . $role_name . '</div>';
-                                    }
-                                    echo '</td>';
                                 }
                             @endphp
                             </tr>
@@ -48,7 +44,8 @@
                 <hr>
 
                 <div class="card-body my-squash"><b>Bidders By Bidder Role</b><br>
-                   <span style="font-size:0.8rem;">Table shows bidder role and bidder count. Tand the count for "bid-for-tnon" should equal the count for "TRAFFIC+TNON".</span>
+                   <span style="font-size:0.8rem;">Bidders in the TRAFFIC bidder group have roles of both "bid-for-tcom" and "bid-for-tnon",
+                   so the count for "bid-for-tcom" should equal TRAFFIC+TCOM and the count for "bid-for-tnon" should equal the count for "TRAFFIC+TNON".</span>
                 </div>
 
                 <div class="card-body my-squash">
@@ -79,10 +76,26 @@
                                 // see if the number of lines is at least the number of bidders by group
                                 $flags_by_role = array();
                                 foreach($bidders_by_role as $role_name=>$role_count){
-                                    if ($role_count == $bidders_by_group[ strtoupper(str_replace("bid-for-","",$role_name)  )     ]){
-                                        $flags_by_role[$role_name] = 'OK';
+                                    if ($role_name == 'bid-for-tcom'){
+                                        if ($role_count == $bidders_by_group['TRAFFIC+TCOM']){
+                                            $flags_by_role[$role_name] = 'OK';
+                                        } else {
+                                            $flags_by_role[$role_name] = '<span style="color:red;">CHECK</span>';
+                                        }
                                     } else {
-                                        $flags_by_role[$role_name] = '<span style="color:red;">CHECK</span>';
+                                        if ($role_name == 'bid-for-tnon'){
+                                            if ($role_count == $bidders_by_group['TRAFFIC+TNON']){
+                                                $flags_by_role[$role_name] = 'OK';
+                                            } else {
+                                                $flags_by_role[$role_name] = '<span style="color:red;">CHECK</span>';
+                                            }
+                                        } else {
+                                            if ($role_count == $bidders_by_group[ strtoupper(str_replace("bid-for-","",$role_name)  )     ]){
+                                                $flags_by_role[$role_name] = 'OK';
+                                            } else {
+                                                $flags_by_role[$role_name] = '<span style="color:red;">CHECK</span>';
+                                            }
+                                        }
                                     }
                                 }
 
@@ -147,10 +160,26 @@
 
 
                             foreach($lines_by_group as $group_code=>$group_count){
-                                if ($group_count >= $bidders_by_group[$group_code]){
-                                    $flags_by_group[$group_code] = 'OK';
+                                if ($group_code == 'TCOM'){
+                                    if ($lines_by_group['TCOM'] >= $bidders_by_group['TRAFFIC+TCOM']){
+                                        $flags_by_group[$group_code] = 'OK';
+                                    } else {
+                                        $flags_by_group[$group_code] = '<span style="color:red;">CHECK</span>';
+                                    }
                                 } else {
-                                    $flags_by_group[$group_code] = '<span style="color:red;">CHECK</span>';
+                                    if ($group_code == 'TNON'){
+                                        if ($lines_by_group['TNON'] >= $bidders_by_group['TRAFFIC+TNON']){
+                                            $flags_by_group[$group_code] = 'OK';
+                                        } else {
+                                            $flags_by_group[$group_code] = '<span style="color:red;">CHECK</span>';
+                                        }
+                                    } else {
+                                        if ($group_count >= $bidders_by_group[$group_code]){
+                                            $flags_by_group[$group_code] = 'OK';
+                                        } else {
+                                            $flags_by_group[$group_code] = '<span style="color:red;">CHECK</span>';
+                                        }
+                                    }
                                 }
                             }
 

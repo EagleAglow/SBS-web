@@ -120,9 +120,6 @@ class UserController extends Controller {
             }
         }        
 
-
-
-
         // assign user bidding roles based on selected bidding group
         if (isset($bidder_group_id)){
             $bidder_group = BidderGroup::where('id',$bidder_group_id)->first();
@@ -131,7 +128,6 @@ class UserController extends Controller {
                 $user->assignRole($role_name); //Assigning role to user
             }
         }
-
 
         // deal with welcome message options
         $welcome = $request['welcome'];

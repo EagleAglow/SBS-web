@@ -84,16 +84,9 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     $bidder_groups = BidderGroup::all();
                     foreach($bidder_groups as $bidder_group){
                         if($bidder_group->code == $bg_code){
-                            if($bidder_group->code == 'TRAFFIC'){
-                                // assign both TNON and TCOM
-                                $clone_user->assignRole('bid-for-tcom');
-                                $clone_user->assignRole('bid-for-tnon');
-                            } else {
-                                if($bidder_group->code == 'NONE'){
-                                    // do nothing
-                                } else {
-                                    $clone_user->assignRole('bid-for-' . strtolower($bidder_group->code));
-                                }
+                            $role_names = $bidder_group->getRoleNames();
+                            foreach ($role_names as $role_name) {
+                                $clone_user->assignRole($role_name); //Assigning role to user
                             }
                         }
                     }
@@ -140,16 +133,9 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     $bidder_groups = BidderGroup::all();
                     foreach($bidder_groups as $bidder_group){
                         if($bidder_group->code == $bg_code){
-                            if($bidder_group->code == 'TRAFFIC'){
-                                // assign both TNON and TCOM
-                                $clone_user->assignRole('bid-for-tcom');
-                                $clone_user->assignRole('bid-for-tnon');
-                            } else {
-                                if($bidder_group->code == 'NONE'){
-                                    // do nothing
-                                } else {
-                                    $clone_user->assignRole('bid-for-' . strtolower($bidder_group->code));
-                                }
+                            $role_names = $bidder_group->getRoleNames();
+                            foreach ($role_names as $role_name) {
+                                $clone_user->assignRole($role_name); //Assigning role to user
                             }
                         }
                     }

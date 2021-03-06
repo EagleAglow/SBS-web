@@ -116,9 +116,9 @@ class LogItemController extends Controller {
         if (Auth::user()->hasRole('admin')){
             LogItem::truncate();
             LogItem::insertOrIgnore([ 'note' => 'Log Cleared By:' . Auth::user()->name  , 'created_at' => date("Y-m-d H:i:s"), 'updated_at' => date("Y-m-d H:i:s") ]);
-    
             flash('Log Purged!')->success();
-            return view('admins.logitems.index');
+            $log_items = LogItem::orderBy('created_at','DESC')->get();
+            return view('admins.logitems.index',['log_items' => $log_items,]);
         } else {
             abort('401');
         }

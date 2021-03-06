@@ -164,7 +164,7 @@
                                     if ($user->hasRole($bidder_role->name)){ $u_has_role = 1; } else { $u_has_role = 0; }
                                     if ($bg->hasRole($bidder_role->name)){ $bg_has_role = 1; } else { $bg_has_role = 0; }
                                     if ( $u_has_role <> $bg_has_role ){
-                                        // mis-match
+                                        // mismatch
                                         $bidder_count = $bidder_count +1;
                                         if($first == true){
                                             $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' has bidding role/group mismatch';

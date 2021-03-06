@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Param;
 use App\ScheduleLine;
-use App\Role;
+use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NextBidderMail;
@@ -61,16 +61,8 @@ class AdminDashBiddingController extends Controller
             $log_item->save();
 
             // see if all bidders have matching bidding groups and roles, fix errors
-            // build cross ref arrays (will include 'bidder-active', but skipped below )
             $bidder_roles = DB::table('roles')->where('name','like', 'bid-for-%')->get('name');
-            $bidder_group_xref = array();
-            foreach($bidder_roles as $bidder_role){
-                // skip 'bidder-active'
-                if ($bidder_role->name != 'bidder-active'){
-                    $bidder_group_xref[ strtoupper(str_replace('bid-for-',"",$bidder_role->name)) ] = $bidder_role->name;
-                }
-            }
-            $users = User::all();
+            $users = User::all()->sortBy('name');
             foreach($users as $user){
                 // see if user has a bidder role
                 $user_roles = $user->roles;
@@ -83,7 +75,8 @@ class AdminDashBiddingController extends Controller
                 }
                 if ($is_bidder){
                     // do they have a bidding group?
-                    $bg = $user->bidder_group->code;
+//                    $bg = $user->bidder_group->code;
+                    $bg = $user->bidder_group;
                     if (!isset($bg)){
                         // this user has no bidding group code, remove all roles that begin with 'bid-for-' (already collected, above)
                         foreach($bidder_roles as $bidder_role){
@@ -101,66 +94,61 @@ class AdminDashBiddingController extends Controller
                         $user_bidrole_list = array();
                         foreach($user_roles as $user_role){
                             if ( str_starts_with($user_role->name,'bid-for-') ){
-                                // skip 'bidder-active'
-                                if ($user_role->name != 'bidder-active'){
-                                    array_push($user_bidrole_list, $user_role->name);
-                                }
+                                array_push($user_bidrole_list, $user_role->name);
                             }
                         }
+
+ 
+                        // build bid group role list
+                        $bg_roles = $user->bidder_group->roles;
+
+
+/*                         
+                        $ng_role_list = array();
+                        foreach($bg_roles as $bg_role){
+                            if ( str_starts_with($bg_role->name,'bid-for-') ){
+                                array_push($bg_role_list, $bg_role->name);
+                            }
+                        }
+
+ */                        
 
                         // if this user is the active bidder, skip check, just assume data is OK
                         // really don't want to (or need to) change that role in the middle of bidding
                         if (!$user->hasRole('bidder-active')){
                             // does this user have the bidding role(s) that goes with the code?
-                            if ($bg == 'TRAFFIC'){
-                                // user should have only two bidder roles 'bid-for-tnon' and 'bid-for-tcom'
-                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bid-for-tnon', $user_bidrole_list)) and (in_array('bid-for-tnon', $user_bidrole_list)) ) ){
-                                    // fix mismatch - remove bidding roles, then restore tcom and tnon
-                                    foreach($bidder_roles as $bidder_role){
-                                        if ($user->hasRole($bidder_role->name)){
-                                            $user->removeRole($bidder_role->name);
-                                        }
-                                    }
-                                    $user->assignRole('bid-for-tnon');
-                                    $user->assignRole('bid-for-tcom');
-                                    // log action
-                                    $log_item = new LogItem();
-                                    $log_item->note = 'Set bidding roles for TRAFFIC bidder (' . $user->name . ')';
-                                    $log_item->save();
+                            $mismatch = false;
+                            foreach($bidder_roles as $bidder_role){
+                                if ($user->hasRole($bidder_role->name)){ $u_has_role = 1; } else { $u_has_role = 0; }
+                                if ($bg->hasRole($bidder_role->name)){ $bg_has_role = 1; } else { $bg_has_role = 0; }
+                                if ( $u_has_role <> $bg_has_role ){
+                                    $mismatch = true;
+                                    break;  // only mismatch once...
                                 }
-                            } else {
-                                if ($bg == 'NONE'){
-                                    // user should have no bidder roles, remove any
-                                    foreach($bidder_roles as $bidder_role){
-                                        if ($user->hasRole($bidder_role->name)){
-                                            $user->removeRole($bidder_role->name);
-                                        }
-                                    }
-                                    // log action
-                                    $log_item = new LogItem();
-                                    $log_item->note = 'Remove bidding roles for ' . $user->bidder_group->code . ' bidder (' . $user->name . ')';
-                                    $log_item->save();
-                                } else {
-                                    // user should have only one role, that matches bidder group
-                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array('bid-for-' . strtolower($user->bidder_group->code), $user_bidrole_list)) ) ){
-                                        // fix mismatch - remove bidding roles, then restore correct one
-                                        foreach($bidder_roles as $bidder_role){
-                                            if ($user->hasRole($bidder_role->name)){
-                                                $user->removeRole($bidder_role->name);
-                                            }
-                                        }
-                                        $user->assignRole($bidder_group_xref[$user->bidder_group->code]);
-                                        // log action
-                                        $log_item = new LogItem();
-                                        $log_item->note = 'Set bidding roles for ' . $user->bidder_group->code . ' bidder (' . $user->name . ')';
-                                        $log_item->save();
+                            }
+                            if ($mismatch){
+                                // fix mismatch - remove all bidding roles, then restore correct one(s)
+                                foreach($bidder_roles as $bidder_role){
+                                    if ($user->hasRole($bidder_role->name)){
+                                        $user->removeRole($bidder_role->name);
                                     }
                                 }
+                                foreach($bg_roles as $bg_role){
+                                    $user->assignRole($bg_role->name);
+                                }
+                                // log action
+                                $log_item = new LogItem();
+                                $log_item->note = 'Set bidding roles for ' . $user->bidder_group->code . ' bidder (' . $user->name . ')';
+                                $log_item->save();
                             }
                         }
                     }
                 }
             }
+            // log end
+            $log_item = new LogItem();
+            $log_item->note = 'Done with bidder group/role fix';
+            $log_item->save();
 
             // log start bid order fix
             $log_item = new LogItem();
