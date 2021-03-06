@@ -48,7 +48,7 @@
 											<input type="hidden" name="_method" value="DELETE">
 												@csrf
 												{{ method_field('DELETE') }}
-											<button type="submit" onclick="return confirm('Delete {{$line_group->name}}?')" class="btn btn-danger">Delete</button>
+											<button type="submit" onclick="return confirm('Delete {{$line_group->name}}?')" class="btn btn-danger">Delete</button>&nbsp;
 										</form>
 									</div>
 								</div>

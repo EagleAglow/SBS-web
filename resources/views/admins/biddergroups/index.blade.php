@@ -27,7 +27,7 @@
 							<th class="text-center" scope="col">Code</th>
 							<th class="text-center" scope="col">Order</th>
 							<th class="text-center" scope="col">Name</th>
-							<th class="text-center" scope="col">Bidding<br>Roles(s)</th>
+							<th class="text-center" scope="col">Can Bid<br>Line(s)</th>
 							<th class="text-center" scope="col">Action</th>
 							</tr>
 						</thead>
@@ -38,7 +38,9 @@
 							<td class="text-center">{{ $bidder_group->order }}</td>
 							<td class="text-center">{{ $bidder_group->name }}</td>
 							<td class="text-center">
-								{{ implode(', ', $bidder_group->roles()->get()->pluck('name')->toArray()) }}
+								@foreach ($bidder_group->roles as $role)
+								<div>{{ strtoupper(str_replace('bid-for-','',$role->name)) }}</div>
+								@endforeach
 							</td>
 							<td>
 								<div class="row">
@@ -52,7 +54,7 @@
 											<input type="hidden" name="_method" value="DELETE">
 												@csrf
 												{{ method_field('DELETE') }}
-											<button type="submit" onclick="return confirm('Delete {{$bidder_group->name}}?')" class="btn btn-danger">Delete</button>
+											<button type="submit" onclick="return confirm('Delete {{$bidder_group->name}}?')" class="btn btn-danger">Delete</button>&nbsp;
 										</form>
 									</div>
 								</div>

@@ -54,7 +54,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-md-4 col-form-label text-md-right">{{ __('Can Bid') }}</label>
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Bids For Lines') }}</label>
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
                                 @if(!(strpos($role->name, 'bid-for-') === false ))
@@ -63,7 +63,7 @@
                                     @php
                                         if ($bidder_group->hasRole($role->name)){ echo ' checked="checked">'; } else { echo '>'; }
                                     @endphp
-                                    &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
+                                    &nbsp;<label for={{ $role->name }}>{{ strtoupper(str_replace('bid-for-','',$role->name)) }}</label>
                                 </div>
                                 @endif
                             @endforeach                        

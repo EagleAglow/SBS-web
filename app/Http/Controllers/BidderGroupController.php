@@ -121,13 +121,15 @@ class BidderGroupController extends Controller {
         $input = $request->only(['code', 'order', 'name', ]);
         $bidder_group->fill($input)->save();
 
-        // Retrieve all 'checked' roles in request
-        $roles = $request['roles'];
-        if (isset($roles)) {        
-            $user->roles()->sync($roles);  //If any role is selected role to group          
+        // get an instance to assign roles
+        $bidder_group = BidderGroup::where('code',$code)->first();
+        $roles = $request['roles']; //Retrieving the roles field
+        //Checking if a role was selected
+        if (isset($roles)) {
+            $bidder_group->roles()->sync($roles);  //If any role is selected role to group          
         }        
         else {
-            $user->roles()->detach(); //If no role is selected remove existing association
+            $bidder_group->roles()->detach(); //If no role is selected remove existing association
         }
 
         flash('Bidder Group: '. $bidder_group->code.' updated!')->success();

@@ -49,6 +49,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group row squash">
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Bids For lines') }}</label>
+                            <div class="col-md-6 my-group">   
+                            @foreach ($roles as $role)
+                                @if(!(strpos($role->name, 'bid-for-') === false ))
+                                <div>
+                                    <input type="checkbox" name="roles[]" value="{{ $role->id }}">
+                                    &nbsp;<label for={{ $role->name }}>{{ strtoupper(str_replace('bid-for-','',$role->name)) }}</label>
+                                </div>
+                                @endif
+                            @endforeach                        
+                            </div>
+                        </div>
+
                         <input class="btn btn-primary float-right" type="submit" value="Add">
                     </form>
                 </div>
