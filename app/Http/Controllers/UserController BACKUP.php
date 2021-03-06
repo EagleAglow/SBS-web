@@ -298,7 +298,7 @@ class UserController extends Controller {
         if ($block_msg == true){
             $msg = 'Change to active bidder was blocked. Active bidder is ';
             foreach($other_bidders as $other_bidder){
-                $msg = $msg . $other_bid-for->name;
+                $msg = $msg . $other_bidders->name;
             } 
         }
 

@@ -123,7 +123,6 @@
                     $problem_count = 0;
                     $bidder_count = 0;
                     $first = true;
-                    $bidder_roles = DB::table('roles')->where('name','like', 'bid-for-%')->get('name');
                     $users = App\User::all()->sortBy('name');
                     foreach($users as $user){
                         // build user/bidder role list
@@ -131,12 +130,18 @@
                         $user_bidrole_list = array();
                         foreach($user_roles as $user_role){
                             if ( str_starts_with($user_role->name,'bid-for-') ){
-                                array_push($user_bidrole_list, $user_role->name);
+                                // skip 'bidder-active'
+                                if ($user_role->name != 'bidder-active'){
+                                    array_push($user_bidrole_list, $user_role->name);
+                                }
                             }
                         }
 
                         // does user have a bidding group?
-                        $bg = $user->bidder_group;
+                        $bgg = $user->bidder_group;
+                        if (isset($bgg)){
+                            $bg = $user->bidder_group->code;
+                        }
                         if (!isset($bg)){
                             $bidder_count = $bidder_count +1;
                             if($first == true){
@@ -146,33 +151,46 @@
                                 $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' has no bidding group';
                             }
                         } else {
-                            // has bidding group - crosscheck bg roles against user roles, except for NONE
-                            if ($bg->code == 'NONE'){
-                                // user should have no bidder roles
-                                if (!( Auth::user()->roles->where('name','like', 'bid-for-%')->count() == 0 )){
+                            // has bidding group - crosscheck against role(s)
+                            
+                            if ($bg == 'TRAFFIC'){
+                                // user should have only two bidder roles 'bid-for-tnon' and 'bid-for-tcom'
+                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bid-for-tnon', $user_bidrole_list)) and (in_array('bid-for-tnon', $user_bidrole_list)) ) ){
                                     // mismatch
                                     $bidder_count = $bidder_count +1;
                                     if($first == true){
-                                        $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (NONE group should not have any bidder roles';
+                                        $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bid-for-tnon and bid-for-tcom)';
                                         $first = false;
                                     } else {
-                                        $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (NONE group should not have any bidder roles';
+                                        $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bid-for-tnon and bid-for-tcom)';
                                     }
                                 }
+
                             } else {
-                                foreach($bidder_roles as $bidder_role){
-                                    if ($user->hasRole($bidder_role->name)){ $u_has_role = 1; } else { $u_has_role = 0; }
-                                    if ($bg->hasRole($bidder_role->name)){ $bg_has_role = 1; } else { $bg_has_role = 0; }
-                                    if ( $u_has_role <> $bg_has_role ){
-                                        // mis-match
+                                if ($bg == 'NONE'){
+                                    // user should have no bidder roles
+                                    if ( !((count($user_bidrole_list)) == 0) ){
+                                        // mismatch
                                         $bidder_count = $bidder_count +1;
                                         if($first == true){
-                                            $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' has bidding role/group mismatch';
+                                            $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (NONE group should not have any bidder roles';
                                             $first = false;
                                         } else {
-                                            $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' has bidding role/group mismatch';
+                                            $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (NONE group should not have any bidder roles';
                                         }
-                                        break;  // only mismatch once...
+                                    }
+
+                                } else {
+                                    // user should only have one bidder role that matches
+                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array( 'bid-for-' . strtolower($bg), $user_bidrole_list)) ) ){
+                                        // mismatch
+                                        $bidder_count = $bidder_count +1;
+                                        if($first == true){
+                                            $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bid-for-' . strtolower($bg) . ')';
+                                            $first = false;
+                                        } else {
+                                            $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bid-for-' . strtolower($bg) . ')';
+                                        }
                                     }
                                 }
                             }

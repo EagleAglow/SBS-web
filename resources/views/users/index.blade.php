@@ -25,7 +25,7 @@
 						<thead>
 							<tr>
 							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Name</span><br>Email / Number</th>
-							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Group</span><br>Roles</th>
+							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Bid Group</span><br>Roles</th>
 							<th class="text-center" scope="col"><span style="padding:0 0.5rem;border:1px solid #ccc;border-radius:0.25rem;">Seniority</span><br>Tie&nbsp;Breaker</th>
 							<th class="text-center" scope="col">Bid Order</th>
 							<th class="text-center" scope="col">Has Bid</th>

@@ -20,6 +20,14 @@ use Session;
 // ad lib validaton
 use App\Rules\DummyFail;
 
+// SMS messaging
+use Dotunj\LaraTwilio\Facades\LaraTwilio;  
+
+// welcome mail
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserMail;
+
+
 
 class UserController extends Controller {
 
@@ -70,7 +78,6 @@ class UserController extends Controller {
         $this->validate($request, [
             'name'=>'required|max:120',
             'email'=>'required|email|unique:users',
-            'password'=>'required|min:6|confirmed'
         ]);
 
         //Validate phone number for ten digits - error if not
@@ -92,15 +99,20 @@ class UserController extends Controller {
         $bidder_group_id = $request['bidder_group_id'];
 
         $pwd_in_request = $request->password;
-        // hash password for storage
+        // hash password for storage 
         $request['password'] = Hash::make($pwd_in_request);
+
+        //new user - generate a dummy password and put it in request
+        $pw = User::generatePassword();
+        $request['password'] = Hash::make($pw);
 
         // use name, email, bidder_group_id and password data from request
         $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id', 'phone_number')); 
 
         $roles = $request['roles']; //Retrieving the roles field
 
-        //Checking if a role was selected
+
+        //Checking if a user role was selected (supervisor, admin, superuser)
         if (isset($roles)) {
             foreach ($roles as $role) {
             $role_r = Role::where('id', '=', $role)->firstOrFail();            
@@ -108,21 +120,40 @@ class UserController extends Controller {
             }
         }        
 
-        // assign bidding roles based on bidding groups, special handling for NONE and TRAFFIC
+
+
+
+        // assign user bidding roles based on selected bidding group
         if (isset($bidder_group_id)){
-            $bidder_groups = BidderGroup::all();
-            foreach($bidder_groups as $bidder_group){
-                if($bidder_group->id == $bidder_group_id){
-                    if($bidder_group->code == 'TRAFFIC'){
-                        // assign both TNON and TCOM
-                        $user->assignRole('bid-for-tcom');
-                        $user->assignRole('bid-for-tnon');
-                    } else {
-                        if($bidder_group->code == 'NONE'){
-                            // do nothing
-                        } else {
-                            $user->assignRole('bid-for-' . strtolower($bidder_group->code));
-                        }
+            $bidder_group = BidderGroup::where('id',$bidder_group_id)->first();
+            $role_names = $bidder_group->getRoleNames();
+            foreach ($role_names as $role_name) {
+                $user->assignRole($role_name); //Assigning role to user
+            }
+        }
+
+
+        // deal with welcome message options
+        $welcome = $request['welcome'];
+        $sms = $request['sms'];
+        if (($welcome == 'welcome') Or ($sms == 'sms')){
+            // Generate a new reset password token - need the same for both, if we do both
+            $token = app('auth.password.broker')->createToken($user);
+        
+            if ($welcome == 'welcome'){
+                // send mail
+                Mail::to($user->email)->send(new NewUserMail($user->name, $user->email, $token));
+            }
+                
+            if ($sms == 'sms'){
+                // send SMS, if they have a number
+                if (isset($user->phone_number)){
+                    if (strlen($user->phone_number)>0){
+                        $url= url(config('url').route('password.reset', ['email' => $user->email, $token ]));
+                        $msg =  'Hello '. $user->name . '- You have just been added to this system, and in order to use it, ';
+                        $msg = $msg . 'you need to set your password at this link: ';
+                        $msg = $msg . $url;
+                        LaraTwilio::notify($user->phone_number, $msg);
                     }
                 }
             }

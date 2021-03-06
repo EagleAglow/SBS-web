@@ -64,10 +64,12 @@
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
                                 @if(strpos($role->name, 'bid-for-') === false )
-                                <div>
-                                    <input type="checkbox" name="roles[]" value="{{ $role->id }}">
-                                    &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
-                                </div>
+                                    @if(strpos($role->name, 'bidder-active') === false )
+                                    <div>
+                                        <input type="checkbox" name="roles[]" value="{{ $role->id }}">
+                                        &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
+                                    </div>
+                                    @endif
                                 @endif
                             @endforeach                        
                             </div>
@@ -109,7 +111,7 @@
                             <label class="col-md-4 col-form-label text-md-right">{{ __('Welcome SMS?') }}</label>
                             <div class="col-md-6 my-group">   
                                 <div>
-                                    <input type="checkbox" name="SMS" value="SMS" checked="checked">
+                                    <input type="checkbox" name="sms" value="sms" checked="checked">
                                     &nbsp;<label for="SMS">Send password reset</label>
                                 </div>
                             </div>
