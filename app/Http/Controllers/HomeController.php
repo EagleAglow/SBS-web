@@ -31,7 +31,7 @@ class HomeController extends Controller
     public function index()
     {
         // reroute to different dashboards
-        if (Auth::user()->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
                 return view('bidders.dash');
         } else {
             if ( Auth::user()->hasRole('supervisor')) {

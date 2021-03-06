@@ -217,7 +217,7 @@ abort('401');  // test to see if we are hitting this
                     $who->assignRole('bidder-active');
 
                     // send email to next (now current) bidder
-                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
                     if(isset($param_next_bidder_email_on_or_off)){
                         if($param_next_bidder_email_on_or_off == 'on'){
                             $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
@@ -238,7 +238,7 @@ abort('401');  // test to see if we are hitting this
                     }
 
                     // send text to next bidder?
-                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
                     if(isset($param_next_bidder_text_on_or_off)){
                         if($param_next_bidder_text_on_or_off == 'on'){
                             $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
@@ -268,7 +268,7 @@ abort('401');  // test to see if we are hitting this
                     if(isset($who2) ){
 
                         // send email to next bidder?
-                        $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                        $param_next_bidder_email_on_or_off = Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
                         if(isset($param_next_bidder_email_on_or_off)){
                             if($param_next_bidder_email_on_or_off == 'on'){
                                 $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
@@ -289,7 +289,7 @@ abort('401');  // test to see if we are hitting this
                         }
 
                         // send text to next bidder?
-                        $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                        $param_next_bidder_text_on_or_off = Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
                         if(isset($param_next_bidder_text_on_or_off)){
                             if($param_next_bidder_text_on_or_off == 'on'){
                                 $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;

@@ -27,6 +27,7 @@
 							<th class="text-center" scope="col">Code</th>
 							<th class="text-center" scope="col">Order</th>
 							<th class="text-center" scope="col">Name</th>
+							<th class="text-center" scope="col">Bidding<br>Roles(s)</th>
 							<th class="text-center" scope="col">Action</th>
 							</tr>
 						</thead>
@@ -36,6 +37,9 @@
 							<td class="text-center">{{ $bidder_group->code }}</td>
 							<td class="text-center">{{ $bidder_group->order }}</td>
 							<td class="text-center">{{ $bidder_group->name }}</td>
+							<td class="text-center">
+								{{ implode(', ', $bidder_group->roles()->get()->pluck('name')->toArray()) }}
+							</td>
 							<td>
 								<div class="row">
 									<div style="margin-left:auto;margin-right:auto;">

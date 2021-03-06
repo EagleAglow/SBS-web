@@ -124,7 +124,7 @@
                                                 $user_roles = $user->roles;
                                                 $is_bidder = false;
                                                 foreach($user_roles as $user_role){
-                                                    if ( str_starts_with($user_role->name,'bidder-') ){
+                                                    if ( str_starts_with($user_role->name,'bid-for-') ){
                                                         $is_bidder = true;
                                                         break;
                                                     }
@@ -147,7 +147,7 @@
                                                 $user_roles = $user->roles;
                                                 $is_bidder = false;
                                                 foreach($user_roles as $user_role){
-                                                    if ( str_starts_with($user_role->name,'bidder-') ){
+                                                    if ( str_starts_with($user_role->name,'bid-for-') ){
                                                         $is_bidder = true;
                                                         break;
                                                     }

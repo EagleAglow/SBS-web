@@ -19,7 +19,7 @@ class BidderMiddleware
     {
 
         //If user has a bidder role, proceed
-        if (Auth::user()->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
             return $next($request);
         } else {
         //If user does not have this role, abort

@@ -95,7 +95,7 @@
                             <label class="col-md-4 col-form-label text-md-right">{{ __('Roles') }}</label>
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
-                                @if(strpos($role->name, 'bidder-') === false )
+                                @if(strpos($role->name, 'bid-for-') === false )
                                 <div>
                                 <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                                     @php

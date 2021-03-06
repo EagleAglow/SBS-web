@@ -49,7 +49,7 @@ class RoleController extends Controller {
     public function store(Request $request) {
         //Validate name and permissions field
         $this->validate($request, [
-            'name'=>'required|unique:roles|max:10',
+            'name'=>'required|unique:roles|max:15',
             'permissions' =>'required',
             ]
         );
@@ -68,7 +68,7 @@ class RoleController extends Controller {
             $role->givePermissionTo($p);
         }
 
-        flash('Role'. $role->name.' added!')->success();
+        flash('Role: '. $role->name.' added!')->success();
         return redirect()->route('roles.index');
     }
 
@@ -106,9 +106,9 @@ class RoleController extends Controller {
 
         $role = Role::findOrFail($id);//Get role with the given id
         // Make it impossible to change any role used in code:
-        // superuser, admin, supervisor, bidder-active, bidder-tcom, bidder-tnon, bidder-oidp, bidder-irpa, bidder-tsu, bidder-demo
+        // superuser, admin, supervisor, bidder-active, bid-for-tcom, bid-for-tnon, bid-for-oidp, bid-for-irpa, bid-for-tsu, bid-for-demo
         // 
-        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'bidder-tcom', 'bidder-tnon', 'bidder-oidp', 'bidder-irpa', 'bidder-tsu', 'bidder-demo');
+        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'bid-for-tcom', 'bid-for-tnon', 'bid-for-oidp', 'bid-for-irpa', 'bid-for-tsu', 'bid-for-demo');
         if (in_array($role->name,$keep)){
             flash('You cannot change the "' . $role->name . '" role! (Used internally)')->warning()->important();
             return redirect()->route('roles.index');
@@ -116,7 +116,7 @@ class RoleController extends Controller {
 
         //Validate name and permission fields
         $this->validate($request, [
-            'name'=>'required|max:10|unique:roles,name,'.$id,
+            'name'=>'required|max:15|unique:roles,name,'.$id,
             'permissions' =>'required',
         ]);
 
@@ -149,9 +149,9 @@ class RoleController extends Controller {
     {
         $role = Role::findOrFail($id);
         // Make it impossible to delete any role used in code:
-        // superuser, admin, supervisor, bidder-active, bidder-tcom, bidder-tnon, bidder-oidp, bidder-irpa, bidder-tsu, bidder-demo
+        // superuser, admin, supervisor, bidder-active, bid-for-tcom, bid-for-tnon, bid-for-oidp, bid-for-irpa, bid-for-tsu, bid-for-demo
         // 
-        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'bidder-tcom', 'bidder-tnon', 'bidder-oidp', 'bidder-irpa', 'bidder-tsu', 'bidder-demo');
+        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'bid-for-tcom', 'bid-for-tnon', 'bid-for-oidp', 'bid-for-irpa', 'bid-for-tsu', 'bid-for-demo');
         if (in_array($role->name,$keep)){
             flash('You cannot delete the "' . $role->name . '" role! (Used internally)')->warning()->important();
             return redirect()->route('roles.index');

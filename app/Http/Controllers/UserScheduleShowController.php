@@ -75,30 +75,30 @@ class UserScheduleShowController extends Controller {
         // bidder group codes: DEMO, OIDP, TSU, IRPA, TRAFFIC
         // not using bidder groups for this, to permit some odd people that don't doe both TCOM and TNON
         // select lines that this user can bid, based on role(s)
-        // roles: bidder-demo, bidder-oidp, bidder-tsu, bidder-irpa, bidder-tcom, bidder-tnon
+        // roles: bid-for-demo, bid-for-oidp, bid-for-tsu, bid-for-irpa, bid-for-tcom, bid-for-tnon
         // line group codes: DEMO, OIDP, TSU, IRPA, TCOM, TNON
 
         // also, flag when both TCOM and TNON are in list, then capture id
         $tcount = 0;
         $list = array();  //empty array
-        if ($user->hasRole('bidder-demo')){
+        if ($user->hasRole('bid-for-demo')){
             $list[] = LineGroup::where('code','DEMO')->first()['id'];
         }
-        if ($user->hasRole('bidder-oidp')){
+        if ($user->hasRole('bid-for-oidp')){
             $list[] = LineGroup::where('code','OIDP')->first()['id'];
         }
-        if ($user->hasRole('bidder-tsu')){
+        if ($user->hasRole('bid-for-tsu')){
             $list[] = LineGroup::where('code','TSU')->first()['id'];
         }
-        if ($user->hasRole('bidder-irpa')){
+        if ($user->hasRole('bid-for-irpa')){
             $list[] = LineGroup::where('code','IRPA')->first()['id'];
         }
-        if ($user->hasRole('bidder-tcom')){
+        if ($user->hasRole('bid-for-tcom')){
             $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
             $list[] = $tcom_id;
             $tcount = $tcount +1;
         }
-        if ($user->hasRole('bidder-tnon')){
+        if ($user->hasRole('bid-for-tnon')){
             $tnon_id = LineGroup::where('code','TNON')->first()['id'];
             $list[] = $tnon_id;
             $tcount = $tcount +1;
@@ -113,24 +113,24 @@ class UserScheduleShowController extends Controller {
             if (count($who) > 0 ){
                 $who = $who->first();
 
-                if ($who->hasRole('bidder-demo')){
+                if ($who->hasRole('bid-for-demo')){
                     $list[] = LineGroup::where('code','DEMO')->first()['id'];
                 }
-                if ($who->hasRole('bidder-oidp')){
+                if ($who->hasRole('bid-for-oidp')){
                     $list[] = LineGroup::where('code','OIDP')->first()['id'];
                 }
-                if ($who->hasRole('bidder-tsu')){
+                if ($who->hasRole('bid-for-tsu')){
                     $list[] = LineGroup::where('code','TSU')->first()['id'];
                 }
-                if ($who->hasRole('bidder-irpa')){
+                if ($who->hasRole('bid-for-irpa')){
                     $list[] = LineGroup::where('code','IRPA')->first()['id'];
                 }
-                if ($who->hasRole('bidder-tcom')){
+                if ($who->hasRole('bid-for-tcom')){
                     $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
                     $list[] = $tcom_id;
                     $tcount = $tcount +1;
                 }
-                if ($who->hasRole('bidder-tnon')){
+                if ($who->hasRole('bid-for-tnon')){
                     $tnon_id = LineGroup::where('code','TNON')->first()['id'];
                     $list[] = $tnon_id;
                     $tcount = $tcount +1;
@@ -225,7 +225,7 @@ class UserScheduleShowController extends Controller {
         $schedule_line_id = $request['schedule_line_id'];
         if (isset($schedule_line_id)){
             if (isset($pick)){
-                if ($user->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
+                if ($user->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
                     if ($pick == 'tag'){
                         // if already tagged, this is a page refresh
                         if (!Pick::where('schedule_line_id',$schedule_line_id)->where('picks.user_id',$uid)->get()->count() > 0){

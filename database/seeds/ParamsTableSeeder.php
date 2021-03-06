@@ -26,7 +26,7 @@ class ParamsTableSeeder extends Seeder
             DB::table('params')->insertOrIgnore([ 'param_name' => 'name-or-taken', 'string_value' => 'taken', ]);
 
             // control email to next bidder
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bidder-email-on-or-off', 'string_value' => 'off', ]);
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bid-for-email-on-or-off', 'string_value' => 'off', ]);
 
             // control email to bidder after bid accepted
             DB::table('params')->insertOrIgnore([ 'param_name' => 'bid-accepted-email-on-or-off', 'string_value' => 'off', ]);
@@ -38,7 +38,7 @@ class ParamsTableSeeder extends Seeder
             DB::table('params')->insertOrIgnore([ 'param_name' => 'email-test-address', 'string_value' => '', ]);
 
             // control text to next bidder
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bidder-text-on-or-off', 'string_value' => 'off', ]);
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'next-bid-for-text-on-or-off', 'string_value' => 'off', ]);
 
             // use test phone instead of actually sending text to bidders
             DB::table('params')->insertOrIgnore([ 'param_name' => 'all-text-to-test-phone-on-or-off', 'string_value' => 'off', ]);

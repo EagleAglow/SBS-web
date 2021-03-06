@@ -15,7 +15,7 @@ class CreateParamsTable extends Migration
     {
         Schema::create('params', function (Blueprint $table) {
             $table->id();
-            $table->string('param_name');  // e.g next-bidder-number
+            $table->string('param_name');  // e.g next-bid-for-number
             $table->date('date_value')->nullable();  // for date parameters
             // native format maybe?  - 'YYYY-MM-DD'
             $table->integer('integer_value')->nullable();  // e.g., next bidder in bidding process

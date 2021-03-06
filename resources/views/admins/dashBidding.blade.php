@@ -129,7 +129,7 @@
                         $user_roles = $user->roles;
                         $user_bidrole_list = array();
                         foreach($user_roles as $user_role){
-                            if ( str_starts_with($user_role->name,'bidder-') ){
+                            if ( str_starts_with($user_role->name,'bid-for-') ){
                                 // skip 'bidder-active'
                                 if ($user_role->name != 'bidder-active'){
                                     array_push($user_bidrole_list, $user_role->name);
@@ -154,15 +154,15 @@
                             // has bidding group - crosscheck against role(s)
                             
                             if ($bg == 'TRAFFIC'){
-                                // user should have only two bidder roles 'bidder-tnon' and 'bidder-tcom'
-                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bidder-tnon', $user_bidrole_list)) and (in_array('bidder-tnon', $user_bidrole_list)) ) ){
+                                // user should have only two bidder roles 'bid-for-tnon' and 'bid-for-tcom'
+                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bid-for-tnon', $user_bidrole_list)) and (in_array('bid-for-tnon', $user_bidrole_list)) ) ){
                                     // mismatch
                                     $bidder_count = $bidder_count +1;
                                     if($first == true){
-                                        $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bidder-tnon and bidder-tcom)';
+                                        $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bid-for-tnon and bid-for-tcom)';
                                         $first = false;
                                     } else {
-                                        $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bidder-tnon and bidder-tcom)';
+                                        $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (TRAFFIC group should only have roles: bid-for-tnon and bid-for-tcom)';
                                     }
                                 }
 
@@ -182,14 +182,14 @@
 
                                 } else {
                                     // user should only have one bidder role that matches
-                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array( 'bidder-' . strtolower($bg), $user_bidrole_list)) ) ){
+                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array( 'bid-for-' . strtolower($bg), $user_bidrole_list)) ) ){
                                         // mismatch
                                         $bidder_count = $bidder_count +1;
                                         if($first == true){
-                                            $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bidder-' . strtolower($bg) . ')';
+                                            $msg = '&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bid-for-' . strtolower($bg) . ')';
                                             $first = false;
                                         } else {
-                                            $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bidder-' . strtolower($bg) . ')';
+                                            $msg = $msg . '<br>&nbsp;&nbsp;&nbsp;' . $user->name . ' (' . $bg . ' group should only have role: bid-for-' . strtolower($bg) . ')';
                                         }
                                     }
                                 }
@@ -212,7 +212,7 @@
                         $user_roles = $user->roles;
                         $is_bidder = false;
                         foreach($user_roles as $user_role){
-                            if ( str_starts_with($user_role->name,'bidder-') ){
+                            if ( str_starts_with($user_role->name,'bid-for-') ){
                                 $is_bidder = true;
                                 break;
                             }
@@ -246,7 +246,7 @@
                         $u_roles = $u->roles;
                         $is_bidder = false;
                         foreach($u_roles as $u_role){
-                            if ( str_starts_with($u_role->name,'bidder-') ){
+                            if ( str_starts_with($u_role->name,'bid-for-') ){
                                 $is_bidder = true;
                                 break;
                             }
@@ -287,7 +287,7 @@
                             $u_roles = $u->roles;
                             $is_bidder = false;
                             foreach($u_roles as $u_role){
-                                if ( str_starts_with($u_role->name,'bidder-') ){
+                                if ( str_starts_with($u_role->name,'bid-for-') ){
                                     $is_bidder = true;
                                     break;
                                 }

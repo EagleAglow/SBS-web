@@ -10,7 +10,7 @@
 			<div class="card mt-5 shadow">
 				<div class="card-header"><h5>Edit Bidder Group:&nbsp; {{$bidder_group->code}}</h5>
                 </div>
-                <div class="card-body">Some comment goes here about bidder groups.
+                <div class="card-body">Bidder group codes identify which bidders can bid for the work assignments identified by line group codes.
                 </div>
 
                 <div class="card-body">
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Code') }}</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Description') }}</label>
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') ? old('name') : $bidder_group->name }}" required autocomplete="name" autofocus>
                                 @error('name')
@@ -50,6 +50,23 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Can Bid') }}</label>
+                            <div class="col-md-6 my-group">   
+                            @foreach ($roles as $role)
+                                @if(!(strpos($role->name, 'bid-for-') === false ))
+                                <div>
+                                <input type="checkbox" name="roles[]" value="{{ $role->id }}"
+                                    @php
+                                        if ($bidder_group->hasRole($role->name)){ echo ' checked="checked">'; } else { echo '>'; }
+                                    @endphp
+                                    &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
+                                </div>
+                                @endif
+                            @endforeach                        
                             </div>
                         </div>
 

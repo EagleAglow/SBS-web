@@ -62,12 +62,12 @@ class AdminDashBiddingController extends Controller
 
             // see if all bidders have matching bidding groups and roles, fix errors
             // build cross ref arrays (will include 'bidder-active', but skipped below )
-            $bidder_roles = DB::table('roles')->where('name','like', 'bidder-%')->get('name');
+            $bidder_roles = DB::table('roles')->where('name','like', 'bid-for-%')->get('name');
             $bidder_group_xref = array();
             foreach($bidder_roles as $bidder_role){
                 // skip 'bidder-active'
                 if ($bidder_role->name != 'bidder-active'){
-                    $bidder_group_xref[ strtoupper(str_replace('bidder-',"",$bidder_role->name)) ] = $bidder_role->name;
+                    $bidder_group_xref[ strtoupper(str_replace('bid-for-',"",$bidder_role->name)) ] = $bidder_role->name;
                 }
             }
             $users = User::all();
@@ -76,7 +76,7 @@ class AdminDashBiddingController extends Controller
                 $user_roles = $user->roles;
                 $is_bidder = false;
                 foreach($user_roles as $user_role){
-                    if ( str_starts_with($user_role->name,'bidder-') ){
+                    if ( str_starts_with($user_role->name,'bid-for-') ){
                         $is_bidder = true;
                         break;
                     }
@@ -85,7 +85,7 @@ class AdminDashBiddingController extends Controller
                     // do they have a bidding group?
                     $bg = $user->bidder_group->code;
                     if (!isset($bg)){
-                        // this user has no bidding group code, remove all roles that begin with 'bidder-' (already collected, above)
+                        // this user has no bidding group code, remove all roles that begin with 'bid-for-' (already collected, above)
                         foreach($bidder_roles as $bidder_role){
                             if ($user->hasRole($bidder_role->name)){
                                 $user->removeRole($bidder_role->name);
@@ -100,7 +100,7 @@ class AdminDashBiddingController extends Controller
                         $user_roles = $user->roles;
                         $user_bidrole_list = array();
                         foreach($user_roles as $user_role){
-                            if ( str_starts_with($user_role->name,'bidder-') ){
+                            if ( str_starts_with($user_role->name,'bid-for-') ){
                                 // skip 'bidder-active'
                                 if ($user_role->name != 'bidder-active'){
                                     array_push($user_bidrole_list, $user_role->name);
@@ -113,16 +113,16 @@ class AdminDashBiddingController extends Controller
                         if (!$user->hasRole('bidder-active')){
                             // does this user have the bidding role(s) that goes with the code?
                             if ($bg == 'TRAFFIC'){
-                                // user should have only two bidder roles 'bidder-tnon' and 'bidder-tcom'
-                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bidder-tnon', $user_bidrole_list)) and (in_array('bidder-tnon', $user_bidrole_list)) ) ){
+                                // user should have only two bidder roles 'bid-for-tnon' and 'bid-for-tcom'
+                                if ( !( ((count($user_bidrole_list)) == 2) and (in_array('bid-for-tnon', $user_bidrole_list)) and (in_array('bid-for-tnon', $user_bidrole_list)) ) ){
                                     // fix mismatch - remove bidding roles, then restore tcom and tnon
                                     foreach($bidder_roles as $bidder_role){
                                         if ($user->hasRole($bidder_role->name)){
                                             $user->removeRole($bidder_role->name);
                                         }
                                     }
-                                    $user->assignRole('bidder-tnon');
-                                    $user->assignRole('bidder-tcom');
+                                    $user->assignRole('bid-for-tnon');
+                                    $user->assignRole('bid-for-tcom');
                                     // log action
                                     $log_item = new LogItem();
                                     $log_item->note = 'Set bidding roles for TRAFFIC bidder (' . $user->name . ')';
@@ -142,7 +142,7 @@ class AdminDashBiddingController extends Controller
                                     $log_item->save();
                                 } else {
                                     // user should have only one role, that matches bidder group
-                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array('bidder-' . strtolower($user->bidder_group->code), $user_bidrole_list)) ) ){
+                                    if ( !( ((count($user_bidrole_list)) == 1) and (in_array('bid-for-' . strtolower($user->bidder_group->code), $user_bidrole_list)) ) ){
                                         // fix mismatch - remove bidding roles, then restore correct one
                                         foreach($bidder_roles as $bidder_role){
                                             if ($user->hasRole($bidder_role->name)){
@@ -177,7 +177,7 @@ class AdminDashBiddingController extends Controller
                 $user_roles = $user->roles;
                 $is_bidder = false;
                 foreach($user_roles as $user_role){
-                    if ( str_starts_with($user_role->name,'bidder-') ){
+                    if ( str_starts_with($user_role->name,'bid-for-') ){
                         $is_bidder = true;
                         break;
                     }
@@ -199,7 +199,7 @@ class AdminDashBiddingController extends Controller
                 $user_roles = $user->roles;
                 $is_bidder = false;
                 foreach($user_roles as $user_role){
-                    if ( str_starts_with($user_role->name,'bidder-') ){
+                    if ( str_starts_with($user_role->name,'bid-for-') ){
                         $is_bidder = true;
                         break;
                     }
@@ -237,7 +237,7 @@ class AdminDashBiddingController extends Controller
                 $u_roles = $u->roles;
                 $is_bidder = false;
                 foreach($u_roles as $u_role){
-                    if ( str_starts_with($u_role->name,'bidder-') ){
+                    if ( str_starts_with($u_role->name,'bid-for-') ){
                         $is_bidder = true;
                         break;
                     }
@@ -307,7 +307,7 @@ class AdminDashBiddingController extends Controller
                     $u_roles = $u->roles;
                     $is_bidder = false;
                     foreach($u_roles as $u_role){
-                        if ( str_starts_with($u_role->name,'bidder-') ){
+                        if ( str_starts_with($u_role->name,'bid-for-') ){
                             $is_bidder = true;
                             break;
                         }
@@ -379,7 +379,7 @@ class AdminDashBiddingController extends Controller
                 $user2 = User::where('bid_order',2)->first();
 
                 // send email to bidders?
-                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_email_on_or_off)){
                     if($param_next_bidder_email_on_or_off == 'on'){
                         $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
@@ -401,7 +401,7 @@ class AdminDashBiddingController extends Controller
                 }
 
                 // send text to bidders?
-                $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                $param_next_bidder_text_on_or_off = Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_text_on_or_off)){
                     if($param_next_bidder_text_on_or_off == 'on'){
                         $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
@@ -459,7 +459,7 @@ class AdminDashBiddingController extends Controller
                 // remove role from active bidder (or bidders, in case of operator error)
                 $active_bidders = User::role('bidder-active')->get();
                 foreach ($active_bidders as $active_bidder){
-                    $active_bidder->removeRole('bidder-active');                    
+                    $active_bid-for->removeRole('bidder-active');                    
                 }
 
                 // set parameter

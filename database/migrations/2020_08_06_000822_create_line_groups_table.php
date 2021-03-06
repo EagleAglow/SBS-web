@@ -15,7 +15,7 @@ class CreateLineGroupsTable extends Migration
     {
         Schema::create('line_groups', function (Blueprint $table) {
             $table->id(); // Alias of $table->bigIncrements('id')
-            $table->string('code',4)->unique();
+            $table->string('code',8)->unique();
             $table->string('name');
             $table->integer('order')->nullable;  // display order in bidding process
             $table->timestamps();

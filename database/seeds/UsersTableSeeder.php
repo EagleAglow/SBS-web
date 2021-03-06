@@ -10,8 +10,8 @@ class UsersTableSeeder extends Seeder
 
     private function myBidderFill($nm,$em,$pwd,$bg,$bgno)  // name, email, password, bidder_group, bidder_group_primary_order
     {
-        // expects bidder_group codes: none (no role assigned), demo (role=bidder-demo), tsu (role=bidder-tsu),
-        // irpa (role=bidder-irpa),oidp (role=bidder-oidp), traffic (roles=bidder-traffic)
+        // expects bidder_group codes: none (no role assigned), demo (role=bid-for-demo), tsu (role=bid-for-tsu),
+        // irpa (role=bid-for-irpa),oidp (role=bid-for-oidp), traffic (roles=bid-for-traffic)
 
         if ($bg=='traffic'){
             $bg_id = App\BidderGroup::select('id')->where('code','TRAFFIC')->first()->id;
@@ -41,15 +41,15 @@ class UsersTableSeeder extends Seeder
 
 
         if ($bg=='traffic'){
-            $bg_role = 'bidder-tnon'; 
+            $bg_role = 'bid-for-tnon'; 
             $newUser->assignRole($bg_role);
-            $bg_role = 'bidder-tcom'; 
+            $bg_role = 'bid-for-tcom'; 
             $newUser->assignRole($bg_role);
         } else {
             if ($bg=='none'){
                 // no role is assigned
             } else {
-                $bg_role = 'bidder-' . $bg; 
+                $bg_role = 'bid-for-' . $bg; 
                 $newUser->assignRole($bg_role);
             }
         }
@@ -123,7 +123,7 @@ $newUser = User::create([
             'bidder_primary_order' => 1,
 
         ]);
-        $newUser->assignRole('bidder-demo');
+        $newUser->assignRole('bid-for-demo');
         $newUser->assignRole('supervisor');
         $newUser->assignRole('admin');
         $newUser->assignRole('superuser');

@@ -73,7 +73,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     // stupid way to do this, but $this_user does not play well with roles
                     $clone_user = User::where('email',$email)->get()->first();
                     // remove any existing bidding role
-                    $bidder_roles = DB::table('roles')->where('name','like', 'bidder-%')->get('name');
+                    $bidder_roles = DB::table('roles')->where('name','like', 'bid-for-%')->get('name');
                     foreach($bidder_roles as $bidder_role){
                         if ($clone_user->hasRole($bidder_role->name)){
                             $clone_user->removeRole($bidder_role->name);
@@ -86,13 +86,13 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                         if($bidder_group->code == $bg_code){
                             if($bidder_group->code == 'TRAFFIC'){
                                 // assign both TNON and TCOM
-                                $clone_user->assignRole('bidder-tcom');
-                                $clone_user->assignRole('bidder-tnon');
+                                $clone_user->assignRole('bid-for-tcom');
+                                $clone_user->assignRole('bid-for-tnon');
                             } else {
                                 if($bidder_group->code == 'NONE'){
                                     // do nothing
                                 } else {
-                                    $clone_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                    $clone_user->assignRole('bid-for-' . strtolower($bidder_group->code));
                                 }
                             }
                         }
@@ -129,7 +129,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                 if (isset($bg_code)){
                     $clone_user = User::where('email',$email)->get()->first();
                     // remove any existing bidding role
-                    $bidder_roles = DB::table('roles')->where('name','like', 'bidder-%')->get('name');
+                    $bidder_roles = DB::table('roles')->where('name','like', 'bid-for-%')->get('name');
                     foreach($bidder_roles as $bidder_role){
                         if ($clone_user->hasRole($bidder_role->name)){
                             $clone_user->removeRole($bidder_role->name);
@@ -142,13 +142,13 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                         if($bidder_group->code == $bg_code){
                             if($bidder_group->code == 'TRAFFIC'){
                                 // assign both TNON and TCOM
-                                $clone_user->assignRole('bidder-tcom');
-                                $clone_user->assignRole('bidder-tnon');
+                                $clone_user->assignRole('bid-for-tcom');
+                                $clone_user->assignRole('bid-for-tnon');
                             } else {
                                 if($bidder_group->code == 'NONE'){
                                     // do nothing
                                 } else {
-                                    $clone_user->assignRole('bidder-' . strtolower($bidder_group->code));
+                                    $clone_user->assignRole('bid-for-' . strtolower($bidder_group->code));
                                 }
                             }
                         }

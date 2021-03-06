@@ -15,7 +15,7 @@ class CreateBidderGroupsTable extends Migration
     {
         Schema::create('bidder_groups', function (Blueprint $table) {
             $table->id(); // Alias of $table->bigIncrements('id')
-            $table->string('code',7)->unique();
+            $table->string('code',8)->unique();
             $table->string('name');
             $table->integer('order')->nullable;  // display order in bidding process
             $table->timestamps();

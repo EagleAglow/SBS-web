@@ -38,13 +38,11 @@ class BidderGroupController extends Controller {
     */
     public function create() {
 
-        return view('admins.biddergroups.create');
+        $roles = Role::get();
+        return view('admins.biddergroups.create', ['roles'=>$roles]);
+
     }
 
-    // public function new() {
-    //     //Get all schedulelines and pass to the view
-    //         return view('admins.shiftcodes.create');
-    // }
 
     /**
     * Store a newly created resource in storage.
@@ -67,6 +65,16 @@ class BidderGroupController extends Controller {
         $bidder_group->name = $name;
 
         $bidder_group->save();
+        // get an instance to assign roles
+        $bidder_group = BidderGroup::where('code',$code)->first();
+        $roles = $request['roles']; //Retrieving the roles field
+        //Checking if a role was selected
+        if (isset($roles)) {
+            foreach ($roles as $role) {
+            $role_r = Role::where('id', '=', $role)->firstOrFail();            
+            $bidder_group->assignRole($role_r); //Assign role to group
+            }
+        } 
 
         flash('Bidder Group: '. $bidder_group->code.' added!')->success();
         return redirect()->route('biddergroups.index');
@@ -113,16 +121,14 @@ class BidderGroupController extends Controller {
         $input = $request->only(['code', 'order', 'name', ]);
         $bidder_group->fill($input)->save();
 
-
-
-
-
-
-
-
-
-
-        
+        // Retrieve all 'checked' roles in request
+        $roles = $request['roles'];
+        if (isset($roles)) {        
+            $user->roles()->sync($roles);  //If any role is selected role to group          
+        }        
+        else {
+            $user->roles()->detach(); //If no role is selected remove existing association
+        }
 
         flash('Bidder Group: '. $bidder_group->code.' updated!')->success();
         return redirect()->route('biddergroups.index'); 

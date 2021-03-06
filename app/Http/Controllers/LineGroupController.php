@@ -54,22 +54,35 @@ class LineGroupController extends Controller {
     */
     public function store(Request $request) {
         $this->validate($request, [
-            'code'=>'required|min:3|max:4|unique:line_groups,code',
+            'code'=>'required|min:3|max:8|alpha_dash|unique:line_groups,code',
             'order'=>'integer',
         ]);
 
-        $code = $request['code'];
+        $code = strtoupper($request['code']);
         $order = $request['order'];
         $name = $request['name'];
         $line_group = new LineGroup();
         $line_group->code = $code;
         $line_group->order = $order;
-        $line_group->name = $name;
+        $line_group->name = $name; 
 
         $line_group->save();
 
-        flash('Line Group'. $line_group->code.' added!')->success();
-        return redirect()->route('linegroups.index');
+        // create role/permissions to go with the group - example DEMO
+        // there should be a role: bid-for-demo, that has permissions: bid-self and bid-demo
+        // except 'NONE' - special case, no role or permissions
+        $code = strtolower($code);
+        if ($code == 'none'){
+            flash('Line Group'. $code.' added!')->success();
+            return redirect()->route('linegroups.index');
+        } else {
+            $permission = Permission::create(['name' => 'bid-' . $code]);
+            $role = Role::create(['name' => 'bid-for-' . $code]);
+            $role->givePermissionTo($permission);
+            $role->givePermissionTo('bid-self');
+            flash('Line Group'. $code.' added!')->success();
+            return redirect()->route('linegroups.index');
+            }
     }
  
     /**
@@ -104,11 +117,17 @@ class LineGroupController extends Controller {
     public function update(Request $request, $id) {
         $line_group = LineGroup::findOrFail($id);
 
+/* 
         $this->validate($request, [
-            'code'=>'required|min:3|max:8|unique:line_groups,code,'.$id,
+            'code'=>'required|min:3|max:8|alpha_dash|unique:line_groups,code,'.$id,
         ]);
 
+        $code = strtoupper($request['code']);
+        $request['code'] = $code;
         $input = $request->only(['code', 'order', 'name', ]);
+
+ */
+        $input = $request->only(['order', 'name', ]);
         $line_group->fill($input)->save();
 
         flash('Line Group: '. $line_group->code.' updated!')->success();
@@ -129,19 +148,20 @@ class LineGroupController extends Controller {
             return redirect()->route('linegroups.index');
         }
         
-        if ($line_group->code == 'TCOM'){
-            flash('Shift Code: TCOM is used internally and CAN NOT BE DELETED!')->warning()->important();
-            return redirect()->route('linegroups.index');
-        }
-        
-        if ($line_group->code == 'TNON'){
-            flash('Shift Code: TNON is used internally and CAN NOT BE DELETED!')->warning()->important();
-            return redirect()->route('linegroups.index');
-        }
-        
         // make sure it is not in use
         $count = ScheduleLine::where('line_group_id',$id)->count();
         if ($count == 0){
+            $code = strtolower($line_group->code);
+            // remove matching role, id present
+            if (Role::where('name','bid-for-' . $code)->count()>0){
+                $role = Role::findByName( 'bid-for-' . $code);
+                $role->delete();
+            } 
+            if (Permission::where('name','bid-' . $code)->count()>0){
+                $permission = Permission::findByName( 'bid-' . $code);
+                $permission->delete();
+            } 
+
             $line_group->delete();
             flash('Shift Code: '. $line_group->code.' deleted!')->success();
             return redirect()->route('linegroups.index');

@@ -47,7 +47,7 @@ class BidByBidderController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->hasAnyRole('bidder-demo','bidder-irpa','bidder-tsu','bidder-oidp','bidder-tcom','bidder-tnon')){
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
             return view('bidders.dash');
         } else {
             abort('401');
@@ -224,7 +224,7 @@ abort('401');  // test to see if we are hitting this
                 $user->assignRole('bidder-active');
 
                 // send email to next bidder?
-                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                $param_next_bidder_email_on_or_off = Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_email_on_or_off)){
                     if($param_next_bidder_email_on_or_off == 'on'){
                         $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
@@ -244,7 +244,7 @@ abort('401');  // test to see if we are hitting this
                 }
 
                 // send text to next bidder?
-                $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                $param_next_bidder_text_on_or_off = Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
                 if(isset($param_next_bidder_text_on_or_off)){
                     if($param_next_bidder_text_on_or_off == 'on'){
                         $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
@@ -274,7 +274,7 @@ abort('401');  // test to see if we are hitting this
                 if(isset($user2) ){
 
                     // send email to next bidder?
-                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
                     if(isset($param_next_bidder_email_on_or_off)){
                         if($param_next_bidder_email_on_or_off == 'on'){
                             $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
@@ -294,7 +294,7 @@ abort('401');  // test to see if we are hitting this
                     }
 
                     // send text to next bidder?
-                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
                     if(isset($param_next_bidder_text_on_or_off)){
                         if($param_next_bidder_text_on_or_off == 'on'){
                             $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
@@ -361,9 +361,9 @@ abort('401');  // test to see if we are hitting this
                         $param = Param::where('param_name','email-test-address')->first();
                         $param->string_value = $email;
                         $param->save();
-                        if (count(Param::where('param_name','next-bidder-email-on-or-off')->get()) == 0){
+                        if (count(Param::where('param_name','next-bid-for-email-on-or-off')->get()) == 0){
                             $param = new Param();
-                            $param->param_name = 'next-bidder-email-on-or-off';
+                            $param->param_name = 'next-bid-for-email-on-or-off';
                             $param->string_value = 'off';
                             $param->save();
                         }

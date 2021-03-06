@@ -14,7 +14,8 @@ class LineGroupsTableSeeder extends Seeder
         // Truncate the database so we don't repeat the seed
         DB::table('line_groups')->delete();
 
-        //
+        // There are permissions and roles that must correspond to these groups
+        // See comments in PermissionsSeeder.php
         DB::table('line_groups')->insertOrIgnore([ 
             'code' => 'DEMO',
             'name' => 'Demonstration Line',
@@ -47,7 +48,7 @@ class LineGroupsTableSeeder extends Seeder
         ]);
         DB::table('line_groups')->insertOrIgnore([
             'code' => 'NONE',
-            'name' => 'This line has no group',
+            'name' => 'No one can bid for this line',
             'order' => '99',
         ]);
     }

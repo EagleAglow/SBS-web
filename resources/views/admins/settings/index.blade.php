@@ -13,13 +13,13 @@
 
 				@php
 					$param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
-					$param_next_bidder_email_on_or_off = App\Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+					$param_next_bidder_email_on_or_off = App\Param::where('param_name','next-bid-for-email-on-or-off')->first()->string_value;
 					$param_bid_accepted_email_on_or_off = App\Param::where('param_name','bid-accepted-email-on-or-off')->first()->string_value;
 
 					$param_all_email_to_test_address_on_or_off = App\Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
 					$email_test_address = App\Param::where('param_name','email-test-address')->first()->string_value;
 
-					$param_next_bidder_text_on_or_off = App\Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+					$param_next_bidder_text_on_or_off = App\Param::where('param_name','next-bid-for-text-on-or-off')->first()->string_value;
 					$param_all_text_to_test_phone_on_or_off = App\Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
 					$text_test_phone = App\Param::where('param_name','text-test-phone')->first()->string_value;
 

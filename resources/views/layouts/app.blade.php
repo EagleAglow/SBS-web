@@ -79,7 +79,7 @@
                                     <a class="dropdown-item" href="/lang/en">English</a>
                                 @endif
 --}}
-                                @hasanyrole('bidder-demo|bidder-oidp|bidder-tsu|bidder-irpa|bidder-traffic')
+                                @hasanyrole('bid-for-demo|bid-for-oidp|bid-for-tsu|bid-for-irpa|bid-for-traffic')
                                     @if( !Request::is('bidders/dash'))
                                         <a class="dropdown-item" href="{{ route('bidders.dash') }}">Bidder</a>
                                     @endif
