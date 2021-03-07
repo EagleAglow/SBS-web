@@ -68,7 +68,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithUpserts
                     'bidder_group_id' => $bidder_group_id,
                 ]);
 
-                // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC
+                // assign bidding roles based on bidding group, special handling for NONE and TRAFFIC /// no longer 
                 if (isset($bg_code)){
                     // stupid way to do this, but $this_user does not play well with roles
                     $clone_user = User::where('email',$email)->get()->first();

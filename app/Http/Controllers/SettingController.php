@@ -162,7 +162,7 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            $param = Param::where('param_name','next-bid-for-email-on-or-off')->first();
+            $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
             $param->string_value = 'on';
             $param->save();
     
@@ -182,7 +182,7 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            $param = Param::where('param_name','next-bid-for-email-on-or-off')->first();
+            $param = Param::where('param_name','next-bidder-email-on-or-off')->first();
             $param->string_value = 'off';
             $param->save();
     
@@ -462,7 +462,7 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            $param = Param::where('param_name','next-bid-for-text-on-or-off')->first();
+            $param = Param::where('param_name','next-bidder-text-on-or-off')->first();
             $param->string_value = 'on';
             $param->save();
     
@@ -482,7 +482,7 @@ class SettingController extends Controller {
     {
         if (Auth::user()->hasRole('admin')){
 
-            $param = Param::where('param_name','next-bid-for-text-on-or-off')->first();
+            $param = Param::where('param_name','next-bidder-text-on-or-off')->first();
             $param->string_value = 'off';
             $param->save();
     

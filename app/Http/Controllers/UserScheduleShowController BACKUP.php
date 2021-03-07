@@ -72,27 +72,36 @@ class UserScheduleShowController extends Controller {
         }
 
         $user = auth()->user();
-        // original idea...
         // bidder group codes: DEMO, OIDP, TSU, IRPA, TRAFFIC
         // not using bidder groups for this, to permit some odd people that don't doe both TCOM and TNON
         // select lines that this user can bid, based on role(s)
         // roles: bid-for-demo, bid-for-oidp, bid-for-tsu, bid-for-irpa, bid-for-tcom, bid-for-tnon
         // line group codes: DEMO, OIDP, TSU, IRPA, TCOM, TNON
+
         // also, flag when both TCOM and TNON are in list, then capture id
-        //
-        // rewritten - still has odd handling for TRAFFIC, but otherwise
-        // role like 'bid-for-xyz' goes with line group 'XYZ'
-        $tcount = 0;  // tracks TNON + TCOM in order to show "TRAFFIC" for filter
+        $tcount = 0;
         $list = array();  //empty array
-        $role_names = $user->getRoleNames();
-        foreach ($role_names as $role_name) {
-            if (strpos($role_name, 'bid-for-') !== false) {
-                $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                if (($look4 == 'TNON') Or ($look4 == 'TCOM')){
-                    $tcount = $tcount +1;
-                }
-                $list[] = LineGroup::where('code',$look4)->first()['id'];
-            }
+        if ($user->hasRole('bid-for-demo')){
+            $list[] = LineGroup::where('code','DEMO')->first()['id'];
+        }
+        if ($user->hasRole('bid-for-oidp')){
+            $list[] = LineGroup::where('code','OIDP')->first()['id'];
+        }
+        if ($user->hasRole('bid-for-tsu')){
+            $list[] = LineGroup::where('code','TSU')->first()['id'];
+        }
+        if ($user->hasRole('bid-for-irpa')){
+            $list[] = LineGroup::where('code','IRPA')->first()['id'];
+        }
+        if ($user->hasRole('bid-for-tcom')){
+            $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
+            $list[] = $tcom_id;
+            $tcount = $tcount +1;
+        }
+        if ($user->hasRole('bid-for-tnon')){
+            $tnon_id = LineGroup::where('code','TNON')->first()['id'];
+            $list[] = $tnon_id;
+            $tcount = $tcount +1;
         }
         // get user id for later join to user picks
         $pick_uid = $user->id;
@@ -103,17 +112,30 @@ class UserScheduleShowController extends Controller {
             $who = User::Role($other_role)->get();
             if (count($who) > 0 ){
                 $who = $who->first();
-                $role_names = $who->getRoleNames();
-                $list = array();  //empty array
-                foreach ($role_names as $role_name) {
-                    if (strpos($role_name, 'bid-for-') !== false) {
-                        $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                        if (($look4 == 'TNON') Or ($look4 == 'TCOM')){
-                            $tcount = $tcount +1;
-                        }
-                        $list[] = LineGroup::where('code',$look4)->first()['id'];
-                    }
+
+                if ($who->hasRole('bid-for-demo')){
+                    $list[] = LineGroup::where('code','DEMO')->first()['id'];
                 }
+                if ($who->hasRole('bid-for-oidp')){
+                    $list[] = LineGroup::where('code','OIDP')->first()['id'];
+                }
+                if ($who->hasRole('bid-for-tsu')){
+                    $list[] = LineGroup::where('code','TSU')->first()['id'];
+                }
+                if ($who->hasRole('bid-for-irpa')){
+                    $list[] = LineGroup::where('code','IRPA')->first()['id'];
+                }
+                if ($who->hasRole('bid-for-tcom')){
+                    $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
+                    $list[] = $tcom_id;
+                    $tcount = $tcount +1;
+                }
+                if ($who->hasRole('bid-for-tnon')){
+                    $tnon_id = LineGroup::where('code','TNON')->first()['id'];
+                    $list[] = $tnon_id;
+                    $tcount = $tcount +1;
+                }
+
                 // get user id for later join to user picks
                 $pick_uid = $who->id;
             }

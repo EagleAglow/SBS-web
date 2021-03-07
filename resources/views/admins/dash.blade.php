@@ -10,8 +10,7 @@
                 @include('flash::message')
 
                 <div class="card-body"><b>Bidders By Bidder Group</b><br>
-                   <span style="font-size:0.8rem;">The table shows bidder role(s) and number of bidders for each bidder group.
-                   A bidder role determines which line group can be bid by a user with that role.</span>
+                   <span style="font-size:0.8rem;">The table shows the number of bidders for each bidder group, and the line groups for which they can bid.</span>
                 </div>
                 <div class="card-body my-squash">
                     <table class="table compact">
@@ -23,23 +22,37 @@
                                 foreach($groups as $group){
                                     $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
                                 }
-                                
+                                echo '<th class="text-center compact">Bidder Group</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
-                                    echo '<th class="text-center compact">' . $group_code . '</th>';
+                                    echo '<td class="text-center compact">' . $group_code . '</td>';
                                 }
                                 echo '</tr></thead><tbody><tr>';
+                                echo '<th class="text-center compact">Bidder Count</th>';
+                                foreach($bidders_by_group as $group_code=>$group_count){
+                                    echo '<td class="text-center compact">' . $group_count . '</td>';
+                                }
+                                echo '</tr><tr>';
+//                                echo '<th class="text-left compact">Role(s)</th>';
+//                                foreach($bidders_by_group as $group_code=>$group_count){
+//                                    echo '<td class="text-center compact">';
+//                                    $role_names = App\BidderGroup::where('code',$group_code)->first()->getRoleNames();
+//                                    foreach ($role_names as $role_name){
+//                                        echo '<div>' . $role_name . '</div>';
+//                                    }
+//                                    echo '</td>';
+//                                }
+
+                                echo '</tr><tr>';
+                                echo '<th class="text-center compact">Line Group(s)</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact">';
                                     $role_names = App\BidderGroup::where('code',$group_code)->first()->getRoleNames();
                                     foreach ($role_names as $role_name){
-                                        echo '<div>' . $role_name . '</div>';
+                                        echo '<div>' . strtoupper(str_replace('bid-for-','',$role_name)) . '</div>';
                                     }
                                     echo '</td>';
                                 }
-                                echo '</tr><tr>';
-                                foreach($bidders_by_group as $group_code=>$group_count){
-                                    echo '<td class="text-center compact">' . $group_count . '</td>';
-                                }
+
                             @endphp
                             </tr>
                         </tbody>
@@ -50,9 +63,8 @@
 
 
                 <div class="card-body my-squash"><b>Schedule Lines By Line Group</b><br>
-                   <span style="font-size:0.8rem;"> For each line group, the table shows the bidding role and the number of lines that can be bid.
-                   The number of lines with a bidding role needs to be large enough to handle the number of bidders with that role, unless some bidders
-                   can bid an alternate role.<span style="color:red;">This program does not check to see if there are enough lines for the number of bidders.</span></span>
+                   <span style="font-size:0.8rem;"> The table shows the number of lines that can be bid for each line group.<br> 
+                   <span style="color:red;">This program does not check to see if there are enough lines for the number of bidders.</span></span>
                 </div>
                 @php
                     // list schedules, if any
@@ -76,17 +88,18 @@
                                 $lines_by_group[$group->code] = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$group->id)->get());
                             }
 
+                            echo '<th class="text-center compact">Line Group</th>';
                             foreach($lines_by_group as $group_code=>$group_count){
-                                echo '<th class="text-center compact">' . $group_code . '</th>';
+                                echo '<td class="text-center compact">' . $group_code . '</td>';
                             }
                             echo '</tr></thead><tbody><tr>';
 
-                            foreach($lines_by_group as $group_code=>$group_count){
-                                echo '<td class="text-center compact">bid-for-' . strtolower($group_code) . '</td>';
-                            }
-                            echo '</tr><tr>';
+//                            foreach($lines_by_group as $group_code=>$group_count){
+//                                echo '<td class="text-center compact">bid-for-' . strtolower($group_code) . '</td>';
+//                            }
+//                            echo '</tr><tr>';
 
-
+                            echo '<th class="text-center compact">Line Count</th>';
                             foreach($lines_by_group as $group_code=>$group_count){
                                 echo '<td class="text-center compact">' . $group_count . '</td>';
                             }
