@@ -96,7 +96,7 @@ class UserController extends Controller {
         }
         $request['phone_number'] = $phone;
 
-        $bidder_group_id = $request['bidder_group_id'];
+        $bidder_group_id = $request['bidder_group_id']; 
 
         $pwd_in_request = $request->password;
         // hash password for storage 
@@ -110,8 +110,6 @@ class UserController extends Controller {
         $user = User::create($request->only('email', 'name', 'password', 'bidder_group_id', 'phone_number')); 
 
         $roles = $request['roles']; //Retrieving the roles field
-
-
         //Checking if a user role was selected (supervisor, admin, superuser)
         if (isset($roles)) {
             foreach ($roles as $role) {
@@ -192,6 +190,7 @@ class UserController extends Controller {
     */
     public function update(Request $request, $id) {
         $user = User::findOrFail($id); //Get user specified by id
+        $bidder_group_id = $request['bidder_group_id'];
 
         $pwd_in_request = $request->password;
         if (isset($pwd_in_request)){
@@ -334,6 +333,15 @@ class UserController extends Controller {
         }        
         else {
             $user->roles()->detach(); //If no role is selected remove existing role associated to a user
+        }
+
+        // assign user bidding roles based on selected bidding group
+        if (isset($bidder_group_id)){
+            $bidder_group = BidderGroup::where('id',$bidder_group_id)->first();
+            $role_names = $bidder_group->getRoleNames();
+            foreach ($role_names as $role_name) {
+                $user->assignRole($role_name); //Assigning role to user
+            }
         }
 
         if ($superusers < '2'){ // we may have removed the last one

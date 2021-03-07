@@ -61,13 +61,6 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-12">
-                                <span style="font-size:0.75rem;color:red;line-height:1;">
-                                    TRAFFIC is TCOM + TNON (both commercial and non-commercial)</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
                             <label for="bid_order" class="col-md-4 col-form-label text-md-right">{{ __('Bid Order') }}</label>
                             <div class="col-md-6">
                                 <input id="bid_order" type="text" class="form-control @error('bid_order') is-invalid @enderror" name="bid_order" value="{{ old('bid_order') ? old('bid_order') : $user->bid_order }}" autocomplete="bid_order" autofocus>

@@ -55,34 +55,6 @@
                             <div class="col-md-8 my-group">   
                                 @php
                                     echo '<input type="checkbox" name="approved" ';
-                                    // count bidders for bidder groups
-                                    $groups = App\BidderGroup::where('code','!=','NONE')->orderBy('order')->get();
-                                    $bidders_by_group = array();
-                                    foreach($groups as $group){
-                                        $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
-                                    }
-                                    // adjust to line groups, add TRAFFIC to TCOM
-                                    $bidders_by_group['TCOM'] = $bidders_by_group['TRAFFIC']+$bidders_by_group['TCOM'];
-                                    // adjust to line groups, add TRAFFIC to TNON
-                                    $bidders_by_group['TNON'] = $bidders_by_group['TRAFFIC']+$bidders_by_group['TNON'];
-
-                                    // count lines for line groups
-                                    $groups = App\LineGroup::where('code','!=','NONE')->orderBy('order')->get();
-                                    $lines_by_group = array();
-                                    foreach($groups as $group){
-                                        $lines_by_group[$group->code] = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$group->id)->get());
-                                    }
-
-                                    // compare $bidders_by_group to $lines_by_group, skipping group 'TRAFFIC' (by using $lines_by_group)
-                                    // see if the number of lines is at least the number of bidders by group
-
-                                    $pass = 'yes';
-                                    $flags_by_group = array();
-                                    foreach($lines_by_group as $group_code=>$group_count){
-                                        if ($group_count < $bidders_by_group[$group_code]){
-                                            $pass = 'no';
-                                        }
-                                    }
 
                                     // if active, add note to approved checkbox
                                     if ($schedule->active==1){ 
@@ -95,11 +67,7 @@
                                         if ($schedule->approved==1){ 
                                             echo ' checked="checked">';
                                         } else { 
-                                            if($pass == 'no'){
-                                                echo 'disabled="disabled"> &nbsp;&nbsp;&nbsp;<span style="color:red;">A bidder group has more bidders than lines!</span>'; 
-                                            } else {
-                                                echo '>';
-                                            }
+                                            echo '> &nbsp;&nbsp;&nbsp;<span style="color:red;">Make sure there are enough lines for the number of bidders!</span>'; 
                                         }
                                     }
                                 @endphp
