@@ -145,6 +145,79 @@
                         makeProgress();
                     </script>
                 </div>
+
+
+
+                <div class="card-body my-squash">
+                    <table class="table compact">
+                        <thead>
+                            <tr>
+                            @php
+                                $groups = App\BidderGroup::where('code','!=','NONE')->orderBy('code')->get();
+                                $bidders_by_group = array();
+                                foreach($groups as $group){
+                                    $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->where('has_bid',0)->get());
+                                }
+                                echo '<th class="text-center compact">Bidder Group</th>';
+                                foreach($bidders_by_group as $group_code=>$group_count){
+                                    echo '<td class="text-center compact">' . $group_code . '</td>';
+                                }
+                                echo '</tr></thead><tbody><tr>';
+                                echo '<th class="text-center compact">Remaining Bidders</th>';
+                                foreach($bidders_by_group as $group_code=>$group_count){
+                                    echo '<td class="text-center compact">' . $group_count . '</td>';
+                                }
+                                echo '</tr><tr>';
+                                echo '<th class="text-center compact">Line Group(s)</th>';
+                                foreach($bidders_by_group as $group_code=>$group_count){
+                                    echo '<td class="text-center compact">';
+                                    $role_names = App\BidderGroup::where('code',$group_code)->first()->getRoleNames();
+                                    foreach ($role_names as $role_name){
+                                        echo '<div>' . strtoupper(str_replace('bid-for-','',$role_name)) . '</div>';
+                                    }
+                                    echo '</td>';
+                                }
+
+                            @endphp
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                @php
+                    // get active schedules, if any
+                    $schedules = App\Schedule::where('active',1)->get(); //Get all 
+                    if (!$schedules->isEmpty($schedules)){
+                        $schedule = $schedules->first();
+
+                        echo '<div class="card-body my-squash"><table class="table compact">';
+                        echo '<thead><tr>';
+
+
+                        $groups = App\LineGroup::where('code','!=','NONE')->orderBy('code')->get();
+                        $lines_by_group = array();
+                        foreach($groups as $group){
+                            $lines_by_group[$group->code] = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$group->id)->whereNull('user_id')->get());
+                        }
+
+                        echo '<th class="text-center compact">Line Group</th>';
+                        foreach($lines_by_group as $group_code=>$group_count){
+                            echo '<td class="text-center compact">' . $group_code . '</td>';
+                        }
+                        echo '</tr></thead><tbody><tr>';
+
+                        echo '<th class="text-center compact">Line Count</th>';
+                        foreach($lines_by_group as $group_code=>$group_count){
+                            echo '<td class="text-center compact">' . $group_count . '</td>';
+                        }
+                        echo '</tr></tbody></table></div>';
+                    }
+                @endphp
+                </div>
+
+
+
+
         </div>
     </div>
 </div>

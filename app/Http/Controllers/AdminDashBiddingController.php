@@ -447,7 +447,7 @@ class AdminDashBiddingController extends Controller
                 // remove role from active bidder (or bidders, in case of operator error)
                 $active_bidders = User::role('bidder-active')->get();
                 foreach ($active_bidders as $active_bidder){
-                    $active_bidders->removeRole('bidder-active');                    
+                    $active_bidder->removeRole('bidder-active');                    
                 }
 
                 // set parameter
