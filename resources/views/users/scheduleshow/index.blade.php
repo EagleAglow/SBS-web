@@ -73,7 +73,7 @@
                 $line_group_ids[] = App\LineGroup::where('code',strtoupper(str_replace('bid-for-','',$role_name)))->first()->id; 
             }
         }
-        if (!count($line_group_ids)>1){
+        if (count($line_group_ids)==1){
             // bidder only has one choice (maybe none, but that's another problem)
             $need_reserve = false;
         }
