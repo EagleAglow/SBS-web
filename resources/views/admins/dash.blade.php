@@ -19,6 +19,7 @@
                             @php
                                 $groups = App\BidderGroup::where('code','!=','NONE')->orderBy('code')->get();
                                 $bidders_by_group = array();
+                                $bidder_sum = 0;
                                 foreach($groups as $group){
                                     $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
                                 }
@@ -26,11 +27,14 @@
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact">' . $group_code . '</td>';
                                 }
+                                echo '<td class="text-center compact">&sum;</td>';
                                 echo '</tr></thead><tbody><tr>';
                                 echo '<th class="text-center compact">Bidder Count</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact">' . $group_count . '</td>';
+                                    $bidder_sum = $bidder_sum + $group_count;
                                 }
+                                echo '<td class="text-center compact">' . $bidder_sum . '</td>';
                                 echo '</tr><tr>';
 //                                echo '<th class="text-left compact">Role(s)</th>';
 //                                foreach($bidders_by_group as $group_code=>$group_count){
@@ -50,9 +54,8 @@
                                     foreach ($role_names as $role_name){
                                         echo '<div>' . strtoupper(str_replace('bid-for-','',$role_name)) . '</div>';
                                     }
-                                    echo '</td>';
                                 }
-
+                                echo '</td><td>&nbsp;</td>';
                             @endphp
                             </tr>
                         </tbody>
@@ -64,7 +67,7 @@
 
                 <div class="card-body my-squash"><b>Schedule Lines By Line Group</b><br>
                    <span style="font-size:0.8rem;"> The table shows the number of lines that can be bid for each line group.<br> 
-                   <span style="color:red;">This program does not check to see if there are enough lines for the number of bidders.</span></span>
+                   <span style="color:red;"><b>This program does not check to see if there are enough lines for the number of bidders.</b></span></span>
                 </div>
                 @php
                     // list schedules, if any
@@ -84,6 +87,7 @@
 
                             $groups = App\LineGroup::where('code','!=','NONE')->orderBy('code')->get();
                             $lines_by_group = array();
+                            $line_sum = 0;
                             foreach($groups as $group){
                                 $lines_by_group[$group->code] = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$group->id)->get());
                             }
@@ -92,6 +96,7 @@
                             foreach($lines_by_group as $group_code=>$group_count){
                                 echo '<td class="text-center compact">' . $group_code . '</td>';
                             }
+                            echo '<td class="text-center compact">&sum;</td>';
                             echo '</tr></thead><tbody><tr>';
 
 //                            foreach($lines_by_group as $group_code=>$group_count){
@@ -102,7 +107,9 @@
                             echo '<th class="text-center compact">Line Count</th>';
                             foreach($lines_by_group as $group_code=>$group_count){
                                 echo '<td class="text-center compact">' . $group_count . '</td>';
+                                $line_sum = $line_sum + $group_count;
                             }
+                            echo '<td class="text-center compact">' . $line_sum . '</td>';
                             echo '</tr></tbody></table></div>';
                         }
                     }

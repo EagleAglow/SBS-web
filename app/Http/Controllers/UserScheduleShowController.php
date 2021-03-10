@@ -120,19 +120,15 @@ class UserScheduleShowController extends Controller {
         } 
 
         // cycle $my_sort between 'filter', 'tnon', 'tcom', all', but only use 'tnon' and 'tcom' if both are in $list
-        // use $traffic = 'yes' or 'no' to handle that - getting ugly in here
+        // use $traffic = 'yes' or 'no' to handle that
+        // getting ugly in here - would not want this for a more flexible configuration
         if ($tcount >1 ){
             $traffic = 'yes';
         } else {
             $traffic = 'no';
         }
-        // fix an unlikely error
-        if (!isset($tnon_id)){
-            $my_sort == 'filter';
-        }
-        if (!isset($tcom_id)){
-            $my_sort == 'filter';
-        }
+        $tcom_id = LineGroup::where('code','TCOM')->first()['id'];
+        $tnon_id = LineGroup::where('code','TNON')->first()['id'];
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
         if ($schedule->approved == true){

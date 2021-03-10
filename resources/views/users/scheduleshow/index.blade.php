@@ -36,7 +36,90 @@
 
     $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
 
+
+
+// need to set up reserve process - develop a list of schedule line group ids that are reserved, can not be bid by the active bidder
+// use the list to configure buttons for "Bid" and "Bid For" (below line 350)
+
+// is there an active bidder?
+// is this user the active bidder (user has role 'bidder-active')
+// -or-
+// is this user a supervisor (user has role 'supervisor')?
+// can the active bidder bid any line group that needs to be reserved, on this bid?
+// make the list, use it below
+
+    $need_reserve = false;
+    $reserved_line_group_ids = array();  // where we will save these reserved line group ids
+
+    $active_bidder = App\User::role('bidder-active')->first();
+    if (isset($active_bidder)){
+        // there is an active bidder
+        if ($active_bidder->id == Auth::user()->id){
+            // this user is active_bidder
+            $need_reserve = true;  // might be changed to false, below, if not needed
+        }
+        if(Auth::user()->hasRole('supervisor')){
+            // this user can bid for active user
+            $need_reserve = true;  // might be changed to false, below, if not needed
+        }
+    }
+    if ($need_reserve){
+        // can the active bidder bid for more than one line group (that is, do they have more than one 'bid-for-' role)?
+        $role_names = App\BidderGroup::where('id',$active_bidder->bidder_group_id)->first()->getRoleNames();
+        // reduce list to only those roles beginning with 'bid-for-' and collect the line group ids
+        $line_group_ids = array();
+        foreach($role_names as $role_name){
+            if(strpos($role_name,'bid-for-') !== false){
+                $line_group_ids[] = App\LineGroup::where('code',strtoupper(str_replace('bid-for-','',$role_name)))->first()->id; 
+            }
+        }
+        if (!count($line_group_ids)>1){
+            // bidder only has one choice (maybe none, but that's another problem)
+            $need_reserve = false;
+        }
+    }
+    if ($need_reserve){
+        // bidder would normally have a choice, but we need to see if bidder should be limited for this bid, to ensure others don't become bidless?
+        // for each line group code in short list, count remaining lines, 
+        // then subtract remaining bidders in bidder groups that can only bid that line group
+        // if the result is zero (or less, which indicates a BIG problem), then the active bidder should not bid that line group
+        // this limitation may need to apply to multiple line groups, to be a general solution
+        foreach($line_group_ids as $line_group_id){
+            $how_many_lines = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$line_group_id)->whereNull('user_id')->get());
+            // get a list of bidder groups that can bid ONLY for the line group with this line group id
+            // so, get code for this line group, turn that into a 'bid-for-' role, get bidder groups with that role, see if they have other 'bid-for-'' roles
+            // if only one role (the one we're checking), subtract the number of remaining bidders in that bidder group
+
+            $critical_role_name = 'bid-for-' . strtolower(App\LineGroup::where('id',$line_group_id)->first()->code);
+            $scan_bidder_groups = App\BidderGroup::all();
+            $bozo = '';
+            foreach($scan_bidder_groups as $scan_bidder_group){
+                if ($scan_bidder_group->hasRole($critical_role_name)){
+                    // does this bidder group have more than one 'bid-for-' role?
+                    // bidder groups only have bidding roles, so we can just count them
+                    if ($scan_bidder_group->roles()->count() == 1){
+                        // subtract bidders
+                        $how_many_lines = $how_many_lines - count(App\User::where('bidder_group_id',$scan_bidder_group->id)->where('has_bid',0)->get());
+                        $bozo = $bozo . ' ' . $scan_bidder_group->code;
+                        $bozo = $bozo .  ' ' . $how_many_lines . ' ';
+                    }
+                }
+            }
+            if ($how_many_lines < 1){
+                // this line group is critical, should not be able to bid it with this active bidder
+                $reserved_line_group_ids[] = $line_group_id;
+            }
+
+
+
+        }
+    }
+
+
 @endphp
+
+
+
 
 <div class="container">
 	<div class="row justify-content-center">
@@ -343,6 +426,7 @@
                                                         @if($schedule->active == 1)
                                                             @if( count(App\User::role('bidder-active')->get('id')) > 0 )
                                                                 @if(Auth::user()->id == App\User::role('bidder-active')->get('id')->first()->id)
+                                                                    <!-- user is a bidder -->
                                                                     <a href="{{ url('/bidder/bid', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Bid</button></a>
                                                                     @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) > 0)
                                                                         <div style="font-size:0.85rem;text-align:right;color:#ff0000;">&#9733;

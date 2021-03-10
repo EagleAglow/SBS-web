@@ -65,12 +65,6 @@ class PermissionsSeeder extends Seeder
         $bg = BidderGroup::where('code','IRPA')->first();
         $bg->assignRole($role1);
 
-        $role1 = Role::create(['name' => 'bid-for-oidp']);   // can bid for OIDP lines
-        $role1->givePermissionTo('bid-self');
-        $role1->givePermissionTo('bid-oidp');
-        $bg = BidderGroup::where('code','OIDP')->first();
-        $bg->assignRole($role1);
-
         $role1 = Role::create(['name' => 'bid-for-tnon']);   // can bid for non-commercial traffic lines
         $role1->givePermissionTo('bid-self');
         $role1->givePermissionTo('bid-tnon');
@@ -85,6 +79,17 @@ class PermissionsSeeder extends Seeder
         $bg = BidderGroup::where('code','TCOM')->first();
         $bg->assignRole($role1);
         $bg = BidderGroup::where('code','TRAFFIC')->first();  // Traffic can bid this also
+        $bg->assignRole($role1);
+
+        $role1 = Role::create(['name' => 'bid-for-oidp']);   // can bid for OIDP lines
+        $role1->givePermissionTo('bid-self');
+        $role1->givePermissionTo('bid-oidp');
+//        $bg = BidderGroup::where('code','OIDP')->first();
+//        $bg->assignRole($role1);
+        
+
+        $role1 = Role::where('name','bid-for-tcom')->first();   // can bid for commercial traffic lines
+        $bg = BidderGroup::where('code','OIDP')->first();
         $bg->assignRole($role1);
 
         $role1 = Role::create(['name' => 'bidder-active']);   // active bidder

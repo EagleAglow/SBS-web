@@ -172,11 +172,11 @@ $newUser = User::create([
         UsersTableSeeder::myBidderFill('HESS, Diana','Diana.Hess@Demo.com','password','irpa',138);
         
         // OIDP
-        UsersTableSeeder::myBidderFill('MUELLER, Ciaran','Ciaran.Mueller@Demo.com','password','oidp',139);
-        UsersTableSeeder::myBidderFill('WALL, Florence','Florence.Wall@Demo.com','password','oidp',139);
-        UsersTableSeeder::myBidderFill('ELLIS, Chaney','Chaney.Ellis@Demo.com','password','oidp',139);
-        UsersTableSeeder::myBidderFill('HAMILTON, Heidi','Heidi.Hamilton@Demo.com','password','oidp',140);
-        UsersTableSeeder::myBidderFill('ROCHE, Gilbert','Gilbert.Roche@Demo.com','password','oidp',140);
+        UsersTableSeeder::myBidderFill('MUELLER, Ciaran','Ciaran.Mueller@Demo.com','password','oidp',339);
+        UsersTableSeeder::myBidderFill('WALL, Florence','Florence.Wall@Demo.com','password','oidp',339);
+        UsersTableSeeder::myBidderFill('ELLIS, Chaney','Chaney.Ellis@Demo.com','password','oidp',339);
+        UsersTableSeeder::myBidderFill('HAMILTON, Heidi','Heidi.Hamilton@Demo.com','password','oidp',340);
+        UsersTableSeeder::myBidderFill('ROCHE, Gilbert','Gilbert.Roche@Demo.com','password','oidp',340);
 
         
         // TRAFFIC
@@ -189,10 +189,13 @@ $newUser = User::create([
         UsersTableSeeder::myBidderFill('COLLIN, Dylan','Dylan.Collin@Demo.com','password','traffic',143);
         UsersTableSeeder::myBidderFill('NICHOLS, Malachi','Malachi.Nichols@Demo.com','password','traffic',144);
         UsersTableSeeder::myBidderFill('MALLET, Matheo','Matheo.Mallet@Demo.com','password','traffic',144);
+
         UsersTableSeeder::myBidderFill('GIRARD, Baptiste','Baptiste.Girard@Demo.com','password','tnon',145);
         UsersTableSeeder::myBidderFill('CRUZ, Celeste','Celeste.Cruz@Demo.com','password','tcom',146);
+
         UsersTableSeeder::myBidderFill('ABBOTT, Katelyn','Katelyn.Abbott@Demo.com','password','traffic',146);
         UsersTableSeeder::myBidderFill('BRUN, Malik','Malik.Brun@Demo.com','password','traffic',147);
+/*        
         UsersTableSeeder::myBidderFill('MOREAU, Simon','Simon.Moreau@Demo.com','password','traffic',148);
         UsersTableSeeder::myBidderFill('RIOS, Ulysses','Ulysses.Rios@Demo.com','password','traffic',149);
         UsersTableSeeder::myBidderFill('COOK, Lyle','Lyle.Cook@Demo.com','password','traffic',150);
@@ -396,7 +399,7 @@ $newUser = User::create([
         UsersTableSeeder::myBidderFill('CARR, Brenda','Brenda.Carr@Demo.com','password','traffic',272);
         UsersTableSeeder::myBidderFill('STONE, Levi','Levi.Stone@Demo.com','password','traffic',272);
         UsersTableSeeder::myBidderFill('BOWERS, Edan','Edan.Bowers@Demo.com','password','traffic',272);
-
+*/
                         
     }
 }
