@@ -40,7 +40,7 @@
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     </a>
-                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 3MARCH2021
+                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 10MARCH2021
                         @if(config('app.debug'))
                             <span style="color:red;"><b> &nbsp; DEBUG MODE!</b></span>
                         @endif 
@@ -136,6 +136,7 @@
                                     @endif
                                 @endrole
                                 <div class="dropdown-divider"></div>
+                                
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">
