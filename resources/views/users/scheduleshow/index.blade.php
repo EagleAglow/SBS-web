@@ -84,6 +84,7 @@
         // then subtract remaining bidders in bidder groups that can only bid that line group
         // if the result is zero (or less, which indicates a BIG problem), then the active bidder should not bid that line group
         // this limitation may need to apply to multiple line groups, to be a general solution
+        $need_reserve = false;
         foreach($line_group_ids as $line_group_id){
             $how_many_lines = count(App\ScheduleLine::where('blackout','!=',1)->where('schedule_id',$schedule->id)->where('line_group_id',$line_group_id)->whereNull('user_id')->get());
             // get a list of bidder groups that can bid ONLY for the line group with this line group id
@@ -108,13 +109,16 @@
             if ($how_many_lines < 1){
                 // this line group is critical, should not be able to bid it with this active bidder
                 $reserved_line_group_ids[] = $line_group_id;
+                $need_reserve = true;
             }
-
-
-
         }
     }
-
+    $reserved = '';
+    if ($need_reserve){
+        foreach($reserved_line_group_ids as $reserved_line_group_id){
+            $reserved = $reserved . App\LineGroup::where('id',$reserved_line_group_id)->first()->code;
+        }
+    } 
 
 @endphp
 
@@ -143,6 +147,9 @@
                                     @if( count(App\User::role('bidder-active')->get('id')) > 0 )
                                         <h6>You can place a bid for:<span style="color:red;"> {{ App\User::role('bidder-active')->get('name')->first()->name }} </span></h6>
                                     @endif
+                                @endif
+                                @if($need_reserve)
+                                    <h6>Some line groups are reserved: {{ $reserved }}
                                 @endif
                             </div>
                             <div class="col-md-6">
@@ -427,7 +434,12 @@
                                                             @if( count(App\User::role('bidder-active')->get('id')) > 0 )
                                                                 @if(Auth::user()->id == App\User::role('bidder-active')->get('id')->first()->id)
                                                                     <!-- user is a bidder -->
-                                                                    <a href="{{ url('/bidder/bid', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Bid</button></a>
+                                                                    @if(in_array($schedule_line->line_group_id,$reserved_line_group_ids))
+                                                                        <a href="#"><button type="button" disabled="disabled" class="btn btn-outline-primary btn-my-edit float-right">None</button></a>
+                                                                        <br><div style="font-size:0.5rem;text-align:center;margin-top:-0.3rem;color:red;"><b>RESERVED</b></div>
+                                                                    @else
+                                                                        <a href="{{ url('/bidder/bid', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Bid</button></a>
+                                                                    @endif
                                                                     @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) > 0)
                                                                         <div style="font-size:0.85rem;text-align:right;color:#ff0000;">&#9733;
                                                                         {{ App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get('rank')->first()->rank }}
@@ -436,7 +448,12 @@
                                                                 @else
                                                                     @if(Auth::user()->hasRole('supervisor'))
                                                                         <!-- user is a supervisor --> 
-                                                                        <a href="{{ url('/supervisor/bidfor', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Bid For</button></a>
+                                                                        @if(in_array($schedule_line->line_group_id,$reserved_line_group_ids))
+                                                                            <a href="#"><button type="button" disabled="disabled" class="btn btn-outline-primary btn-my-edit float-right">None</button></a>
+                                                                            <br><div style="font-size:0.5rem;text-align:center;margin-top:-0.3rem;color:red;"><b>RESERVED</b></div>
+                                                                        @else
+                                                                            <a href="{{ url('/supervisor/bidfor', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit float-right">Bid For</button></a>
+                                                                        @endif
                                                                         @php
                                                                             // BEWARE - Don't cut/paste, this differs from other similar sections
                                                                             $pick = App\Pick::where('user_id', App\User::role('bidder-active')->get('id')->first()->id )->where('schedule_line_id',$schedule_line->id)->get('rank')->first();
