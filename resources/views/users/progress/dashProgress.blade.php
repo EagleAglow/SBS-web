@@ -158,17 +158,13 @@
                                 foreach($bid_groups as $group){
                                     $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->where('has_bid',0)->get());
                                 }
+
+                                
                                 echo '<th class="text-center compact">Bidder Group</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact">' . $group_code . '</td>';
                                 }
                                 echo '</tr></thead><tbody><tr>';
-                                echo '<th class="text-center compact">Remaining Bidders</th>';
-                                foreach($bidders_by_group as $group_code=>$group_count){
-                                    echo '<td class="text-center compact">' . $group_count . '</td>';
-                                }
-                                echo '</tr><tr>';
-
                                 echo '<th class="text-center compact">Line Group(s)</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
                                     echo '<td class="text-center compact"><span style="color:red;"><b>';
@@ -177,6 +173,11 @@
                                         echo '<div>' . strtoupper(str_replace('bid-for-','',$role_name)) . '</div>';
                                     }
                                     echo '</b></span></td>';
+                                }
+                                echo '</tr><tr>';
+                                echo '<th class="text-center compact">Remaining Bidders</th>';
+                                foreach($bidders_by_group as $group_code=>$group_count){
+                                    echo '<td class="text-center compact">' . $group_count . '</td>';
                                 }
 
                             @endphp

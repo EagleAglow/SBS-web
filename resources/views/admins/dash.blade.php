@@ -66,7 +66,9 @@
 
 
                 <div class="card-body my-squash"><b>Schedule Lines By Line Group For Each System Schedule</b><br>
-                   <span style="font-size:0.8rem;"> The table shows the number of lines that can be bid for each line group.</span>
+                   <span style="font-size:0.8rem;"> The table shows the number of lines that can be bid for each line group. The "Reserved" line count is the
+                          number of lines that will be reserved for bidders who can bid only that line group. <span style="color:red;"><b>This program does not check to see if 
+                          the total of "Open" lines is sufficient for bidders with a choice of line groups.</b></span>
                 </div>
                 @php
                     // list schedules, if any
@@ -118,7 +120,7 @@
                             // check as much as we can...
                             // check grand total of bidders vs. lines
                             if ($line_sum >= $bidder_sum){
-                                $result_for_sum = '<b>OK</b>';
+                                $result_for_sum = 'OK';
                             } else {
                                 $result_for_sum = '<span style="color:red;font-weight:bold;">Problem</span>';
                             }
@@ -127,41 +129,86 @@
                             $simple_ones = array();
                             // process line groups
                             foreach($groups as $group){
-                                // get code for this line group, turn that into a 'bid-for-' role, get bidder groups with that role, see if they have other 'bid-for-'' roles
-                                $simple_code = $group->code;
-                                $simple_role_name = 'bid-for-' . strtolower($simple_code);
+                                // get code for this line group, turn that into a 'bid-for-' role, get bidder groups with that role, see if they have other 'bid-for-' roles
+                                $scan_code = $group->code;
+                                $scan_role_name = 'bid-for-' . strtolower($scan_code);
                                 $scan_bidder_groups = App\BidderGroup::all();
                                 $count_bidder_groups_for_this_line_group = 0;
                                 foreach($scan_bidder_groups as $scan_bidder_group){
-                                    if ($scan_bidder_group->hasRole($simple_role_name)){
+                                    if ($scan_bidder_group->hasRole($scan_role_name)){
                                         $count_bidder_groups_for_this_line_group = $count_bidder_groups_for_this_line_group +1;
                                         // capture this bidder group, used if there is only one
                                         $bg = $scan_bidder_group;
                                     }
                                 }
 
-                                if ($count_bidder_groups_for_this_line_group == 1){
-//                                    $results_by_group[$simple_code] = 'fred';
+                                if ($count_bidder_groups_for_this_line_group == 0){
+                                    // add to list and save review result
+                                    $simple_ones[] = $scan_code;
+                                    $results_by_group[$scan_code] = 'OK';
+                                }
 
+                                if ($count_bidder_groups_for_this_line_group == 1){
                                     // does this bidder group have more than one 'bid-for-' role?
                                     // bidder groups only have bidding roles, so we can just count them
                                     if ($bg->roles()->count() == 1){
                                         // add to list
-                                        $simple_ones[] = $simple_code;
+                                        $simple_ones[] = $scan_code;
                                         // do the math and save review result
-                                        if ( $lines_by_group[$simple_code] >= count(App\User::where('bidder_group_id',$bg->id)->where('has_bid',0)->get()) ){
-                                            $results_by_group[$simple_code] = '<b>OK</b>';
+                                        if ( $lines_by_group[$scan_code] >= count(App\User::where('bidder_group_id',$bg->id)->get()) ){
+                                            $results_by_group[$scan_code] = 'OK';
                                         } else {
-                                            $results_by_group[$simple_code] = '<span style="color:red;font-weight:bold;">Problem</span>';
+                                            $results_by_group[$scan_code] = '<span style="color:red;font-weight:bold;">Problem</span>';
                                         }
                                     }
-
                                 }
-                                // if only one role (the one we're checking), subtract the number of remaining bidders in that bidder group
+                            }
+                            // remaining line groups (not in the "simple" list) each have more than one bidder group
+                            // for these, want to report how many lines are reserved for bidders with only a single choice of line group
+                            // first, get a list of them (full line group code list, then remove simple ones)...
+                            $complex_ones = array(); 
+                            foreach($groups as $group){
+                                $complex_ones[] = $group->code;
+                            }
+                            foreach ($simple_ones as $simple_one){
+                                if (($key = array_search($simple_one, $complex_ones)) !== false) {
+                                    unset($complex_ones[$key]);
+                                    // re-index
+                                    $complex_ones = array_values($complex_ones);
+                                }
+                            }
+                            // arrays to hold reserve count and 'not-reserved" count by line group
+                            $reserved = array();
+                            $not_reserved = array();
+                            foreach ($complex_ones as $complex_one){
+                                $not_reserved[$complex_one] = $lines_by_group[$complex_one];  // not correct now, need to later subtract reserved count
+                                $reserved[$complex_one] = 0;
+                                // turn code into a 'bid-for-' role, get bidder groups with that role
+                                // for bidder groups with only this line group code, count those bidders
+                                $scan_code = $complex_one;
+                                $scan_role_name = 'bid-for-' . strtolower($scan_code);
+                                $scan_bidder_groups = App\BidderGroup::all();
+                                foreach($scan_bidder_groups as $scan_bidder_group){
+                                    if ($scan_bidder_group->hasRole($scan_role_name)){
+                                        // bidder groups only have bidding roles, so we can just count them
+                                        if ($scan_bidder_group->roles()->count() == 1){
+                                            $reserved[$complex_one] = $reserved[$complex_one] + count(App\User::where('bidder_group_id',$scan_bidder_group->id)->get());
+                                        }
+                                    }
+                                }
+                                $not_reserved[$complex_one] = $not_reserved[$complex_one] - $reserved[$complex_one];
+                                if ($reserved[$complex_one] > 0){
+                                    $results_by_group[$complex_one] = '<div>' . $reserved[$complex_one] . ' Reserved</div><div>' . $not_reserved[$complex_one] . ' Open</div>';
+                                }
+
+
 
                             }
 
-/////   also need to handle line groups with no bidders ////////////////////////////////////////////////////////                            
+
+
+
+
 
 
                             echo '<th class="text-center compact">Review</th>';

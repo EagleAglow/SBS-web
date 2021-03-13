@@ -93,7 +93,6 @@
 
             $critical_role_name = 'bid-for-' . strtolower(App\LineGroup::where('id',$line_group_id)->first()->code);
             $scan_bidder_groups = App\BidderGroup::all();
-            $bozo = '';
             foreach($scan_bidder_groups as $scan_bidder_group){
                 if ($scan_bidder_group->hasRole($critical_role_name)){
                     // does this bidder group have more than one 'bid-for-' role?
@@ -101,8 +100,6 @@
                     if ($scan_bidder_group->roles()->count() == 1){
                         // subtract bidders
                         $how_many_lines = $how_many_lines - count(App\User::where('bidder_group_id',$scan_bidder_group->id)->where('has_bid',0)->get());
-                        $bozo = $bozo . ' ' . $scan_bidder_group->code;
-                        $bozo = $bozo .  ' ' . $how_many_lines . ' ';
                     }
                 }
             }
