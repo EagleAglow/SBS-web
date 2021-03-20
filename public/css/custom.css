@@ -1,0 +1,262 @@
+
+div.links-title {font-size:0.7rem; margin:0; padding:0 0 0 0;}
+
+/* shrink space in table */
+td.shift-info  { margin: 0; padding:0;}
+div.shift-code  { margin: 0; padding:0; font-size:0.8rem; line-height: 
+    normal;color:#000;font-family: 'Roboto Condensed', 'Arial Narrow', sans-serif;}
+td.text-center.line-code {  font-size:0.8rem; color:#000; font-weight:600;}
+
+div.line-comment { margin: 0; padding: 0; font-size:0.7rem; color:#000;font-weight:600;}
+
+div.line-bidder { margin: 0; padding:0; font-size:0.7rem; line-height: normal;
+    color:red;font-weight:600;}
+
+span.line-number { margin: 0; padding:0; font-size:1rem; line-height: normal;
+    color:red;font-family: 'Roboto', 'Arial', serif;font-weight:600;}
+span.blackout { font-size:0.8rem;;font-weight:600;}
+
+span.line-group {  margin: 0; padding:0; font-size:0.8rem; color:#000;font-weight:600;}
+
+div.blackout {border: 2px solid black;}
+
+th.text-center.btn-shift {padding:0 0 0.3rem 0; margin:0; vertical-align:center; }
+
+/* bid result on bidder dash */
+th.text-center.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0; }
+td.text-center.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0; }
+th.text-left.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0;  }
+td.text-left.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0;  }
+table.table.compact {margin-bottom:0;} 
+
+
+th.week-end { border-left: 3px solid #38c172;border-right: 3px solid #38c172;}
+td.week-end { border-left: 3px solid #38c172;border-right: 3px solid #38c172;}
+
+div.shift-begin  { margin: 0; padding:0; font-size:0.7rem; color:#000;}
+div.shift-end  { margin: 0; padding:0; font-size:0.7rem; color:#000;}
+
+.table th.month-day-row { font-size:0.7rem; margin:0; padding:0 0 0 0;}
+
+/* try to shrink edit / delete buttons 
+button.btn { padding:0.1rem 0.25rem; margin:0.1rem;}
+button.btn.btn-my-edit { padding-left:0.75rem; padding-right:0.75rem;}
+*/
+button { padding:0; margin:0;}
+button.btn { padding:0.1rem 0.25rem;}
+button.btn.btn-my-edit { margin-bottom:0.5rem;}
+button.btn.btn-my-delete { margin-right:0.5rem;}
+button.btn.btn-my-success { margin-right:0.5rem;}
+button.btn.btn-my-tag { 
+    font-size:0.7rem;
+    font-weight:bold;
+    border:2px solid #3490dc;
+  }
+button#submit { 
+    color: #fff;
+    background-color: #3490dc;
+    border-color: #3490dc;
+    padding: 0.375rem 0.75rem;
+  }
+a.btn-settings { padding:0.1rem 0.4rem;}
+/*
+input.btn-settings { padding:0.1rem 0.4rem;}
+*/
+
+
+
+.table {margin-bottom:0;}
+hr {margin-top:0;}
+
+.table td {padding:0.5rem;}
+.table th {padding:0.5rem;}
+
+div.my-group {padding-top: 0.5rem;}
+
+/* fiddle with app.blade.php elements */
+a.navbar-brand {font-size:1.55rem;font-weight:500;}
+
+/* fiddle with dash.php elements */
+div.card-header {font-size:1.2rem; font-weight:600;}
+
+div.card-body.my-squash {padding-top: 0;}
+div.card-body.my-squash2 {padding-top: 0.3rem;padding-bottom:0}
+div.card-body.my-squish {border-bottom:none; padding-bottom: 0;}
+
+div.card-body.setting-squash {padding-top: 1rem;padding-bottom:1rem;}
+div.card-body.setting-squash2 {padding-top: 0;padding-bottom:1rem;}
+div.card-body.setting-squish {border-bottom:none; padding-bottom: 0;}
+div.form-group.setting-squash {margin-bottom:0;}
+
+div.form-group.squash {margin-bottom: 0;}
+
+
+
+ul.pagination {margin-bottom:0.5rem; margin-top:0.5rem;}
+
+div.pagination-text { font-size:1.05rem; font-weight: 600; color:#3490dc; padding:0.7rem 0.5rem 0 0.5rem; float:left;}
+
+/* flash messages
+    note - js script for this is at bottom of app.blade.php
+*/
+div.alert {border: solid 1px #000000;}
+div.modal-content  {border: solid 1px #3490dc;}
+
+
+/* 
+display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px; */
+
+
+/* reverse blue/white colors on pagination block */
+
+.pagination {
+  display: flex;
+  list-style: none;
+  border-radius: 0.5rem;
+} 
+/*  make pagination scroll, but not mess up other navigation,
+    e.g., drop-down at top 
+*/    
+div.my-nav {
+  display:block;
+  flex-wrap: nowrap;
+  list-style: none;
+  overflow: auto;
+  padding-left: 1rem;
+  margin-right: 1rem;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 0.4rem 0.4rem;
+  line-height: 1.2;
+  border: 1px solid #dee2e6;
+  color: #fff;
+  background-color: #3490dc;
+  border-radius: 0.5rem;
+}
+
+.page-link:hover {
+  z-index: 2;
+  text-decoration: none;
+  background-color: #227dc7;
+  border-color: #2176bd;
+  color: #fff;
+}
+
+.page-link:focus {
+  z-index: 3;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+}
+
+.page-item:first-child .page-link {
+  margin-left: -1rem;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.page-item:last-child .page-link {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  border-color: #3490dc;
+  color:#227dc7;
+  background-color: #fff;
+  font-weight:bold;
+}
+
+.page-item.disabled .page-link {
+  pointer-events: none;
+  cursor: auto;
+  border-color: #dee2e6;
+  color: #fff;
+  background-color: #3490dc;
+}
+
+.pagination-lg .page-link {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.pagination-lg .page-item:first-child .page-link {
+  border-top-left-radius: 0.6rem;
+  border-bottom-left-radius: 0.6rem;
+}
+
+.pagination-lg .page-item:last-child .page-link {
+  border-top-right-radius: 0.6rem;
+  border-bottom-right-radius: 0.6rem;
+}
+
+.pagination-sm .page-link {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7875rem;
+  line-height: 1.5;
+}
+
+.pagination-sm .page-item:first-child .page-link {
+  border-top-left-radius: 0.4rem;
+  border-bottom-left-radius: 0.4rem;
+}
+
+.pagination-sm .page-item:last-child .page-link {
+  border-top-right-radius: 0.4rem;
+  border-bottom-right-radius: 0.4rem;
+}
+
+/* begin styling for overlay spinner  */
+#cover-spin {
+  position:fixed;
+  width:100%;
+  left:0;right:0;top:0;bottom:0;
+  background-color: rgba(255,255,255,0.7);
+  z-index:9999;
+  display:none;
+}
+
+@-webkit-keyframes spin {
+from {-webkit-transform:rotate(0deg);}
+to {-webkit-transform:rotate(360deg);}
+}
+
+@keyframes spin {
+from {transform:rotate(0deg);}
+to {transform:rotate(360deg);}
+}
+
+#cover-spin::after {
+  content:'';
+  display:block;
+  position:absolute;
+  left:48%;top:40%;
+  width:40px;height:40px;
+  border-style:solid;
+  border-color:black;
+  border-top-color:transparent;
+  border-width: 4px;
+  border-radius:50%;
+  -webkit-animation: spin .8s linear infinite;
+  animation: spin .8s linear infinite;
+}
+
+/* end styling for overlay spinner  */
+
+/* make dropdown menu stand out a little */
+.dropdown-menu {
+  color: #15171a;
+  background-color: #fff;
+  border: 3px solid #a5cff1;
+  border-radius: 0.25rem;
+}

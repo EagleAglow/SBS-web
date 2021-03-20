@@ -1,0 +1,40 @@
+Demo accounts -----------------
+    superuser@demo.com
+    admin@demo.com
+    supervisor@demo.com
+    bidder_one@demo.com
+    bidder_two@demo.com
+    bidder_three@demo.com
+    bidder_four@demo.com
+
+Seed for users table sets 'email_verified_at' for demo users,
+    avoids sending email when routing is set to 'verify'
+
+Possibly, modified Laravel core file: /var/www/SBS/vendor/laravel/ui/auth-backend/SendsPasswordResetEmails.php
+    to keep from sending any password resets to 'demo.com' accounts.  Will likely not "stick" through builds, though...
+
+    Original:   $request->validate(['email' => 'required|email']);
+    Change:     // change to keep from sending password resets to demo accounts
+                $request->validate(['email' => 'required|email|not_regex:/(@demo.com)/i']);
+
+
+Demo vs. Welcome page -----------------
+    See code for '/' route in web.php
+
+Login / Register / Reset / Verify -----
+    For demo purposes, this is set up to use all those features.
+    See: web.php
+    Auth::routes(['login' => true, 'reset' => true, 'register' => true, 'verify' => true,]);
+
+To implement check for user logged in, and email verified, see example in HomeController.php
+    // original, just verifies user
+    //      $this->middleware('auth');
+    // add check for email verified
+    //      $this->middleware(['auth','verified']);
+
+Pagination changes ---------------------
+    /var/www/SBS/vendor/laravel/framework/src/Illuminate/Pagination/resources/views/bootstrap-4.blade.php
+    /var/www/SBS/vendor/laravel/framework/src/Illuminate/Pagination/resources/views/default.blade.php
+
+    Double up direction symbol: &rsaquo; changed to: &rsaquo;&rsaquo; 
+    Double up direction symbol: &lsaquo; changed to: &lsaquo;&lsaquo;

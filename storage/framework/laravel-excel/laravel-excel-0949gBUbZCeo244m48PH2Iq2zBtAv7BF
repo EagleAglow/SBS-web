@@ -1,0 +1,27 @@
+NAME,EMAIL,PHONE,SENIORITY,GROUP
+Demo Bidder One,one@demo.com,,10,DEMO
+Demo Bidder Two,two@demo.com,,12,DEMO
+Demo Bidder Three,three@demo.com,,12,DEMO
+Demo Bidder Four,four@demo.com,,12,DEMO
+Demo Bidder Five,five@demo.com,,13,DEMO
+Demo Admin,admin@demo.com,,,NONE
+Demo Superuser,superuser@demo.com,,,NONE
+Demo Supervisor,supervisor@demo.com,,,NONE
+Developer,dev@demo.com,,1,DEMO
+"D'AGNILLO, Gilbert",Gilbert.D'Agnillo@Demo.com,,101,TSU
+"MCCRAY, Hayfa",Hayfa.Mccray@Demo.com,,102,TSU
+"O'HAGAN, Dustin",Dustin.O'Hagan@Demo.com,,103,TSU
+"CARSON, Eric",Eric.Carson@Demo.com,,104,TSU
+"WARNER, Enzo",Enzo.Warner@Demo.com,,125,IRPA
+"MUELLER, Ciaran",Ciaran.Mueller@Demo.com,,139,OIDP
+"WALL, Florence",Florence.Wall@Demo.com,,139,OIDP
+"ELLIS, Chaney",Chaney.Ellis@Demo.com,,139,OIDP
+"HAMILTON, Heidi",Heidi.Hamilton@Demo.com,,140,OIDP
+"ROCHE, Gilbert",Gilbert.Roche@Demo.com,,140,OIDP
+"ROLLAND, Theo",Theo.Rolland@Demo.com,,109,TRAFFIC
+"PHILIPPE, Julien",Julien.Philippe@Demo.com,,127,TRAFFIC
+"LOTT, Janna",Janna.Lott@Demo.com,,139,TRAFFIC
+"ROYBOY, Baptiste",Baptiste.RoyBoy@Demo.com,,900,TNON
+"FAURE, Victor",Victor.Faure@Demo.com,,142,TRAFFIC
+New Guy,New.Guy@demo.com,1114567890,901,TCOM
+NOSPAM,nospam@atomicwizard.com,,902,NONE
