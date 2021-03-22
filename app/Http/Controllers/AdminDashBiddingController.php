@@ -373,7 +373,10 @@ class AdminDashBiddingController extends Controller
                 $state_param = Param::where('param_name','bidding-state')->first();
                 $state_param->update(['string_value' => 'running']);
                 $next_param = Param::where('param_name','bidding-next')->first();
+                // need to toggle value to ensure "updated_at" is changed
+                $next_param->update(['integer_value' => 0]);
                 $next_param->update(['integer_value' => 1]);
+
                 // get second bidder - assumes always at least two
                 $user2 = User::where('bid_order',2)->first();
 
