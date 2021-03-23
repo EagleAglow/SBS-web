@@ -41,13 +41,24 @@ class UserController extends Controller {
     *
     * @return \Illuminate\Http\Response
     */
-    public function index() {
-    //Get all users and pass it to the view
-    // can't use "orderBy" with User collection, nested "sortBy" may not work
+    public function index(Request $request) {
+        //Get all users and pass it to the view
+        // can't use "orderBy" with User collection, nested "sortBy" may not work
+        $my_sort = $request['my_sort'];
+        if(!isset($my_sort)){
+            $my_sort = 'alpha';
+        }
 
-        $users = User::all()->sortBy('bidder_tie_breaker')->sortBy('seniority_date'); 
-        
-        return view('users.index')->with('users', $users);
+        if ($my_sort == 'alpha'){
+            $users = User::all()->sortBy('name'); 
+        } else {
+            if ($my_sort == 'seniority'){
+                $users = User::all()->sortBy('seniority_date'); 
+            } else {
+                $users = User::all()->sortBy('bid_order'); 
+            }
+        }
+        return view('users.index')->with(['users'=> $users,'my_sort'=>$my_sort]);
     }
 
     /**
@@ -163,8 +174,13 @@ class UserController extends Controller {
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-    public function show($id) {
-        return redirect('users'); 
+    public function showshow(Request $request, $id) {
+        $my_sort = $request['my_sort'];
+        if(!isset($my_sort)){
+            $my_sort = 'alpha';
+        }
+
+        return redirect('users')->with(['my_sort'=>$my_sort]); 
     }
 
     /**

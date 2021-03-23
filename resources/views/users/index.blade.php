@@ -8,14 +8,53 @@
 		<div class="col-md-12">
 			<div class="card shadow">
                 <div class="card-header">
-                    <div class="flex row"><div class="col">Admin - Users</div>
-                        <div class="col">
+                    <div class="flex row">
+						<div class="col-md-5">Admin - Users</div>
+
+						@if($my_sort == 'alpha')
+							<div class="col">
+								<div class="row">
+									<form action="{{ url('users' ) }}" method="GET">
+										<input type="hidden" name="my_sort" value="seniority">
+										@csrf
+										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority Order</button>
+									</form>
+								</div>
+								<div class="row" style="font-size:0.8rem;font-weight:500;">Showing alphabetic order</div>
+							</div>
+						@else
+							@if($my_sort == 'seniority')
+							<div class="col">
+								<div class="row">
+									<form action="{{ url('users' ) }}" method="GET">
+										<input type="hidden" name="my_sort" value="bid_order">
+										@csrf
+										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Bidding Order</button>
+									</form>
+								</div>
+								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority order</div>
+							</div>
+							@else
+							<div class="col">
+								<div class="row">
+									<form action="{{ url('users' ) }}" method="GET">
+										<input type="hidden" name="my_sort" value="alpha">
+										@csrf
+										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Alphabetic Order</button>
+									</form>
+								</div>
+								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;&nbsp;Showing bidding order</div>
+							</div>
+							@endif
+						@endif
+
+						<div class="col">
                             <div class="text-right">
 								<a href="{{ route('users.create') }}"><button type="button" class="btn btn-success">Add User</button></a>
                             </div>
                         </div>
-                    </div>
-                </div>
+					</div>
+				</div>
 
                 @include('flash::message')
 
