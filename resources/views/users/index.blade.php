@@ -39,7 +39,7 @@
 								<div class="col">
 									<div class="row">
 										<form action="{{ url('users' ) }}" method="GET">
-											<input type="hidden" name="my_sort" value="alpha">
+											<input type="hidden" name="my_sort" value="s/t">
 											@csrf
 											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority/Tie-breaker Order</button>
 										</form>

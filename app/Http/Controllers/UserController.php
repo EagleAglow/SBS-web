@@ -57,8 +57,8 @@ class UserController extends Controller {
             } else {
                 if ($my_sort == 'bid_order'){
                     $users = User::all()->sortBy('bid_order'); 
-                } else {
-                    $users = User::all()->sortBy('seniority_date')->sortBy('bidder_tie_breaker'); 
+                } else {  // $my_sort = "s/t"
+                    $users = User::all()->sortBy('bidder_tie_breaker')->sortBy('seniority_date'); 
                 }
             }
         }
