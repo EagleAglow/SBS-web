@@ -35,16 +35,29 @@
 								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority order</div>
 							</div>
 							@else
-							<div class="col">
-								<div class="row">
-									<form action="{{ url('users' ) }}" method="GET">
-										<input type="hidden" name="my_sort" value="alpha">
-										@csrf
-										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Alphabetic Order</button>
-									</form>
+								@if($my_sort == 'bid_order')
+								<div class="col">
+									<div class="row">
+										<form action="{{ url('users' ) }}" method="GET">
+											<input type="hidden" name="my_sort" value="alpha">
+											@csrf
+											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority/Tie-breaker Order</button>
+										</form>
+									</div>
+									<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;&nbsp;Showing bidding order</div>
 								</div>
-								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;&nbsp;Showing bidding order</div>
-							</div>
+								@else
+								<div class="col">
+									<div class="row">
+										<form action="{{ url('users' ) }}" method="GET">
+											<input type="hidden" name="my_sort" value="alpha">
+											@csrf
+											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Alphabetic Order</button>
+										</form>
+									</div>
+									<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority/tie-breaker order</div>
+								</div>
+								@endif
 							@endif
 						@endif
 

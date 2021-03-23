@@ -55,7 +55,11 @@ class UserController extends Controller {
             if ($my_sort == 'seniority'){
                 $users = User::all()->sortBy('seniority_date'); 
             } else {
-                $users = User::all()->sortBy('bid_order'); 
+                if ($my_sort == 'bid_order'){
+                    $users = User::all()->sortBy('bid_order'); 
+                } else {
+                    $users = User::all()->sortBy('seniority_date')->sortBy('bidder_tie_breaker'); 
+                }
             }
         }
         return view('users.index')->with(['users'=> $users,'my_sort'=>$my_sort]);
@@ -174,7 +178,7 @@ class UserController extends Controller {
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-    public function showshow(Request $request, $id) {
+    public function show(Request $request, $id) {
         $my_sort = $request['my_sort'];
         if(!isset($my_sort)){
             $my_sort = 'alpha';
