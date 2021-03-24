@@ -136,7 +136,7 @@ class ScheduleLineSetController extends Controller {
 //          'line'=>new DummyFail( 'Message passed to rule class')
 //        ]);
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|numeric', ]);
+        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]);
@@ -162,6 +162,7 @@ class ScheduleLineSetController extends Controller {
 
         $schedule_line = new ScheduleLine();
         $schedule_line->line = $line;
+        $schedule_line->line_with_fill = substr($line . '~~~~', 4);
         $schedule_line->schedule_id = $schedule_id;
         $schedule_line->line_group_id = $line_group_id;
         $schedule_line->comment = $comment;
@@ -219,7 +220,7 @@ class ScheduleLineSetController extends Controller {
         //          'line'=>new DummyFail( 'Message passed to rule class')
         //        ]);
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|numeric', ]);
+        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]); 
@@ -244,7 +245,8 @@ class ScheduleLineSetController extends Controller {
             $$d = $request[$d];
         }
         
-        $schedule_line->line = $line;
+        $schedule_line->line = $line; 
+        $schedule_line->line_with_fill = substr($line . '~~~~', 4);
         $schedule_line->schedule_id = $schedule_id;
         $schedule_line->line_group_id = $line_group_id;
         $schedule_line->comment = $comment;
