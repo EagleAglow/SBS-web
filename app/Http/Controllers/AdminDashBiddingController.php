@@ -397,7 +397,7 @@ class AdminDashBiddingController extends Controller
                         } else {
                             // send to bidders
                             Mail::to($user->email)->send(new ActiveBidderMail($user->name));     
-                            Mail::to($user->email)->send(new NextBidderMail($user2->name));     
+                            Mail::to($user2->email)->send(new NextBidderMail($user2->name));     
                         }
                     }
                 }
