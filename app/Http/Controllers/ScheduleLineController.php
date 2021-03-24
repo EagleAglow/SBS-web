@@ -32,7 +32,7 @@ class ScheduleLineController extends Controller {
     */
     public function index() {
 
-        $schedule_lines = ScheduleLine::paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::orderBy('line_with_fill')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
 
         return view('superusers.schedulelines.index',
             ['schedule_lines'=>$schedule_lines,
@@ -50,7 +50,7 @@ class ScheduleLineController extends Controller {
     */
     public function show(Request $request) {
 
-        $schedule_lines = ScheduleLine::paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::orderBy('line_with_fill')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
 
         $schedule_title = $request['schedule_title'];
         if (!isset($schedule_title)){
@@ -118,7 +118,7 @@ class ScheduleLineController extends Controller {
 //          'line'=>new DummyFail( 'Message passed to rule class')
 //        ]);
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|numeric', ]);
+        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]);
@@ -144,6 +144,7 @@ class ScheduleLineController extends Controller {
 
         $schedule_line = new ScheduleLine();
         $schedule_line->line = $line;
+        $schedule_line->line_with_fill => substr('0000' . $line, -4);
         $schedule_line->schedule_id = $schedule_id;
         $schedule_line->line_group_id = $line_group_id;
         $schedule_line->comment = $comment;
@@ -201,7 +202,7 @@ class ScheduleLineController extends Controller {
         //          'line'=>new DummyFail( 'Message passed to rule class')
         //        ]); 
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|numeric', ]);
+        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]);
@@ -227,6 +228,7 @@ class ScheduleLineController extends Controller {
         }
         
         $schedule_line->line = $line;
+        $schedule_line->line_with_fill => substr('0000' . $line, -4);
         $schedule_line->schedule_id = $schedule_id;
         $schedule_line->line_group_id = $line_group_id;
         $schedule_line->comment = $comment;

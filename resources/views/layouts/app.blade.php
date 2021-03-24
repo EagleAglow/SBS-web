@@ -12,7 +12,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title id="my-title">Schedule Bid System</title>
+    <title id="my-title">Shift Bid Tech</title>
 
     <!-- Scripts -->
     <!-- original
