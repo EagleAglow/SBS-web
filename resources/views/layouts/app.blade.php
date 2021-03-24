@@ -40,7 +40,7 @@
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     </a>
-                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 23MARCH2021-C
+                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 24MARCH2021
                         @if(config('app.debug'))
                             <span style="color:red;"><b> &nbsp; DEBUG MODE!</b></span>
                         @endif 
