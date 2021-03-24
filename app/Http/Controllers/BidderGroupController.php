@@ -52,7 +52,7 @@ class BidderGroupController extends Controller {
     */
     public function store(Request $request) {
         $this->validate($request, [
-            'code'=>'required|min:3|max:8|alpha_dash|unique:bidder_groups,code',
+            'code'=>'required|min:3|max:12|alpha_dash|unique:bidder_groups,code',
             'order'=>'integer',
         ]);
 
@@ -113,7 +113,7 @@ class BidderGroupController extends Controller {
         $bidder_group = BidderGroup::findOrFail($id);
 
         $this->validate($request, [
-            'code'=>'required|min:3|max:8|alpha_dash|unique:bidder_groups,code,'.$id,
+            'code'=>'required|min:3|max:12|alpha_dash|unique:bidder_groups,code,'.$id,
         ]);
 
         $code = strtoupper($request['code']);
