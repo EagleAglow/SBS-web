@@ -21,7 +21,7 @@ class ScheduleLinesTableSeeder extends Seeder
             'barge' => $brg,
             'offsite' => $off,
             'line' => $L,
-            'line_with_fill' => substr('0000' . $L, -4),
+            'line_with_fill' => substr($L . '~~~~', 4),
             'day_01' => DB::table('shift_codes')->where('name', $d01)->first()->id,
             'day_02' => DB::table('shift_codes')->where('name', $d02)->first()->id,
             'day_03' => DB::table('shift_codes')->where('name', $d03)->first()->id,
