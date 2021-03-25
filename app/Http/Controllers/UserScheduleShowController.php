@@ -140,7 +140,7 @@ class UserScheduleShowController extends Controller {
                 // get lines that have been tagged for the user - join succeeds
                 $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
                 ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-                ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_with_fill')
+                ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                 ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
             } else {
                 if($my_sort == 'COMMERCIAL'){
@@ -152,7 +152,7 @@ class UserScheduleShowController extends Controller {
                     // get lines that have been tagged for the user - join succeeds
                     $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
                     ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_with_fill')
+                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                     ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                 } else {
                     if($my_sort == 'TRAFFIC'){
@@ -164,7 +164,7 @@ class UserScheduleShowController extends Controller {
                         // get lines that have been tagged for the user - join succeeds
                         $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
                         ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
-                        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_with_fill')
+                        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                         ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                     } else {
                         // all

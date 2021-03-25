@@ -32,7 +32,7 @@ class ScheduleLineController extends Controller {
     */
     public function index() {
 
-        $schedule_lines = ScheduleLine::orderBy('line_with_fill')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::orderBy('line_natural')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
 
         return view('superusers.schedulelines.index',
             ['schedule_lines'=>$schedule_lines,
@@ -50,7 +50,7 @@ class ScheduleLineController extends Controller {
     */
     public function show(Request $request) {
 
-        $schedule_lines = ScheduleLine::orderBy('line_with_fill')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::orderBy('line_natural')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
 
         $schedule_title = $request['schedule_title'];
         if (!isset($schedule_title)){
