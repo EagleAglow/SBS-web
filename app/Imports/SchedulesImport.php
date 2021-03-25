@@ -92,7 +92,8 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
         return new ScheduleLine([
             'schedule_id' => $schedule_id,
             'line'     => $row['line'],
-            'line_with_fill' => substr($row['line'] . '~~~~', 0, 4),
+            // special handling for "natural sort"
+            'line_natural' => ScheduleLine::natural($row['line']),
             'line_group_id' => $line_group_id,
             'blackout'     => $blackout,
             'nexus'     => $nexus,

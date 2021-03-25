@@ -153,6 +153,32 @@ class ScheduleLine extends Model
           }
     }
 
+    public static function natural($original){
+        // used to fill field 'line_natural' to produce a "natural" sort like 1, 2, 2a, 2b, 20
+        // break original 'line' string into front and back portion where it changes from numeric to alpha
+        // each part is leading filled with "-", then they are concatenated
+        $numeric_string = '';
+        $alpha_string = '';
+        $number = true; // changes when transition is detected
+        $myArray = str_split($original);
+        foreach($myArray as $character){
+            $chr_type = 'X';  // neither alpha nor numeric - we will be skipping dashes and dots
+            if ((ord($character)>47) And (ord($character)<58)){ $chr_type = 'N'; } // numeric
+            if ((ord(strtoupper($character))>64) And (ord(strtoupper($character))<91)){ $chr_type = 'A'; } // alpha
+            if ($chr_type == 'N'){
+                if ($number){
+                    $numeric_string = $numeric_string . $character;
+                } 
+            }
+            if ($chr_type == 'A'){
+                if ($number){
+                    $number = false; // ignore any further digits
+                    $alpha_string = $alpha_string . $character;
+                }
+            }
+        }
+        return substr('----' . $numeric_string, -4) . substr('----' . $alpha_string, -4);
+    }
 
     public function schedule()
     {

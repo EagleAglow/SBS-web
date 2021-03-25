@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\ScheduleLine; 
 
 class ScheduleLinesTableSeeder extends Seeder
 {
@@ -21,7 +22,8 @@ class ScheduleLinesTableSeeder extends Seeder
             'barge' => $brg,
             'offsite' => $off,
             'line' => $L,
-            'line_with_fill' => substr($L . '~~~~', 0, 4),
+            // special handling for "natural sort
+            'line_natural' => ScheduleLine::natural($L),
             'day_01' => DB::table('shift_codes')->where('name', $d01)->first()->id,
             'day_02' => DB::table('shift_codes')->where('name', $d02)->first()->id,
             'day_03' => DB::table('shift_codes')->where('name', $d03)->first()->id,
@@ -80,7 +82,6 @@ class ScheduleLinesTableSeeder extends Seeder
             'day_56' => DB::table('shift_codes')->where('name', $d56)->first()->id,
          ]);
     }
-
 
     public function run()
     {
