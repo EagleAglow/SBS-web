@@ -27,6 +27,7 @@
 							<th class="text-center" scope="col">Code</th>
 							<th class="text-center" scope="col">Order</th>
 							<th class="text-center" scope="col">Name</th>
+							<th class="text-center" scope="col">Role and<br>Permission</th>
 							<th class="text-center" scope="col">Action</th>
 							</tr>
 						</thead>
@@ -36,6 +37,23 @@
 							<td class="text-center">{{ $line_group->code }}</td>
 							<td class="text-center">{{ $line_group->order }}</td>
 							<td class="text-center">{{ $line_group->name }}</td>
+							<td class="text-center">
+							@php
+								if ($line_group->code == 'NONE'){
+									if ((count(Spatie\Permission\Models\Role::where('name','bid-for-'.strtolower($line_group->code))->get()) == 0) And (count(Spatie\Permission\Models\Permission::where('name','bid-'.strtolower($line_group->code))->get()) == 0)){
+										echo 'OK';
+									} else {
+										echo 'ERROR';
+									}
+								} else {
+									if ((count(Spatie\Permission\Models\Role::where('name','bid-for-'.strtolower($line_group->code))->get()) == 1) And (count(Spatie\Permission\Models\Permission::where('name','bid-'.strtolower($line_group->code))->get()) == 1)){
+										echo 'OK';
+									} else {
+										echo 'ERROR';
+									}
+								}
+							@endphp
+							</td>
 							<td>
 								<div class="row">
 									<div style="margin-left:auto;margin-right:auto;">
