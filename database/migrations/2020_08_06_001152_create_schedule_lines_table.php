@@ -19,7 +19,7 @@ class CreateScheduleLinesTable extends Migration
             $table->foreignId('line_group_id');
             $table->string('line',4);
             // special handling for "natural sort"
-            $table->string('line_natural',8);  // two parts of 'line', each part leading "-" filled, used for "natural" sorting
+            $table->string('line_natural',8)->nullable;  // two parts of 'line', each part leading "-" filled, used for "natural" sorting
 
             // composite index, named 'magic'
             $table->unique(['schedule_id', 'line_group_id', 'line'], 'magic');

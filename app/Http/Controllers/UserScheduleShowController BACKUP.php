@@ -36,15 +36,11 @@ class UserScheduleShowController extends Controller {
 
         $my_selection = $request['my_selection'];
         if(!isset($my_selection)){
-            $my_selection = 'all';
+            $my_selection = 'filter';
         }
-        $next_selection = $request['next_selection'];
-        if(!isset($my_selection)){
-            $next_selection = 'all';
-        }
-        $show_all = $request['show_all'];  // show traffic and commercial
-        if(!isset($show_all)){
-            $show_all = 'yes';
+        $tandc = $request['tandc'];  // show traffic and commercial
+        if(!isset($tandc)){
+            $tandc = 'yes';
         }
 
 
@@ -55,9 +51,7 @@ class UserScheduleShowController extends Controller {
             'last_day'=>$last_day,
             'page'=>$page,
             'id'=>$id,
-            'my_selection'=>$my_selection,
-            'next_selection'=>$next_selection,
-            'show_all'=>$show_all,
+            'tandc'=>$tandc,
             ]);
     }
  
@@ -67,90 +61,116 @@ class UserScheduleShowController extends Controller {
             abort('401');
         }
 
-        $user = auth()->user();  // actual user who is loading page - used to handle picks
-        // first, identify the appropriate user
-        $appropriate_user = auth()->user();  // unless the user is a supervisor (while not bidding for themselves)
-        if ($appropriate_user->hasRole('supervisor')){
-            if (!$appropriate_user->hasRole('bidder-active')){
-                // find the user that is the active bidder (use first, even though  should be only one)
-                $active_bidder_role = Role::where('name','bidder-active')->first();
-                $active_bidders = User::Role($active_bidder_role)->get();
-                if (count($active_bidders) > 0 ){
-                    $appropriate_user = $active_bidders->first();
-                }
-            }
+        $my_selection = $request['my_selection'];
+        if(!isset($my_selection)){
+            $my_selection = 'filter';
         }
-        $pick_uid = $appropriate_user->id;    // get user id for later join to user picks
-        // identify correct line groups
-        $role_names = $appropriate_user->getRoleNames();
-        $list_ids = array();  //empty array for line group ids
+        $tandc = $request['tandc'];
+        if(!isset($tandc)){
+            $tandc = 'yes';
+        }
+
+        $user = auth()->user();
+        // original idea...
+        // bidder group codes: DEMO, OIDP, TSU, IRPA, TRAFFIC, COM, TANDC
+        // not using bidder groups for this, to permit some odd people that don't doe both TCOM and TNON
+        // select lines that this user can bid, based on role(s)
+        // roles: bid-for-demo, bid-for-oidp, bid-for-tsu, bid-for-irpa, bid-for-tcom, bid-for-tnon
+        // line group codes: DEMO, OIDP, TSU, IRPA, TCOM, TNON
+        // also, flag when both TRAFFIC and COM are in list, then capture id
+        //
+        // rewritten - still has odd handling for TRAFFIC, but otherwise
+        // role like 'bid-for-xyz' goes with line group 'XYZ'
+        $tcount = 0;  // tracks TRAFFIC + COM in order to show "TANDC" for filter
+        $list = array();  //empty array
+        $role_names = $user->getRoleNames();
         foreach ($role_names as $role_name) {
             if (strpos($role_name, 'bid-for-') !== false) {
                 $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
-            }
-        }
-
-        // presentation selection = which line groups to show
-        // if the bidder can only bid one line group, set 'my_selection' to 'all' 
-        //    and 'next_selection' to 'all' (lowercase to differ from any line group code)
-        // if the bidder can bid more than one line group, rotate 'my_selection' through 'all' (lowercase to differ from
-        //    line group names), and then each line group name (uppercase).  'next_selection' shows subsequent choice
-
-        $my_selection = $request['my_selection'];
-        if(!isset($my_selection)){
-            if (count($list_ids) <2){
-                $my_selection = 'all';
-                $next_selection = 'all';
-            } else {
-                $my_selection = 'all';
-            }
-        }
-        if(!isset($next_selection)){
-            // set next selection to whatever follows 'my_selection' in the list
-            if ($my_selection == 'all'){
-                $next_selection = LineGroup::where('id',$list_ids[0])->first()['code'];
-            } else {
-                $key_id = LineGroup::where('code',$my_selection)->first()['id'];
-                if (isset($key_id)){
-                    $key = array_search(key_id);
-                    if (($key +1) >= count($list_ids)){
-                        // wrap to 'all'
-                        $next_selection = 'all';
-                    } else {
-                        $next_selection = LineGroup::where('id',$list_ids[$key +1])->first()['code'];     
-                    }
-                } else {
-                    // unlikely error - my_selection not in list
-                    $my_selection = 'all';
-                    $next_selection = 'all';
+                if (($look4 == 'TRAFFIC') Or ($look4 == 'COMMERCIAL')){
+                    $tcount = $tcount +1;
                 }
+                $list[] = LineGroup::where('code',$look4)->first()['id'];
             }
         }
+        // get user id for later join to user picks
+        $pick_uid = $user->id;
 
-        // presentation filtering = whether or not to show only the lines are left for bidding
-        // set 'show_all' to 'yes' or 'no'
-        if(!isset($show_all)){
-            $show_all = 'yes';
+        // deal with bidding by supervisor... if there is an active bidder, use their role to get line group(s)
+        if ($user->hasRole('supervisor')){
+            $other_role = Role::where('name','bidder-active')->first();
+            $who = User::Role($other_role)->get();
+            if (count($who) > 0 ){
+                $who = $who->first();
+                $role_names = $who->getRoleNames();
+                $list = array();  //empty array
+                foreach ($role_names as $role_name) {
+                    if (strpos($role_name, 'bid-for-') !== false) {
+                        $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                        if (($look4 == 'TRAFFIC') Or ($look4 == 'COMMERCIAL')){
+                            $tcount = $tcount +1;
+                        }
+                        $list[] = LineGroup::where('code',$look4)->first()['id'];
+                    }
+                }
+                // get user id for later join to user picks
+                $pick_uid = $who->id;
+            }
+        } 
+
+        // cycle $my_selection between 'filter', 'TRAFFIC', 'COMMERCIAL', all', but only use 'TRAFFIC' and 'COMMERCIAL' if both are in $list
+        // use $tandc = 'yes' or 'no' to handle that - 
+        // getting ugly in here - would not want this for a more flexible configuration
+        if ($tcount >1 ){
+            $tandc = 'yes';
+        } else {
+            $tandc = 'no';
         }
+        $tcom_id = LineGroup::where('code','COMMERCIAL')->first()['id'];
+        $tnon_id = LineGroup::where('code','TRAFFIC')->first()['id'];
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
         if ($schedule->approved == true){
-            if($my_selection == 'all'){
-                // all 
-                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list_ids)->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines; //Get first 5 ScheduleLines
-            } else {
-                // filter to a single line group
-                // collection of picks 
+            if($my_selection == 'filter'){
+                // collection of picks
                 $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
                 // get lines that have not been tagged for the user
-                $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $key_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
                 ->select('schedule_lines.*', DB::raw('99999 as rank'));
                 // get lines that have been tagged for the user - join succeeds
-                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$key_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
                 ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
                 ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                 ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+            } else {
+                if($my_selection == 'COMMERCIAL'){
+                    // collection of picks
+                    $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+                    // get lines that have not been tagged for the user
+                    $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $tcom_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                    // get lines that have been tagged for the user - join succeeds
+                    $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
+                    ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+                } else {
+                    if($my_selection == 'TRAFFIC'){
+                        // collection of picks
+                        $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+                        // get lines that have not been tagged for the user
+                        $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $tnon_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                        ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                        // get lines that have been tagged for the user - join succeeds
+                        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->where('blackout',0)->whereNull('schedule_lines.user_id')
+                        ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                        ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
+                        ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
+                    } else {
+                        // all
+                        $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list)->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines; //Get first 5 ScheduleLines
+                    }
+                }
             }
         } else {
             // not approved - return an empty object
@@ -178,8 +198,7 @@ class UserScheduleShowController extends Controller {
         $schedule_line_id = $request['schedule_line_id'];
         if (isset($schedule_line_id)){
             if (isset($pick)){
-//                if ($user->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
-                if ($user->hasPermission('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
+                if ($user->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
                     if ($pick == 'tag'){
                         // if already tagged, this is a page refresh
                         if (!Pick::where('schedule_line_id',$schedule_line_id)->where('picks.user_id',$uid)->get()->count() > 0){
@@ -261,8 +280,7 @@ class UserScheduleShowController extends Controller {
             'page'=>$page,
             'id'=>$id,
             'my_selection'=>$my_selection,
-            'next_selection'=>$next_selection,
-            'show_all'=>$show_all,
+            'tandc'=>$tandc,
             ]);
 
     }

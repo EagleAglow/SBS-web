@@ -33,13 +33,33 @@ class BidderDashController extends Controller
      */
     public function index()
     {
-//        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
-        if (Auth::user()->hasPermissionTo('bid-self')){
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
             return view('bidders.dash');
         } else {
             abort('401');
         }
     }
+
+// WRONG PLACE for this!
+// commented, pending testing - REMOVE LATER
+    // public function exportExcelBids($slug) 
+    // {
+    //     if (Auth::user()->hasRole('admin')){
+    //         // if bidding state is complete, switch from complete to reported
+    //         $state_param = Param::where('param_name','bidding-state')->first();
+    //         if (isset($state_param)){
+    //             $test = $state_param->string_value;
+    //             if ($test == 'complete') {
+    //                 $state_param->update(['string_value' => 'reported']);
+    //             }
+    //         }
+
+    //         return Excel::download(new BidsExport, 'bids.'.$slug);
+    //     } else {
+    //         abort('401');
+    //     }
+    // }
+
 
 
 //    generate and download ics file for this schedule_line id 

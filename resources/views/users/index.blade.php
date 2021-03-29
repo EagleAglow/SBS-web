@@ -11,11 +11,11 @@
                     <div class="flex row">
 						<div class="col-md-5">Admin - Users</div>
 
-						@if($my_sort == 'alpha')
+						@if($my_selection == 'alpha')
 							<div class="col">
 								<div class="row">
 									<form action="{{ url('users' ) }}" method="GET">
-										<input type="hidden" name="my_sort" value="seniority">
+										<input type="hidden" name="my_selection" value="seniority">
 										@csrf
 										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority Order</button>
 									</form>
@@ -23,11 +23,11 @@
 								<div class="row" style="font-size:0.8rem;font-weight:500;">Showing alphabetic order</div>
 							</div>
 						@else
-							@if($my_sort == 'seniority')
+							@if($my_selection == 'seniority')
 							<div class="col">
 								<div class="row">
 									<form action="{{ url('users' ) }}" method="GET">
-										<input type="hidden" name="my_sort" value="bid_order">
+										<input type="hidden" name="my_selection" value="bid_order">
 										@csrf
 										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Bidding Order</button>
 									</form>
@@ -35,11 +35,11 @@
 								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority order</div>
 							</div>
 							@else
-								@if($my_sort == 'bid_order')
+								@if($my_selection == 'bid_order')
 								<div class="col">
 									<div class="row">
 										<form action="{{ url('users' ) }}" method="GET">
-											<input type="hidden" name="my_sort" value="s/t">
+											<input type="hidden" name="my_selection" value="s/t">
 											@csrf
 											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority/Tie-breaker Order</button>
 										</form>
@@ -50,7 +50,7 @@
 								<div class="col">
 									<div class="row">
 										<form action="{{ url('users' ) }}" method="GET">
-											<input type="hidden" name="my_sort" value="alpha">
+											<input type="hidden" name="my_selection" value="alpha">
 											@csrf
 											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Alphabetic Order</button>
 										</form>

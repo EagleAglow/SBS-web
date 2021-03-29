@@ -160,9 +160,12 @@ class LineGroupController extends Controller {
             if (Permission::where('name','bid-' . $code)->count()>0){
                 $permission = Permission::findByName( 'bid-' . $code);
                 $permission->delete();
-            } 
-
+            }
             $line_group->delete();
+
+            // delete matching role
+            Role::where('name', 'bid-for-' . $code)->delete();
+
             flash('Shift Code: '. $line_group->code.' deleted!')->success();
             return redirect()->route('linegroups.index');
         } else {

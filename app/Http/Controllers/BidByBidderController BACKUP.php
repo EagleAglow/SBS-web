@@ -47,9 +47,8 @@ class BidByBidderController extends Controller
      */
     public function index()
     {
-//        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
-        if (Auth::user()->hasPermission('bid-self')){
-                return view('bidders.dash');
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
+            return view('bidders.dash');
         } else {
             abort('401');
         }

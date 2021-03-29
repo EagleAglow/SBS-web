@@ -12,7 +12,7 @@ class ScheduleLine extends Model
      * @var array
      */
     protected $fillable = [
-        'line', 'schedule_id','line_group_id', 'comment', 'user_id', 'bid_at',
+        'line', 'line_natural', 'schedule_id','line_group_id', 'comment', 'user_id', 'bid_at',
         'blackout', 'nexus', 'barge', 'offsite', 'day_01',
         'day_02', 'day_03', 'day_04', 'day_05', 'day_06',
         'day_07', 'day_08', 'day_09', 'day_10', 'day_11',

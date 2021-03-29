@@ -44,25 +44,25 @@ class UserController extends Controller {
     public function index(Request $request) {
         //Get all users and pass it to the view
         // can't use "orderBy" with User collection, nested "sortBy" may not work
-        $my_sort = $request['my_sort'];
-        if(!isset($my_sort)){
-            $my_sort = 'alpha';
+        $my_selection = $request['my_selection'];
+        if(!isset($my_selection)){
+            $my_selection = 'alpha';
         }
 
-        if ($my_sort == 'alpha'){
+        if ($my_selection == 'alpha'){
             $users = User::all()->sortBy('name'); 
         } else {
-            if ($my_sort == 'seniority'){
+            if ($my_selection == 'seniority'){
                 $users = User::all()->sortBy('seniority_date'); 
             } else {
-                if ($my_sort == 'bid_order'){
+                if ($my_selection == 'bid_order'){
                     $users = User::all()->sortBy('bid_order'); 
-                } else {  // $my_sort = "s/t"
+                } else {  // $my_selection = "s/t"
                     $users = User::all()->sortBy('bidder_tie_breaker')->sortBy('seniority_date'); 
                 }
             }
         }
-        return view('users.index')->with(['users'=> $users,'my_sort'=>$my_sort]);
+        return view('users.index')->with(['users'=> $users,'my_selection'=>$my_selection]);
     }
 
     /**
@@ -179,12 +179,12 @@ class UserController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function show(Request $request, $id) {
-        $my_sort = $request['my_sort'];
-        if(!isset($my_sort)){
-            $my_sort = 'alpha';
+        $my_selection = $request['my_selection'];
+        if(!isset($my_selection)){
+            $my_selection = 'alpha';
         }
 
-        return redirect('users')->with(['my_sort'=>$my_sort]); 
+        return redirect('users')->with(['my_selection'=>$my_selection]); 
     }
 
     /**

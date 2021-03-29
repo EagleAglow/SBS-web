@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use App\User;
-
 
 class HomeController extends Controller
 {
@@ -34,8 +31,7 @@ class HomeController extends Controller
     public function index()
     {
         // reroute to different dashboards
-//        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
-        if (Auth::user()->hasPermissionTo('bid-self')){
+        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
                 return view('bidders.dash');
         } else {
             if ( Auth::user()->hasRole('supervisor')) {
