@@ -32,7 +32,7 @@
                             <div class="col-md-8">
                                 <select required class="form-control" name="schedule_id" id="schedule_id">
                                     @foreach($schedules as $schedule)
-                                        <option value="{{ $schedule->id }}" {{ $schedule->id == $schedule_line->schedule_id ? 'selected':'disabled="disabled"' }}>{{ $schedule->title }}</option>
+                                        <option value="{{ $schedule->id }}" {{ $schedule->id == $schedule_line->schedule_id ? 'selected':'' }}>{{ $schedule->title }}</option>
                                     @endforeach
                                 </select>
                             </div>

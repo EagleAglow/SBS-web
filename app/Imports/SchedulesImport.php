@@ -38,6 +38,9 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
         $offsite  = $row['offsite'];
         if (!$offsite == 1){ $offsite = 0;}
 
+        $comment = $row['comment'];
+        if (!isset($comment)) { $comment = ''; }
+
         // process record, looking for errors - if any problem, record goes to an "Import Errors" schedule
         // look for a schedule titled "Import Errors" - if not found, create it
         $schedules = Schedule::select('id')->where('title','=', 'Import Errors')->get();
@@ -60,6 +63,7 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
             $schedule_id = $schedules->first()->id;
         } else {
             $schedule_id = $error_schedule_id;
+            $comment = $comment . 'Unknown schedule: ' . $schedule_title;
         }
 
         $line_group_code = $row['group'];
@@ -69,23 +73,39 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
         } else {
             $line_group_id = LineGroup::select('id')->where('code','=', 'NONE')->get()->first()->id;
             $schedule_id = $error_schedule_id;
+            if (strlen($comment)>0){ $comment = $comment . ' / ';}
+            $comment = $comment . 'Unknown group: ' . $line_group_code;
         }
 
         // use day off code for any errors
         $error_id = ShiftCode::select('id')->where('name','=', '----')->get()->first()->id;
         // check shift codes
+        $bad_codes = '';
         for ($n = 1; $n <= 56; $n++) {
             $d = 'day_' . substr(('00' . $n),-2);
-            $code_ids = ShiftCode::select('id')->where('name','=', $row[$d])->get();
+            $a_code = $row[$d];
+            $code_ids = ShiftCode::select('id')->where('name','=', $a_code)->get();
             if (count($code_ids)>0){
                 $$d = $code_ids->first()->id;
             } else {
                 $$d = $error_id;
                 $schedule_id = $error_schedule_id;
-            } 
+                if (strlen($bad_codes)>0){
+                    if (strpos($bad_codes, $a_code ) !== false) {
+                        // do nothing
+                    } else {
+                        $bad_codes = $bad_codes . ' ' . $a_code;
+                    }
+                } else {
+                    $bad_codes = $a_code;
+                }
+            }
         }
-
-
+        if (strlen($bad_codes) > 0){
+            if (strlen($comment)>0){ $comment = $comment . ' / ';}
+            $comment = $comment . 'Unknown shift code(s): ' . $bad_codes;
+        }
+    
 
 
 
@@ -99,7 +119,7 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
             'nexus'     => $nexus,
             'barge'     => $barge,
             'offsite'   => $offsite,
-            'comment'     => $row['comment'],
+            'comment'   => $comment,
 
             'day_01' => $day_01,
             'day_02' => $day_02,

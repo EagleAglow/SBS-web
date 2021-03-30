@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ImportExportUsersController; 
+use App\Http\Controllers\ImportExportShiftCodesController; 
 use App\Http\Controllers\ImportExportSchedulesController; 
 use App\Http\Controllers\ExportBidsController;
 
@@ -137,10 +138,16 @@ Route::prefix('admins')->group(function () {
     Route::get('excel-csv-file-users', [ImportExportUsersController::class, 'index']);
     Route::post('import-excel-csv-file-users', [ImportExportUsersController::class, 'importExcelCSVUsers']);
     Route::get('export-excel-csv-file-users/{slug}', [ImportExportUsersController::class, 'exportExcelCSVUsers']);
+
     Route::get('excel-csv-file-schedules', [ImportExportSchedulesController::class, 'index']);
     Route::post('import-excel-csv-file-schedules', [ImportExportSchedulesController::class, 'importExcelCSVSchedules']);
     Route::get('export-excel-csv-file-schedules/{slug}', [ImportExportSchedulesController::class, 'exportExcelCSVSchedules']);
+
     Route::get('export-excel-file-bids/{slug}', [ExportBidsController::class, 'exportExcelBids']);
+
+    Route::get('excel-csv-file-shift-codes', [ImportExportShiftCodesController::class, 'index']);
+    Route::post('import-excel-csv-file-shift-codes', [ImportExportShiftCodesController::class, 'importExcelCSVShiftCodes']);
+    Route::get('export-excel-csv-file-shift-codes/{slug}', [ImportExportShiftCodesController::class, 'exportExcelCSVShiftCodes']);
 
     // bulk user delete
     Route::get('/userpurge', 'ImportExportUsersController@userpurge')->name('admins.userpurge');

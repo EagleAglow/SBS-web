@@ -118,11 +118,12 @@ class ScheduleLineController extends Controller {
 //          'line'=>new DummyFail( 'Message passed to rule class')
 //        ]);
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
+        $this->validate($request, ['line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]);
         $comment = $request['comment'];
+        if (!isset($comment)) { $comment = ''; }
 
         // checkboxes
         $blackout = $request['blackout'];
@@ -203,12 +204,13 @@ class ScheduleLineController extends Controller {
         //          'line'=>new DummyFail( 'Message passed to rule class')
         //        ]); 
 
-        $this->validate($request, ['comment'=>'required','line'=>'required|alpha_num|max:4', ]);
+        $this->validate($request, ['line'=>'required|alpha_num|max:4', ]);
         $this->validate($request, [ 
             'line'=>new UniqueLineGroupSchedule( $line, $line_group_id, $schedule_id, $action )
         ]);
 
         $comment = $request['comment'];
+        if (!isset($comment)) { $comment = ''; }
         
         // checkboxes
         $blackout = $request['blackout'];

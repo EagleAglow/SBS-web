@@ -77,6 +77,9 @@
                             @if( !Request::is('admins/excel-csv-file-schedules'))
                                 <a class="dropdown-item" href="{{ url('admins/excel-csv-file-schedules') }}">Admin - Schedules Import/Export</a>
                             @endif
+                            @if( !Request::is('admins/excel-csv-file-shift-codes'))
+                                <a class="dropdown-item" href="{{ url('admins/excel-csv-file-shift-codes') }}">Admin - Shift Codes Import/Export</a>
+                            @endif
                             @if( !Request::is('admins/logitems'))
                                 <a class="dropdown-item" href="{{ url('admins/logitems') }}">Admin - Log</a>
                             @endif

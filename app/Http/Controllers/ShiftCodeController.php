@@ -26,7 +26,7 @@ class ShiftCodeController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function index() {
-        $shift_codes = ShiftCode::all(); //Get all shiftcodes
+        $shift_codes = ShiftCode::all()->sortBy('name'); //Get all shiftcodes
 
         return view('admins.shiftcodes.index')->with('shift_codes', $shift_codes);
     }
