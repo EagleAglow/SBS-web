@@ -117,6 +117,11 @@
         }
     } 
 
+
+    if (!isset($trap)){
+        $trap = '?';
+    }
+
 @endphp
 
 
@@ -128,7 +133,7 @@
 			<div class="card shadow">
 
                 <div class="card-header">
-                    <div class="row">my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} / show_all=> {{$show_all}}
+                    <div class="row" style="color:red;font-size:0.85rem;margin-left:0.5rem;">DEBUGGING - REMOVE LATER - my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} / show_all=> {{$show_all}} / trap=> {{$trap}}
                     </div>
                 </div>
 
@@ -161,10 +166,10 @@
                             </div>
 {{--
                             message and button(s) depend on values of: $my_selection, $next_selection, $show_all
-                            if $my_selection = 'all' AND $next_selection = 'all' only one line group is available
+                            if $my_selection = $next_selection, then only one line group is available
 --}}                            
 
-                            @if( ($my_selection == 'all') And ($next_selection == 'all' ))
+                            @if( $my_selection == $next_selection )
                                 @if ($show_all == 'yes')
                                     <div class="col">
                                         <div class="row">
@@ -174,19 +179,20 @@
 
                                     <div class="col">
                                         <div class="row text-right">
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing your group lines</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="all">
-                                                <input type="hidden" name="next_selection" value="all">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="no">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Hide Unbiddable Lines</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;A=Hide Unbiddable Lines</button>
                                             </form>
                                             </div>
+                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
                                         </div>
                                     </div>
                                 @else
@@ -198,19 +204,20 @@
 
                                     <div class="col">
                                         <div class="row text-right">
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing biddable group lines</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="all">
-                                                <input type="hidden" name="next_selection" value="all">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="yes">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show All cYour Group Lines</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;B=Show Full Line List</button>
                                             </form>
                                             </div>
+                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>
                                         </div>
                                     </div>
                                 @endif
@@ -218,73 +225,93 @@
                                 @if ($show_all == 'yes')
                                     <div class="col">
                                         <div class="row">
-                                        <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing only the lines you can bid</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="all">
-                                                <input type="hidden" name="next_selection" value="all">
-                                                <input type="hidden" name="show_all" value="yes">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="yes">
+                                                <input type="hidden" name="show_all" value={{ $show_all }}>
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show All Lines For Your Bidding Group(s)</button>
+                                                @if ($next_selection == 'all')
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;C=Show Combined Groups</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;C=Show {{ $next_selection }} Group</button>
+                                                @endif
                                             </form>
                                             </div>
+                                            @if ($my_selection == 'all')
+                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing combined groups</div>
+                                            @else
+                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{ $my_selection }} group</div>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="col">
                                         <div class="row text-right">
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{$my_selection}} lines</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{$my_selection}}">
-                                                <input type="hidden" name="next_selection" value="{{$next_selection}}">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="no">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;>&nbsp;Show Only Lines You Can Bid</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;D=Hide Unbiddable Lines</button>
                                             </form>
+                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
                                             </div>
                                         </div>
                                     </div>
                                 @else
                                     <div class="col">
                                         <div class="row">
-                                        <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing only the lines you can bid</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="all">
-                                                <input type="hidden" name="next_selection" value="all">
-                                                <input type="hidden" name="show_all" value="yes">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="yes">
+                                                <input type="hidden" name="show_all" value={{ $show_all }}>
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show All Lines For Your Bidding Group(s)</button>
+                                                @if ($next_selection == 'all')
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;E=Show Combined Groups</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;E=Show {{ $next_selection }} Group</button>
+                                                @endif
                                             </form>
                                             </div>
+                                            @if ($my_selection == 'all')
+                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing combined groups</div>
+                                            @else
+                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{ $my_selection }} group</div>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="col">
                                         <div class="row text-right">
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{$my_selection}} lines</div>
                                             <div>
                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                                 <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{$my_selection}}">
-                                                <input type="hidden" name="next_selection" value="{{$next_selection}}">
-                                                <input type="hidden" name="show_all" value="no">
+                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                <input type="hidden" name="go_next" value="no">
+                                                <input type="hidden" name="show_all" value="yes">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;>&nbsp;Show Only Lines You Can Bid</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;F=Show Full Line List</button>
                                             </form>
                                             </div>
+                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>
                                         </div>
                                     </div>
                                 @endif
@@ -311,7 +338,8 @@
                                     <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                     <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
-                                    <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                    <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                    <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                     <input type="hidden" name="show_all" value={{$show_all}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary btn-shift">&#8656;&nbsp;Earlier</button>
@@ -345,7 +373,8 @@
                                     <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
                                     <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
-                                    <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                    <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                    <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                     <input type="hidden" name="show_all" value={{$show_all}}>
                                     @csrf
                                     <button type="submit" class="btn btn-secondary">Later&nbsp;&#8658;</button>
@@ -528,7 +557,8 @@
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="tag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                                 <input type="hidden" name="show_all" value={{$show_all}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
@@ -540,7 +570,8 @@
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="untag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                                 <input type="hidden" name="show_all" value={{$show_all}}>
                                                                                 @csrf
                                                                                 <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
@@ -552,7 +583,8 @@
                                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                                     <input type="hidden" name="pick" value="boost">
                                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                                    <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                                    <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                                    <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                                     <input type="hidden" name="show_all" value={{$show_all}}>
                                                                                     @csrf
                                                                                     <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
@@ -571,7 +603,8 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="tag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                         <input type="hidden" name="show_all" value={{$show_all}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
@@ -583,7 +616,8 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="untag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                         <input type="hidden" name="show_all" value={{$show_all}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
@@ -595,7 +629,8 @@
                                                                             <input type="hidden" name="page" value="{{ $page }}">
                                                                             <input type="hidden" name="pick" value="boost">
                                                                             <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                            <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                            <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                            <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                             <input type="hidden" name="show_all" value={{$show_all}}>
                                                                             @csrf
                                                                             <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
@@ -613,7 +648,8 @@
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="tag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                    <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                    <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                    <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                     <input type="hidden" name="show_all" value={{$show_all}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
@@ -625,7 +661,8 @@
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="untag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                    <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                    <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                    <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                     <input type="hidden" name="show_all" value={{$show_all}}>
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-primary btn-my-edit pull-left">Untag</button>
@@ -637,7 +674,8 @@
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="boost">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
-                                                                        <input type="hidden" name="my_selection" value={{$my_selection}}>
+                                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                                         <input type="hidden" name="show_all" value={{$show_all}}>
                                                                         @csrf
                                                                         <button type="submit" class="btn btn-outline-primary btn-my-tag float-right">
@@ -659,7 +697,7 @@
 
                                     @php
                                         // things to include with pagination 
-                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_selection'=>$my_selection,'show_all'=>$show_all);
+                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_selection'=>$my_selection,'next_selection'=>$next_selection,'show_all'=>$show_all);
                                     @endphp
 
                                     {{ $schedule_lines->appends($params)->links() }}    
