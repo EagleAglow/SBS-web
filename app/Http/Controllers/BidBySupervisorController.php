@@ -202,6 +202,10 @@ abort('401');  // test to see if we are hitting this
                         } else {
                             // send to bidder
                             Mail::to($who->email)->send(new BidSelectionMail($who->name, $schedule_line->id));
+                            $note = 'Email for completed bid sent to: ' . $who->name . ' (' . $who->email . ')';
+                            $log_item = new LogItem();
+                            $log_item->note = $note;
+                            $log_item->save();
                         }
                     }
                 }
@@ -232,7 +236,10 @@ abort('401');  // test to see if we are hitting this
                             } else {
                                 // send to bidder
                                 Mail::to($who->email)->send(new ActiveBidderMail($who->name));
-
+                                $note = 'Email for active bidder sent to: ' . $who->name . ' (' . $who->email . ')';
+                                $log_item = new LogItem();
+                                $log_item->note = $note;
+                                $log_item->save();
                             }
                         }
                     }
@@ -255,6 +262,10 @@ abort('401');  // test to see if we are hitting this
                                 if (isset($who->phone_number)){
                                     if (strlen($who->phone_number)>0){
                                         LaraTwilio::notify($who->phone_number, 'Hello '. $who->name . '- You can bid now, you are the active bidder.');
+                                        $note = 'Text for active bidder sent to: ' . $who->name . ' (' . $who->phone_number . ')';
+                                        $log_item = new LogItem();
+                                        $log_item->note = $note;
+                                        $log_item->save();
                                     }
                                 }
                             }
@@ -281,7 +292,10 @@ abort('401');  // test to see if we are hitting this
                                 } else {
                                     // send to bidder
                                     Mail::to($who2->email)->send(new NextBidderMail($who2->name));
-
+                                    $note = 'Email for "next" bidder sent to: ' . $who2->name . ' (' . $who2->email . ')';
+                                    $log_item = new LogItem();
+                                    $log_item->note = $note;
+                                    $log_item->save();
                                 }
                             }
                         }
@@ -304,6 +318,10 @@ abort('401');  // test to see if we are hitting this
                                     if (isset($who2->phone_number)){
                                         if (strlen($who2->phone_number)>0){
                                             LaraTwilio::notify($who2->phone_number, 'Hello '. $who2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                            $note = 'Text for "next" bidder sent to: ' . $who2->name . ' (' . $who2->phone_number . ')';
+                                            $log_item = new LogItem();
+                                            $log_item->note = $note;
+                                            $log_item->save();
                                         }
                                     }
                                 }
