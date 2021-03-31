@@ -397,7 +397,16 @@ class AdminDashBiddingController extends Controller
                         } else {
                             // send to bidders
                             Mail::to($user->email)->send(new ActiveBidderMail($user->name));     
-                            Mail::to($user2->email)->send(new NextBidderMail($user2->name));     
+                            $note = 'Email for active bidder sent to: ' . $user->name . ' (' . $user->email . ')';
+                            $log_item = new LogItem();
+                            $log_item->note = $note;
+                            $log_item->save();
+
+                            Mail::to($user2->email)->send(new NextBidderMail($user2->name));
+                            $note = 'Email for "next" bidder sent to: ' . $user2->name . ' (' . $user2->email . ')';
+                            $log_item = new LogItem();
+                            $log_item->note = $note;
+                            $log_item->save();
                         }
                     }
                 }
@@ -421,12 +430,20 @@ class AdminDashBiddingController extends Controller
                             if (isset($user->phone_number)){
                                 if (strlen($user->phone_number)>0){
                                     LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.');
+                                    $note = 'Text for active bidder sent to: ' . $user->name . ' (' . $user->phone_number . ')';
+                                    $log_item = new LogItem();
+                                    $log_item->note = $note;
+                                    $log_item->save();
                                 }
                             }
                             // send to next bidder, if they have a number
                             if (isset($user2->phone_number)){
                                 if (strlen($user2->phone_number)>0){
                                     LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                    $note = 'Text for "next" bidder sent to: ' . $user2->name . ' (' . $user2->phone_number . ')';
+                                    $log_item = new LogItem();
+                                    $log_item->note = $note;
+                                    $log_item->save();
                                 }
                             }
                         }
