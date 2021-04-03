@@ -20,8 +20,11 @@
 -->
 
     <!-- Scripts -->
-    <!-- don't defer loading, needed to make flash messages work -->
+    <!-- don't defer app.js loading, needed to make flash messages work -->
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <!-- uses version 1.0.2, which requires jquery. Note: Upgrading bootstrap may remove jquery -->
+    <script type="text/javascript" src="{{ asset('js/mdtimepicker.min.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -30,6 +33,9 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+
+    <!-- uses version 1.0.2, except removed import for Roboto font, which is already used -->
+    <link href="{{ asset('css/mdtimepicker.min.css') }}" rel="stylesheet">
 
 </head>
 <body>
@@ -40,7 +46,7 @@
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     </a>
-                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 31MARCH2021
+                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">Version: 2APRIL2021
                         @if(config('app.debug'))
                             <span style="color:red;"><b> &nbsp; DEBUG MODE!</b></span>
                         @endif 
@@ -164,6 +170,15 @@
         $('#cover-spin').hide();
         $('div.alert').not('.alert-important').delay(1100).hide(900);
         $('#flash-overlay-modal').modal();
+
+//        $('#timepicker').mdtimepicker(); //Initializes the time picker
+
+        $(document).ready(function(){
+            $('#begin_time, #end_time').mdtimepicker({ is24hour: true });
+        });
+
+
+
     </script> 
 
 </body>

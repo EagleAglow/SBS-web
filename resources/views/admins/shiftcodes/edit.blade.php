@@ -29,6 +29,8 @@
                             </div>
                         </div>
 
+{{--
+
                         <div class="form-group row">
                             <label for="begin_time" class="col-md-4 col-form-label text-md-right">{{ __('Shift Begins') }}</label>
                             <div class="col-md-6">
@@ -53,6 +55,39 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <!-- sets minimum time to current client (system) time -->
+                            <input type="text" id="timepicker" data-mintime="now"/>
+                        </div>
+
+--}}
+
+                        <div class="form-group row">
+                            <label for="begin_time" class="col-md-4 col-form-label text-md-right">{{ __('Shift Begins') }}</label>
+                            <div class="col-md-6">
+                                <input id="begin_time" type="text" class="form-control @error('begin_time') is-invalid @enderror" name="begin_time" value="{{ old('begin_time') ? old('begin_time') : $shift_code->begin_time }}" required autocomplete="begin_time" autofocus>
+                                @error('begin_time')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label for="end_time" class="col-md-4 col-form-label text-md-right">{{ __('Shift Ends') }}</label>
+                            <div class="col-md-6">
+                                <input id="end_time" type="text" class="form-control @error('end_time') is-invalid @enderror" name="end_time" value="{{ old('end_time') ? old('end_time') : $shift_code->end_time }}" required autocomplete="end_time" autofocus>
+                                @error('end_time')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
 
 
                         <input class="btn btn-primary float-right" type="submit" value="Save">
