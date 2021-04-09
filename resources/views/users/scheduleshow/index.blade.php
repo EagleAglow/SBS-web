@@ -117,7 +117,7 @@
         }
     } 
 
-
+    // debugging aid
     if (!isset($trap)){
         $trap = '?';
     }
@@ -131,12 +131,12 @@
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card shadow">
-
+{{--
                 <div class="card-header">
                     <div class="row" style="color:red;font-size:0.85rem;margin-left:0.5rem;">DEBUGGING - REMOVE LATER - my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} / show_all=> {{$show_all}} / trap=> {{$trap}}
                     </div>
                 </div>
-
+--}}
 
                 @if ($schedule_lines->isEmpty($schedule_lines))
                     <div class="card-header">No Schedule Lines.</div>
@@ -189,7 +189,7 @@
                                                 <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="no">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;A=Hide Unbiddable Lines</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Hide Unbiddable Lines</button>
                                             </form>
                                             </div>
                                             <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
@@ -214,7 +214,7 @@
                                                 <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="yes">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;B=Show Full Line List</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Full Line List</button>
                                             </form>
                                             </div>
                                             <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>
@@ -236,9 +236,9 @@
                                                 <input type="hidden" name="show_all" value={{ $show_all }}>
                                                 @csrf
                                                 @if ($next_selection == 'all')
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;C=Show Combined Groups</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Combined Groups</button>
                                                 @else
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;C=Show {{ $next_selection }} Group</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show {{ $next_selection }} Group</button>
                                                 @endif
                                             </form>
                                             </div>
@@ -262,7 +262,7 @@
                                                 <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="no">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;D=Hide Unbiddable Lines</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Hide Unbiddable Lines</button>
                                             </form>
                                             <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
                                             </div>
@@ -282,9 +282,9 @@
                                                 <input type="hidden" name="show_all" value={{ $show_all }}>
                                                 @csrf
                                                 @if ($next_selection == 'all')
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;E=Show Combined Groups</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Combined Groups</button>
                                                 @else
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;E=Show {{ $next_selection }} Group</button>
+                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show {{ $next_selection }} Group</button>
                                                 @endif
                                             </form>
                                             </div>
