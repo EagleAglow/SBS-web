@@ -84,6 +84,10 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
         for ($n = 1; $n <= 56; $n++) {
             $d = 'day_' . substr(('00' . $n),-2);
             $a_code = $row[$d];
+            // accept leading dash for day off
+            if (substr($a_code,0,1) == '-'){
+                $a_code = '----';
+            }
             $code_ids = ShiftCode::select('id')->where('name','=', $a_code)->get();
             if (count($code_ids)>0){
                 $$d = $code_ids->first()->id;
