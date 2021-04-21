@@ -33,8 +33,8 @@ class ShiftCodesImport implements ToModel, WithHeadingRow, WithUpserts
 
         return new ShiftCode([
             'name'         => $row['code'],
-            'begin_time'   => $row['begin'],
-            'end_time'     => $row['end'],
+            'begin_time'   => date("H:i:s", strtotime($row['begin'])),
+            'end_time'     => date("H:i:s", strtotime($row['end'])),
         ]);
     }
 
