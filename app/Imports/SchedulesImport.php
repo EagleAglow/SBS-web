@@ -84,7 +84,13 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
         for ($n = 1; $n <= 56; $n++) {
             $d = 'day_' . substr(('00' . $n),-2);
             $a_code = $row[$d];
-            // accept leading dash for day off
+            // accept null/blank/leading dash for day off
+            if (!isset($a_code)){
+                $a_code = '----';
+            }
+            if ($a_code) == ''){
+                $a_code = '----';
+            }
             if (substr($a_code,0,1) == '-'){
                 $a_code = '----';
             }
