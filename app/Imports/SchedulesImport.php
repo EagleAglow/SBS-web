@@ -88,7 +88,7 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
             if (!isset($a_code)){
                 $a_code = '----';
             }
-            if ($a_code) == ''){
+            if ($a_code == ''){
                 $a_code = '----';
             }
             if (substr($a_code,0,1) == '-'){
