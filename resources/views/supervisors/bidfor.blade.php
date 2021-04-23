@@ -30,7 +30,7 @@
                             if ($schedule_line->blackout==1){ $note = $note . ', Blackout (This line can not be bid and this text should never appear.)'; }
                             if ($note == 'Note: '){ $note = 'Note: None';}
                             // following used for confirmation message
-                            $confirm_this = 'This bid assigns Schedule Line/Group: ' . $schedule_line->line . '/' . $line_group->code . ' to: ' . $who;
+                            $confirm_this = 'This bid assigns Schedule Line: ' . $schedule_line->line . ' ' . $line_group->code . ' (' . $note . ') to: ' . $who;
                         @endphp
                     </div>
                     <div class="card-body my-squash">{{$note}}</div>

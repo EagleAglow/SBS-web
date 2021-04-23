@@ -158,6 +158,7 @@
                 @if(config('app.debug'))
                     <div><h4 style="color:red;">WARNING - This site is in DEBUG MODE!</h4></div>
                 @endif 
+                <div><h4>Port: {{ config('app.app_port') }}</h4></div>
             </div>
         </div>
     </body>

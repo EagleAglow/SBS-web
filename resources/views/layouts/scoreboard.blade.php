@@ -34,11 +34,12 @@
                     <a class="navbar-brand" href="{{ url('/') }}">
                         <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     </a>
-                    @if(config('app.debug'))
-                    <div style="font-size:0.6rem;margin-right:1rem;margin-top:0rem;">
-                        <span style="color:red;"><b> &nbsp; DEBUG MODE!</b></span>
+                    <div style="font-size:0.7rem;margin-right:1rem;margin-top:0rem;">
+                        Port: {{ config('app.app_port') }}
+                        @if(config('app.debug'))
+                            <span style="color:red;"><b> &nbsp; &nbsp; DEBUG MODE!</b></span>
+                        @endif
                     </div>
-                    @endif 
                 </div>
 
                 <div class="btn-group">
