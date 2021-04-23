@@ -193,13 +193,13 @@
                                                 <input type="hidden" name="show_all" value="yes">
                                             @endif
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                            <button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
                                                 @if ($show_all == 'yes')
-                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
-                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                    <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Full List</span><br>
+                                                    <span style="padding: 0 0.4rem;">Open Lines</span>
                                                 @else
-                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
-                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                    <span style="padding:0 0.4rem;">Full List</span><br>
+                                                    <span style="border:1px solid white; border-radius:0.15rem; padding: 0 0.4rem;">Open Lines</span>
                                                 @endif    
                                             </button>
                                         </form>
@@ -219,18 +219,18 @@
                                             <input type="hidden" name="go_next" value="yes">
                                             <input type="hidden" name="show_all" value={{ $show_all }}>
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                            <button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
                                                 @foreach($list_codes as $list_code)
                                                     @if($my_selection == $list_code)
-                                                        <span style="color:white;padding: 0 0.2rem;">&#10148;</span> {{ $list_code }} Line Group&nbsp;<br>
+                                                        <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">{{ $list_code }} Lines</span><br>
                                                     @else
-                                                        <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> {{ $list_code }} Line Group&nbsp;<br>
+                                                        <span style="padding:0 0.4rem;">{{ $list_code }} Lines</span><br>
                                                     @endif
                                                 @endforeach
                                                 @if($my_selection == 'all')
-                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> All Your Groups&nbsp;
+                                                    <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Combined</span>
                                                 @else
-                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> All Your Groups&nbsp;
+                                                    <span style="padding:0 0.4rem;">Combined</span>
                                                 @endif
                                             </button>
                                         </form>
@@ -254,13 +254,13 @@
                                                 <input type="hidden" name="show_all" value="yes">
                                             @endif
                                             @csrf
-                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                            <button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
                                                 @if ($show_all == 'yes')
-                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
-                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                    <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Full List</span><br>
+                                                    <span style="padding: 0 0.4rem;">Open Lines</span>
                                                 @else
-                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
-                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                    <span style="padding:0 0.4rem;">Full List</span><br>
+                                                    <span style="border:1px solid white; border-radius:0.15rem; padding: 0 0.4rem;">Open Lines</span>
                                                 @endif    
                                             </button>
                                         </form>
@@ -268,10 +268,6 @@
                                     </div>
                                 </div>
                             @endif
-
-
-
-
 
                         </div>
                     </div>
