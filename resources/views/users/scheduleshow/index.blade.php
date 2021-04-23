@@ -170,151 +170,103 @@
 --}}                            
 
                             @if( $my_selection == $next_selection )
-                                @if ($show_all == 'yes')
-                                    <div class="col">
-                                        <div class="row">
-                                            <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;</div>
-                                        </div>
+                                <div class="col">
+                                    <div class="row">
+                                        <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;</div>
                                     </div>
+                                </div>
 
-                                    <div class="col">
-                                        <div class="row text-right">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="no">
+                                <div class="col">
+                                    <div class="row text-right">
+                                        <div>
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                            <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                            <input type="hidden" name="go_next" value="no">
+                                            <input type="hidden" name="show_all" value="no">
+                                            @if ($show_all == 'yes')
                                                 <input type="hidden" name="show_all" value="no">
-                                                @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Hide Unbiddable Lines</button>
-                                            </form>
-                                            </div>
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="col">
-                                        <div class="row">
-                                            <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="row text-right">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="no">
+                                            @else
                                                 <input type="hidden" name="show_all" value="yes">
-                                                @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Full Line List</button>
-                                            </form>
-                                            </div>
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>
+                                            @endif
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                                @if ($show_all == 'yes')
+                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
+                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                @else
+                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
+                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                @endif    
+                                            </button>
+                                        </form>
                                         </div>
                                     </div>
-                                @endif
+                                </div>
                             @else
-                                @if ($show_all == 'yes')
-                                    <div class="col">
-                                        <div class="row">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="yes">
-                                                <input type="hidden" name="show_all" value={{ $show_all }}>
-                                                @csrf
-                                                @if ($next_selection == 'all')
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Combined Groups</button>
+                                <div class="col">
+                                    <div class="row">
+                                        <div>
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                            <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                            <input type="hidden" name="go_next" value="yes">
+                                            <input type="hidden" name="show_all" value={{ $show_all }}>
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                                @foreach($list_codes as $list_code)
+                                                    @if($my_selection == $list_code)
+                                                        <span style="color:white;padding: 0 0.2rem;">&#10148;</span> {{ $list_code }} Line Group&nbsp;<br>
+                                                    @else
+                                                        <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> {{ $list_code }} Line Group&nbsp;<br>
+                                                    @endif
+                                                @endforeach
+                                                @if($my_selection == 'all')
+                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> All Your Groups&nbsp;
                                                 @else
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show {{ $next_selection }} Group</button>
+                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> All Your Groups&nbsp;
                                                 @endif
-                                            </form>
-                                            </div>
-                                            @if ($my_selection == 'all')
-                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing combined groups</div>
-                                            @else
-                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{ $my_selection }} group</div>
-                                            @endif
+                                            </button>
+                                        </form>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="col">
-                                        <div class="row text-right">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="no">
+                                <div class="col">
+                                    <div class="row text-right">
+                                        <div>
+                                        <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="page" value="1">
+                                            <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                            <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                            <input type="hidden" name="go_next" value="no">
+                                            @if ($show_all == 'yes')
                                                 <input type="hidden" name="show_all" value="no">
-                                                @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Hide Unbiddable Lines</button>
-                                            </form>
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Showing full line list</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="col">
-                                        <div class="row">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="yes">
-                                                <input type="hidden" name="show_all" value={{ $show_all }}>
-                                                @csrf
-                                                @if ($next_selection == 'all')
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Combined Groups</button>
-                                                @else
-                                                    <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show {{ $next_selection }} Group</button>
-                                                @endif
-                                            </form>
-                                            </div>
-                                            @if ($my_selection == 'all')
-                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing combined groups</div>
                                             @else
-                                                <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">Showing {{ $my_selection }} group</div>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="row text-right">
-                                            <div>
-                                            <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                                <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                                <input type="hidden" name="page" value="1">
-                                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                                <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="yes">
-                                                @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Full Line List</button>
-                                            </form>
-                                            </div>
-                                            <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>
+                                            @endif
+                                            @csrf
+                                            <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">
+                                                @if ($show_all == 'yes')
+                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
+                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                @else
+                                                    <span style="color:transparent;padding: 0 0.2rem;">&#10148;</span> Full Line list&nbsp;<br>
+                                                    <span style="color:white;padding: 0 0.2rem;">&#10148;</span> Biddable list
+                                                @endif    
+                                            </button>
+                                        </form>
                                         </div>
                                     </div>
-                                @endif
+                                </div>
                             @endif
 
 

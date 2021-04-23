@@ -345,6 +345,7 @@ class UserScheduleShowController extends Controller {
             'next_selection'=>$next_selection,
             'show_all'=>$show_all,
             'trap' => $trap,
+            'list_codes' => $list_codes
             ]);
 
     }
