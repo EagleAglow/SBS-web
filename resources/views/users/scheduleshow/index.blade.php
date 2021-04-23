@@ -308,7 +308,7 @@
                                                 <input type="hidden" name="go_next" value="no">
                                                 <input type="hidden" name="show_all" value="yes">
                                                 @csrf
-                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;F=Show Full Line List</button>
+                                                <button type="submit" class="btn btn-secondary btn-shift float-right" style="margin-right:1rem;">&nbsp;Show Full Line List</button>
                                             </form>
                                             </div>
                                             <div style="text-align:right;font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;Hiding unbiddable lines</div>

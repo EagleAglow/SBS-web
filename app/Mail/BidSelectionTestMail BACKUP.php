@@ -63,9 +63,6 @@ class BidSelectionTestMail extends Mailable
 
         $stamp = strtotime( $start_date );
         $row_number = 0;
-/* 
-        // not used - see next block
-        // one column for date, row count = 56 times number of cycles
         for ($c = 1; $c <= $cycles; $c++){  //cycles
             for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
                 $day = date("l, j F Y", $stamp);   // result like: Saturday, 10 March 2021
@@ -95,49 +92,6 @@ class BidSelectionTestMail extends Mailable
                 $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days"); // next date
             }
         }
- */
-
-        // one column for date(s), 56 rows
-        
-        for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
-
-            if ($cycles > 1){
-                $day = date("l \/ j F", $stamp);   // result like: Saturday / 10 March
-                $stamp3 = $stamp;
-                for ($c = 2; $c <= ($cycles); $c++){  //cycles
-                    $stamp3 = strtotime( date( 'Y/m/d', $stamp3 ) . "+56 days"); // next cycle date
-                    $day = $day . ' / ' . date("j F", $stamp3);   // result like: Saturday / 10 March
-                }
-            } else {
-                $day = date("l, j F Y", $stamp);   // result like: Saturday, 10 March 2021
-            }
-
-            $d = 'day_' . substr(('00' . $n),-2);   // field name
-            $shift = ShiftCode::where('id', $schedule_line->$d)->get()->first();
-            $shift_code = $shift->name;                              // e.g., 06BX
-            if ($shift_code == '----'){
-                $shift_on = '----';
-                $shift_off = '----';
-            } else {
-                $shift_on = date('H:i',strtotime($shift->begin_time));
-                $shift_off = date('H:i',strtotime($shift->end_time));
-            }
-            $row_number = $row_number +1;
-
-            $table_row = array([
-                'row_number'=>$row_number,   // maybe delete later, not used now
-                'day_number'=>$n,            // maybe delete later, not used now
-                'day_text'=>$day,
-                'code'=>$shift_code,
-                'on'=>$shift_on,
-                'off'=>$shift_off
-            ]);
-
-            $table_rows[] = $table_row;
-
-            $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days"); // next date
-        }
-
 
         // begin ics file
         $linefeed = chr(13) . chr(10);
