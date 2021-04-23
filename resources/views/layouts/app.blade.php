@@ -49,7 +49,7 @@
                     <div style="font-size:0.7rem;margin-right:1rem;margin-top:0rem;">
                     Port: {{ config('app.app_port') }} &nbsp; &nbsp; Version: 23APRIL2021-C
                         @if(config('app.debug'))
-                            <span style="color:red;"><b> &nbsp; &nbsp; DEBUG MODE!</b></span>
+                            <br><span style="color:red;"><b>DEBUG MODE!</b></span>
                         @endif
                     </div>
                 </div>
