@@ -542,4 +542,44 @@ class AdminDashBiddingController extends Controller
             abort('401');
         }
     }
+
+    public function tieclear()  // clears seniority tie-breakers
+    {
+        if (Auth::user()->hasRole('admin')){
+
+            $state_param = Param::where('param_name','bidding-state')->first();
+            $test = $state_param->string_value;
+            if ( $test == 'running'){
+                // do nothing, except complain
+                flash('Unable to reset!')->warning()->important();
+                return redirect()->route('admins.dashBidding');
+            } else {
+
+                // log start
+                $log_item = new LogItem();
+                $log_item->note = 'Start seniority tie-breaker reset';
+                $log_item->save();
+
+                $users = User::get();
+                foreach($users as $user){
+                    $user->update(['bidder_tie_breaker' => null]);
+                }
+
+                // log done
+                $log_item = new LogItem();
+                $log_item->note = 'Finish  seniority tie-breaker reset';
+                $log_item->save();
+
+                flash('Seniority tie-breakers have been RESET!')->success();
+                return view('admins.dashBidding');
+            }
+        } else {
+            abort('401');
+        }
+    }
+
+
+
+
+
 }

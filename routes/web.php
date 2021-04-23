@@ -123,6 +123,8 @@ Route::prefix('admins')->group(function () {
 
     Route::get('/dashBidding', 'AdminDashBiddingController@index')->name('admins.dashBidding');
 
+    // reset seniority tie-breakers
+    Route::get('/tieclear','AdminDashBiddingController@tieclear')->name('admins.tieclear');
     // fixup bidding order
     Route::get('/fix','AdminDashBiddingController@fix')->name('admins.fix');
     // erase bids and reset bid order

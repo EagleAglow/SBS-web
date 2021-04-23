@@ -313,6 +313,7 @@
                                                 <b>Make a schedule active to begin the bidding process...</b>
                                             @else
                                                 <span><a href="{{ url('admins/start') }}" class="btn btn-primary" onclick="$('#cover-spin').show(0)">Start</a></span> &nbsp; &nbsp;
+                                                <span><a href="{{ url('admins/tieclear') }}" onclick="if(confirm('All tie-breaker values will be erased.\nTo get new random tie-breaker values, run FIX.\nAre you sure you want to CLEAR SENIORITY TIES?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Clear Seniority Ties</a></span>
                                             @endif
                                         @else
                                             <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This clears all bids. Are you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset To Ready</a></span>
