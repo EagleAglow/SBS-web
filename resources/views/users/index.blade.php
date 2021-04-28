@@ -11,55 +11,53 @@
                     <div class="flex row">
 						<div class="col-md-5">Admin - Users</div>
 
-						@if($my_selection == 'alpha')
-							<div class="col">
-								<div class="row">
-									<form action="{{ url('users' ) }}" method="GET">
+						<div class="col">
+							<div class="row">
+								<form action="{{ url('users' ) }}" method="GET">
+									@if($my_selection == 'alpha')
 										<input type="hidden" name="my_selection" value="seniority">
 										@csrf
-										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority Order</button>
-									</form>
-								</div>
-								<div class="row" style="font-size:0.8rem;font-weight:500;">Showing alphabetic order</div>
-							</div>
-						@else
-							@if($my_selection == 'seniority')
-							<div class="col">
-								<div class="row">
-									<form action="{{ url('users' ) }}" method="GET">
-										<input type="hidden" name="my_selection" value="bid_order">
-										@csrf
-										<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Bidding Order</button>
-									</form>
-								</div>
-								<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority order</div>
-							</div>
-							@else
-								@if($my_selection == 'bid_order')
-								<div class="col">
-									<div class="row">
-										<form action="{{ url('users' ) }}" method="GET">
-											<input type="hidden" name="my_selection" value="s/t">
+										<button type="submit" class="btn btn-primary btn-shift float-right">
+											<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Alphabetic</span><br>
+											<span style="padding: 0 0.4rem;">By Seniority</span><br>
+											<span style="padding: 0 0.4rem;">By Bid Order</span><br>
+											<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+										</button>
+									@else
+										@if($my_selection == 'seniority')
+											<input type="hidden" name="my_selection" value="bid_order">
 											@csrf
-											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Seniority/Tie-breaker Order</button>
-										</form>
-									</div>
-									<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;&nbsp;Showing bidding order</div>
-								</div>
-								@else
-								<div class="col">
-									<div class="row">
-										<form action="{{ url('users' ) }}" method="GET">
-											<input type="hidden" name="my_selection" value="alpha">
-											@csrf
-											<button type="submit" class="btn btn-secondary btn-shift float-right">&nbsp;Show Alphabetic Order</button>
-										</form>
-									</div>
-									<div class="row" style="font-size:0.8rem;font-weight:500;">&nbsp;Showing seniority/tie-breaker order</div>
-								</div>
-								@endif
-							@endif
-						@endif
+											<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
+												<span style="padding: 0 0.4rem;">Alphabetic</span><br>
+												<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Seniority</span><br>
+												<span style="padding: 0 0.4rem;">By Bid Order</span><br>
+												<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+											</button>
+										@else
+											@if($my_selection == 'bid_order')
+												<input type="hidden" name="my_selection" value="s/t">
+												@csrf
+												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
+													<span style="padding: 0 0.4rem;">Alphabetic</span><br>
+													<span style="padding: 0 0.4rem;">By Seniority</span><br>
+													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Bid Order</span><br>
+													<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+												</button>
+											@else
+												<input type="hidden" name="my_selection" value="alpha">
+												@csrf
+												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
+													<span style="padding: 0 0.4rem;">Alphabetic</span><br>
+													<span style="padding: 0 0.4rem;">By Seniority</span><br>
+													<span style="padding: 0 0.4rem;">By Bid Order</span><br>
+													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Seniority/Tie-Breaker</span>
+												</button>
+											@endif
+										@endif
+									@endif
+								</form>
+							</div>
+						</div>
 
 						<div class="col">
                             <div class="text-right">
