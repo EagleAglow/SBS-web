@@ -122,7 +122,8 @@
                             if ($line_sum >= $bidder_sum){
                                 $result_for_sum = 'OK';
                             } else {
-                                $result_for_sum = '<span style="color:red;font-weight:bold;">Problem</span>';
+//                                $result_for_sum = '<span style="color:red;font-weight:bold;">Problem</span>';
+                                $result_for_sum = '<span style="color:red;font-weight:bold;">Need ' . ($bidder_sum - $line_sum)  . ' More</span>';
                             }
                             // check line groups that only have one bidder group (and that bidder only has one role)
                             // first, get a list of them...
@@ -155,10 +156,12 @@
                                         // add to list
                                         $simple_ones[] = $scan_code;
                                         // do the math and save review result
-                                        if ( $lines_by_group[$scan_code] >= count(App\User::where('bidder_group_id',$bg->id)->get()) ){
+                                        $number_of_bidders = count(App\User::where('bidder_group_id',$bg->id)->get());
+                                        if ( $lines_by_group[$scan_code] >= $number_of_bidders ){
                                             $results_by_group[$scan_code] = 'OK';
                                         } else {
-                                            $results_by_group[$scan_code] = '<span style="color:red;font-weight:bold;">Problem</span>';
+//                                            $results_by_group[$scan_code] = '<span style="color:red;font-weight:bold;">Problem</span>';
+                                            $results_by_group[$scan_code] = '<span style="color:red;font-weight:bold;">Need ' . ($number_of_bidders - $lines_by_group[$scan_code])  . ' More</span>';
                                         }
                                     }
                                 }
@@ -198,11 +201,12 @@
                                 }
                                 $not_reserved[$complex_one] = $not_reserved[$complex_one] - $reserved[$complex_one];
                                 if ($reserved[$complex_one] > 0){
-                                    $results_by_group[$complex_one] = '<div>' . $reserved[$complex_one] . ' Reserved</div><div>' . $not_reserved[$complex_one] . ' Open</div>';
+                                    if ($not_reserved[$complex_one] >= 0){
+                                        $results_by_group[$complex_one] = '<div>' . $reserved[$complex_one] . ' Reserved</div><div>' . $not_reserved[$complex_one] . ' Open</div>';
+                                    } else {
+                                        $results_by_group[$complex_one] = '<div>' . $reserved[$complex_one] . ' Reserved</div><div><span style="color:red;font-weight:bold;">Need ' . (-1 * $not_reserved[$complex_one]) . ' More</span></div>';
+                                    }
                                 }
-
-
-
                             }
 
 
