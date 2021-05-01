@@ -165,7 +165,7 @@
                                 @endif
                             </div>
 {{--
-                            message and button(s) depend on values of: $my_selection, $next_selection, $show_all
+                            button(s) depend on values of: $my_selection, $next_selection, $show_all
                             if $my_selection = $next_selection, then only one line group is available
 --}}                            
 

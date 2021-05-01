@@ -48,9 +48,6 @@ class ScheduleLineSetController extends Controller {
              'start_date'=>$schedule->start,
              'cycles'=>$schedule->cycle_count,
             'schedule_id' => $schedule_id,
-            'my_selection'=>$my_selection,
-            'next_selection'=>$next_selection,
-            'trap'=>'0',
             ]);
     }
  
@@ -65,147 +62,8 @@ class ScheduleLineSetController extends Controller {
             // try to get it from session (used by destroy and create)
             $schedule_id = session('schedule_id');
         }
-
-//////
-
-
-        // identify line groups used in this schedule
-        $line_groups = LineGroup::all();
-        $list_ids = array();  //empty array for line group ids
-        $list_codes = array();  //empty array for line group codes (field = 'name')
-        foreach ($line_groups as $line_group) {
-            if ( ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id',$line_group->id)->count() > 0){
-                $list_ids[] = $line_group->id;
-                $list_codes[] = $line_group->code;
-            }
-        }
-
-        // presentation selection = which line groups to show
-        // if there is only one one line group, set 'my_selection' and 'next_selection' to that group code
-        // otherwise, rotate 'my_selection' through 'all' (lowercase to differ from any
-        //    line group names), and then each line group name (uppercase).  'next_selection' shows subsequent choice
-        // view page returns the values for 'my_selection' and 'next_selection' (but next_selection is not used by controller)
-        // if request field 'go_next' is 'yes',  rotate to next group selection
-
-        // debugging aid
-        $trap = $request['trap'];
-        if (!isset($trap)){ $trap = 'undefined'; }
-
-        // passed to switch to display next group choice
-        $go_next = $request['go_next'];
-        if (!isset($go_next)){ $go_next = 'no'; }
-
-        $my_selection = $request['my_selection'];
-        if(!isset($my_selection)){
-            if (count($list_ids) == 0){
-                // should not get here
-                $my_selection = 'all';
-                $next_selection = 'all';
-            } else {
-                if (count($list_ids) == 1){
-                    $my_selection = $list_codes[0];  // first, and only, code
-                    $next_selection = $list_codes[0];
-                    $key_id = $list_ids[0];     // if my_selection is not 'all', we will need a Key_id for selecting records
-                    $trap = '5';
-                } else {
-                    $my_selection = 'all';
-                    $next_selection = $list_codes[0];  // first code
-                    $trap = '6';
-                }
-            }
-        } else { 
-            if (count($list_ids) == 0){
-                // should not get here
-                $my_selection = 'all';
-                $next_selection = 'all';
-            } else {
-                if (count($list_ids) == 1){
-                    $my_selection = $list_codes[0];  // first, and only, code
-                    $next_selection = $list_codes[0];
-                    $key_id = $list_ids[0];     // if my_selection is not 'all', we will need a Key_id for selecting records
-                    $trap = '7';
-                } else {
-                    // there is more than one line group
-                    if ($go_next == 'yes'){
-                        // change groups
-                        if ($my_selection == 'all'){
-                            // go to first group code
-                            $my_selection = $list_codes[0];  // first code
-                            $next_selection = $list_codes[1];  // second code
-                            $key_id = $list_ids[0];     // if my_selection is not 'all', we will need a Key_id for selecting records
-                            $trap = '3';
-                        } else {
-                            // need id for 'my_selection', and next code in rotation, or if this is last code, then 'all'
-                            $key_id = LineGroup::where('code',$my_selection)->first()['id'];
-                            if (isset($key_id)){
-                                $key = array_search($key_id,$list_ids);
-                                if (($key +1) >= count($list_ids)){
-                                    // wrap my_selection to 'all'
-                                    $my_selection = 'all';
-                                    $next_selection = $list_codes[0];
-                                    $trap = '9';
-                                } else {
-                                    $my_selection = $list_codes[$key +1];
-                                    $key_id = $list_ids[$key +1];
-                                    if (($key +2) >= count($list_ids)){
-                                        // wrap next_selection to 'all'
-                                        $next_selection = 'all';
-                                        $trap = '10';
-                                    } else {
-                                        $next_selection = $list_codes[$key +2];
-                                        $key_id = $list_ids[$key +1];     // if my_selection is not 'all', we will need a Key_id for selecting records
-                                        $trap = '11';
-                                    }
-                                }
-                            } else {
-                                // unlikely error - my_selection not in list
-                                $my_selection = 'all';
-                                $next_selection = 'all';
-                            }
-                        }
-                    } else {
-                        // don't change groups
-                        if ($my_selection == 'all'){
-                            $next_selection = $list_codes[0];  // first code
-                            $trap = '1';
-                        } else {
-                            // need id for 'my_selection', to  find next code in rotation, or if this is last code, then 'all'
-                            // if my_selection is not 'all', we will need a Key_id for selecting records
-                            $key_id = LineGroup::where('code',$my_selection)->first()['id'];
-                            if (isset($key_id)){
-                                $key = array_search($key_id,$list_ids);
-                                if (($key +1) >= count($list_ids)){
-                                    // wrap next_selection to 'all'
-                                    $next_selection = 'all';
-                                    $trap = '8';
-                                } else {
-                                    $next_selection = $list_codes[$key +1];
-                                    $trap = '2';
-                                }
-                            } else {
-                                // unlikely error - my_selection not in list
-                                $my_selection = 'all';
-                                $next_selection = 'all';
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if($my_selection == 'all'){
-            $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->whereIn('line_group_id',$list_ids)
-            ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
-        } else {
-            // filter to a single line group
-            $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id', $key_id)
-            ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
-        }
-        
-
-////         
    
-//        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
+        $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
 
         $schedule_title = $request['schedule_title'];
         if (!isset($schedule_title)){
@@ -242,10 +100,6 @@ class ScheduleLineSetController extends Controller {
             'last_day'=>$last_day,
             'page'=>$page,
             'schedule_id' => $schedule_id,
-            'my_selection'=>$my_selection,
-            'next_selection'=>$next_selection,
-            'trap' => $trap,
-            'list_codes' => $list_codes
             ]);
     }
 

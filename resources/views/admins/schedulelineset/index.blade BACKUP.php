@@ -1,105 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    @php
-        // days to display
-        $delta = '7';
-        if (!isset($page)){ $page = 1; }
-        if (isset($cycles)){
-            if (($cycles <= 0 ) || ( 5 <= $cycles )){
-                $cycles = 1;
-            }
-        } else { $cycles = 1; }
-
-        if (isset($first_day)){
-            if (($first_day <= 0 ) || ( 57 <= $first_day )){
-                $first_day = 1;
-            }
-        } else { $first_day = 1; }
-
-        if (isset($last_day)){
-            if (($last_day <= 9 ) || ( 57 <= $last_day )){
-                $last_day = $first_day + $delta - 1;
-            }
-        } else {
-            $last_day = $first_day + $delta - 1;
-        }
-        
-        if ( $last_day > 56 ){
-                $last_day = 56;
-                $first_day = $last_day - $delta + 1;                                
-        }
-    @endphp
-
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card shadow">
-
-{{--
                 <div class="card-header">
-                    <div class="row" style="color:red;font-size:0.85rem;margin-left:0.5rem;">DEBUGGING - REMOVE LATER - my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} /  trap=> {{$trap}}
-                    </div>
-                </div>
---}}
-
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {{ __('Schedule: ') }}{{ $schedule_title }}
+                    <div class="flex row"><div class="col">{{ __('Schedule: ') }}{{ $schedule_title }}</div>
+                        <div class="col">
+                            <div class="text-right">
+                                <a href="{{ route('schedulelineset.create', $schedule_id) }}"><button type="button" class="btn btn-success">Add Schedule Line</button></a>
+                            </div>
                         </div>
-{{--
-                        button labels depend on values of: $my_selection, $next_selection, $show_all
-                        if $my_selection = $next_selection, then only one line group is available - don't show button
---}}                            
-
-                        @if( $my_selection == $next_selection )
-                            <div class="col">
-                                <div class="row">
-                                    <div style="font-size:0.8rem;font-weight:500;margin-right:1rem;">&nbsp;</div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="text-right">
-                                    <a href="{{ route('schedulelineset.create', $schedule_id) }}"><button type="button" class="btn btn-success">Add Schedule Line</button></a>
-                                </div>
-                            </div>
-                        @else
-                            <div class="col">
-                                <div class="row">
-                                    <div>
-                                    <form action="{{ route('schedulelineset.show', $schedule_id) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                        <input type="hidden" name="go_next" value="yes">
-                                        @csrf
-                                        <button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-                                            @foreach($list_codes as $list_code)
-                                                @if($my_selection == $list_code)
-                                                    <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">{{ $list_code }}</span>
-                                                @else
-                                                    <span style="padding:0 0.4rem;">{{ $list_code }}</span>
-                                                @endif
-                                            @endforeach
-                                            @if($my_selection == 'all')
-                                                <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Combined</span>
-                                            @else
-                                                <span style="padding:0 0.4rem;">Combined</span>
-                                            @endif
-                                        </button>
-                                    </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="text-right">
-                                    <a href="{{ route('schedulelineset.create', $schedule_id) }}"><button type="button" class="btn btn-success">Add Schedule Line</button></a>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
@@ -110,6 +22,35 @@
                     <div class="table-responsive-md">
                         <table class="table table-striped">
                             <thead><div class="pagination-text"></div>
+                            @php
+                                // days to display
+                                $delta = '7';
+                                if (!isset($page)){ $page = 1; }
+                                if (isset($cycles)){
+                                    if (($cycles <= 0 ) || ( 5 <= $cycles )){
+                                        $cycles = 1;
+                                    }
+                                } else { $cycles = 1; }
+
+                                if (isset($first_day)){
+                                    if (($first_day <= 0 ) || ( 57 <= $first_day )){
+                                        $first_day = 1;
+                                    }
+                                } else { $first_day = 1; }
+
+                                if (isset($last_day)){
+                                    if (($last_day <= 9 ) || ( 57 <= $last_day )){
+                                        $last_day = $first_day + $delta - 1;
+                                    }
+                                } else {
+                                    $last_day = $first_day + $delta - 1;
+                                }
+                                
+                                if ( $last_day > 56 ){
+                                        $last_day = 56;
+                                        $first_day = $last_day - $delta + 1;                                
+                                }
+                            @endphp
                             <tr>
                             <th class="text-center btn-shift" scope="col">
 
@@ -121,8 +62,6 @@
                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
-                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                 @csrf
                                 <button type="submit" class="btn btn-secondary btn-shift">&#8656;&nbsp;Earlier</button>
                             </form>
@@ -159,8 +98,6 @@
                                 <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
                                 <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
-                                <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                 @csrf
                                 <button type="submit" class="btn btn-secondary">Later&nbsp;&#8658;</button>
                             </form>
@@ -306,8 +243,7 @@
                                 @php
                                     // things to include with pagination 
                                     $params = array('schedule_id'=>$schedule_id, 'schedule_title'=>$schedule_title, 'start_date'=>$start_date,
-                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'last_day'=>$last_day, 'my_selection'=>$my_selection,
-                                        'next_selection'=>$next_selection  );
+                                        'cycles'=>$cycles, 'first_day'=>$first_day,'last_day'=>$last_day);
                                 @endphp
                                 {{$schedule_lines->appends($params)->links() }}    
                             </tbody>
