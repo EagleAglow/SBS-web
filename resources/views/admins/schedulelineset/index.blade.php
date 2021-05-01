@@ -291,8 +291,10 @@
 
                                                     <form action="{{ route('schedulelineset.destroy', $schedule_line->id) }}" method="POST" class="delete">
                                                         <input type="hidden" name="_method" value="DELETE">
-                                                            @csrf
-                                                            {{ method_field('DELETE') }}
+                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                        @csrf
+                                                        {{ method_field('DELETE') }}
                                                         <button type="submit" onclick="return confirm('Delete Line {{$schedule_line->line}}?')" class="btn btn-danger btn-my-delete">Delete</button>
                                                     </form>
                                                 </div>

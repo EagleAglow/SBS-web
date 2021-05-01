@@ -38,9 +38,52 @@ class ScheduleLineSetController extends Controller {
              $schedule_id = session('schedule_id');
          }
 
+         $my_selection = $request['my_selection'];
+         if (!isset($my_selection)){
+            // try to get it from session (used by destroy and create)
+            $my_selection = session('my_selection');
+            if (!isset($my_selection)){
+                // final fallback
+                $my_selection = 'all';
+            }
+        }
+        $next_selection = $request['next_selection'];
+        if (!isset($next_selection)){
+            // try to get it from session (used by destroy and create)
+            $next_selection = session('next_selection');
+        }
+
+        $line_groups = LineGroup::all();
+        $key_id = 0;  // arbitrary default, should not actually be used
+
+        $list_codes = array();  //empty array for line group codes (field = 'name')
+        foreach ($line_groups as $line_group) {
+            if ( ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id',$line_group->id)->count() > 0){
+                $list_ids[] = $line_group->id;
+                $list_codes[] = $line_group->code;
+                if ($line_group->code == $my_selection){
+                    $key_id = $line_group->id;
+                }
+            }
+        }
+
         $schedule = Schedule::where('id',$schedule_id)->first();
 
         $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
+
+
+        if($my_selection == 'all'){
+            $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->whereIn('line_group_id',$list_ids)
+            ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
+        } else {
+            // filter to a single line group
+
+            $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id', $key_id)
+            ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
+        }
+
+
+
 
         return view('admins.schedulelineset.index',
             ['schedule_lines'=>$schedule_lines,
@@ -51,6 +94,8 @@ class ScheduleLineSetController extends Controller {
             'my_selection'=>$my_selection,
             'next_selection'=>$next_selection,
             'trap'=>'0',
+            'list_codes' => $list_codes,
+            'line_groups' => $line_groups,
             ]);
     }
  
@@ -425,16 +470,19 @@ class ScheduleLineSetController extends Controller {
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-    public function destroy($id) {
+    public function destroy(Request $request, $id) {
         $schedule_line = ScheduleLine::findOrFail($id);
         // get schedule_id, so we can return it.
         $schedule_id = $schedule_line->schedule_id;
 
         $schedule_line->delete();
 
+        $my_selection = $request['my_selection'];
+        $next_selection = $request['next_selection'];
+
         // put schedule_id in session
         flash('Schedule Line deleted!')->success();
-        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id]);
+        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
 
     }
 }
