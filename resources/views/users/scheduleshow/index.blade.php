@@ -603,7 +603,7 @@
                                                                     <button type="submit" class="btn btn-primary btn-my-edit float-right">Tag</button>
                                                                 </form>
                                                             @else
-                                                                <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
+                                                                <form action="{{ url('users/scheduleshow', $schedule->id ) }}" method="GET">
                                                                     <input type="hidden" name="first_day" value="{{ $first_day }}">
                                                                     <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                     <input type="hidden" name="page" value="{{ $page }}">

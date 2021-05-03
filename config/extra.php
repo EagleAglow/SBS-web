@@ -19,4 +19,16 @@ return [
 
     'login_url' => env('APP_LOGIN_URL', ( env('APP_URL', 'http://localhost') . '/login' )),
 
+    /*
+    |--------------------------------------------------------------------------
+    | PHONE number to bid - read from .env file
+    |--------------------------------------------------------------------------
+    |
+    | APP_BID_PHONE for bidder to call  APP_BID_PHONE="000-555-1515"
+
+    |
+    */
+
+    'app_bid_phone' => env('APP_BID_PHONE', '000-555-1515' ),
+
 ];

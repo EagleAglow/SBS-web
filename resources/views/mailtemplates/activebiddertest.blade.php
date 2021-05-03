@@ -1,6 +1,7 @@
 @component('mail::message')
 Hello **{{$name}}**,  {{-- use double space for line break --}}
-You can now login to bid. You are the active (current) bidder.  {{-- use double space for line break --}}
+You are the active (current) bidder.  {{-- use double space for line break --}}
+To Bid, login or call: {{$app_bid_phone}}.
 
 @component('mail::button', ['url' => $url,])
 Login Here

@@ -254,14 +254,14 @@ abort('401');  // test to see if we are hitting this
                             if(isset($param_text_test_phone)){
                                 if(strlen($param_text_test_phone) > 0){
                                     // send text to test phone number
-                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . '- You can bid now, you are the active bidder.');
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
                                 }
                             }
                         } else {
                             // send to bidder, if they have a number
                             if (isset($user->phone_number)){
                                 if (strlen($user->phone_number)>0){
-                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . '- You can bid now, you are the active bidder.');
+                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
                                     $note = 'Text for active bidder sent to: ' . $user->name . ' (' . $user->phone_number . ')';
                                     $log_item = new LogItem();
                                     $log_item->note = $note;

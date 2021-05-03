@@ -21,6 +21,7 @@ class ActiveBidderTestMail extends Mailable
         $this->name = $name;
         $this->url = config('extra.login_url');
         $this->from_name = config('mail.from.name');
+        $this->app_bid_phone = config('extra.app_bid_phone');
     }
 
     /**
@@ -33,12 +34,14 @@ class ActiveBidderTestMail extends Mailable
         $name = $this->name;
         $url = $this->url;
         $from_name = $this->from_name;
+        $app_bid_phone = $this->app_bid_phone;
         return $this->subject('Active Bidder Test Mail')
             ->markdown('mailtemplates.activebiddertest')
             ->with([
                 'name' => $name,
                 'url' =>  $url,
                 'from_name' => $from_name,
+                'app_bid_phone' => $app_bid_phone,
             ]);
     }
 }
