@@ -14,7 +14,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laracasts/flash": "^3.2",
-        "laravel/framework": "^8.24.0",
+        "laravel/framework": "^8.40.0",
         "laravel/tinker": "^2.0",
         "laravelcollective/html": "^6.1",
         "maatwebsite/excel": "^3.1",
