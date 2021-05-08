@@ -26,7 +26,7 @@ class BidderGroupController extends Controller {
     * @return \Illuminate\Http\Response
     */
     public function index() {
-        $bidder_groups = BidderGroup::all(); //Get all bidder groups
+        $bidder_groups = BidderGroup::all()->sortBy('code'); //Get all bidder groups
 
         return view('admins.biddergroups.index')->with('bidder_groups', $bidder_groups);
     }
