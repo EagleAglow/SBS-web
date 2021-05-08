@@ -63,6 +63,10 @@
                             <div class="text-right">
 								<a href="{{ route('users.create') }}"><button type="button" class="btn btn-success">Add User</button></a>
                             </div>
+                            <div class="text-right">&nbsp;</div>
+                            <div class="text-right">
+								<a href="{{url('admins/export-excel-bid-order/xlsx')}}"><button type="button" class="btn btn-primary">Export Bid Order</button></a>
+                            </div>
                         </div>
 					</div>
 				</div>

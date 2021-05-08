@@ -5,6 +5,7 @@ use App\Http\Controllers\ImportExportUsersController;
 use App\Http\Controllers\ImportExportShiftCodesController; 
 use App\Http\Controllers\ImportExportSchedulesController; 
 use App\Http\Controllers\ExportBidsController;
+use App\Http\Controllers\ExportBidOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +146,7 @@ Route::prefix('admins')->group(function () {
     Route::post('import-excel-csv-file-schedules', [ImportExportSchedulesController::class, 'importExcelCSVSchedules']);
     Route::get('export-excel-csv-file-schedules/{slug}', [ImportExportSchedulesController::class, 'exportExcelCSVSchedules']);
 
+    Route::get('export-excel-bid-order/{slug}', [ExportBidOrderController::class, 'exportExcelBidOrder']);
     Route::get('export-excel-file-bids/{slug}', [ExportBidsController::class, 'exportExcelBids']);
 
     Route::get('excel-csv-file-shift-codes', [ImportExportShiftCodesController::class, 'index']);
