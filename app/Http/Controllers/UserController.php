@@ -48,17 +48,20 @@ class UserController extends Controller {
         if(!isset($my_selection)){
             $my_selection = 'bid_order';
         }
+        if (!isset($page)){
+            $page = 1;
+        }
 
         if ($my_selection == 'bid_order'){
-            $users = User::all()->sortBy('bid_order'); 
+            $users = User::orderBy('bid_order')->paginate(25); 
         } else {
             if ($my_selection == 'alpha'){
-                $users = User::all()->sortBy('name'); 
+                $users = User::orderBy('name')->paginate(25); 
             } else {
                 if ($my_selection == 'seniority'){
-                    $users = User::all()->sortBy('seniority_date'); 
+                    $users = User::orderBy('seniority_date')->paginate(25); 
                 } else {  // $my_selection = "s/t"
-                    $users = User::all()->sortBy('bidder_tie_breaker')->sortBy('seniority_date'); 
+                    $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
                 }
             }
         }
@@ -181,10 +184,28 @@ class UserController extends Controller {
     public function show(Request $request, $id) {
         $my_selection = $request['my_selection'];
         if(!isset($my_selection)){
-            $my_selection = 'alpha';
+            $my_selection = 'bid_order';
+        }
+        $page = $request['page'];
+        if (!isset($page)){
+            $page = 1;
         }
 
-        return redirect('users')->with(['my_selection'=>$my_selection]); 
+        if ($my_selection == 'bid_order'){
+            $users = User::orderBy('bid_order')->paginate(25); 
+        } else {
+            if ($my_selection == 'alpha'){
+                $users = User::orderBy('name')->paginate(25); 
+            } else {
+                if ($my_selection == 'seniority'){
+                    $users = User::orderBy('seniority_date')->paginate(25); 
+                } else {  // $my_selection = "s/t"
+                    $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
+                }
+            }
+        }
+        return view('users.index')->with(['users'=> $users,'my_selection'=>$my_selection]);
+//        return redirect('users')->with(['my_selection'=>$my_selection, 'page'=>$page])->paginate(25); 
     }
 
     /**

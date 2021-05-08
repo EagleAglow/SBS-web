@@ -133,6 +133,12 @@
 							</td>
 							</tr>
 							@endforeach
+							@php
+								// things to include with pagination 
+								$params = array('my_selection'=>$my_selection  );
+							@endphp
+							{{$users->appends($params)->links() }}    
+
 						</tbody>
 						</table>
 					</div>
