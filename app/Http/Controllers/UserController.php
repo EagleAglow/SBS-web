@@ -46,17 +46,17 @@ class UserController extends Controller {
         // can't use "orderBy" with User collection, nested "sortBy" may not work
         $my_selection = $request['my_selection'];
         if(!isset($my_selection)){
-            $my_selection = 'alpha';
+            $my_selection = 'bid_order';
         }
 
-        if ($my_selection == 'alpha'){
-            $users = User::all()->sortBy('name'); 
+        if ($my_selection == 'bid_order'){
+            $users = User::all()->sortBy('bid_order'); 
         } else {
-            if ($my_selection == 'seniority'){
-                $users = User::all()->sortBy('seniority_date'); 
+            if ($my_selection == 'alpha'){
+                $users = User::all()->sortBy('name'); 
             } else {
-                if ($my_selection == 'bid_order'){
-                    $users = User::all()->sortBy('bid_order'); 
+                if ($my_selection == 'seniority'){
+                    $users = User::all()->sortBy('seniority_date'); 
                 } else {  // $my_selection = "s/t"
                     $users = User::all()->sortBy('bidder_tie_breaker')->sortBy('seniority_date'); 
                 }
