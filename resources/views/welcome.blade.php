@@ -9,7 +9,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Shift Bid Tech</title>
+        <title id="my-title">{{ config('app.name') }} {{ config('app.app_port') }}</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Roboto:200,600" rel="stylesheet">
