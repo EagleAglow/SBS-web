@@ -190,6 +190,7 @@ class ScheduleController extends Controller {
         foreach($items as $item){
             $schedule_line = new ScheduleLine();
             $schedule_line->line = $item->line;
+            $schedule_line->line_natural = ScheduleLine::natural($item->line);
             // change schedule_id
             $schedule_line->schedule_id = $schedule->id;
             $schedule_line->line_group_id = $item->line_group_id;
