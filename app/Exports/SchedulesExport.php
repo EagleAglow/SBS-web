@@ -104,7 +104,7 @@ class SchedulesExport implements FromCollection
                     ->join('shift_codes as sc_55', 'day_55', '=', 'sc_55.id')
                     ->join('shift_codes as sc_56', 'day_56', '=', 'sc_56.id')
                     ->orderBy('schedule_lines.line_group_id')
-                    ->orderBy('schedule_lines.line')
+                    ->orderBy('schedule_lines.line_natural')
                     ->select('title', 'code', 'line', 'blackout', 'nexus', 'barge', 'offsite', 'comment',
                     'sc_01.name as n_01', 'sc_02.name as n_02', 'sc_03.name as n_03', 'sc_04.name as n_04',
                     'sc_05.name as n_05', 'sc_06.name as n_06', 'sc_07.name as n_07', 'sc_08.name as n_08',
