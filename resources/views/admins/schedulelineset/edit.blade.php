@@ -12,6 +12,8 @@
                 </div>
 					<div class="card-body">
                     <form method="POST" action="{{ route('schedulelineset.update', $schedule_line->id) }}" accept-charset="UTF-8">
+                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                         @csrf
                         @method('PUT')
                         <div class="form-group row">

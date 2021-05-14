@@ -282,20 +282,49 @@
                                             }
                                         @endphp
                                         <td>
-                                            <div class="row">
+                                            <div class="col">
+                                                <div class="row">
+                                                    <div style="margin-left:auto;margin-right:auto;">
+                                                        <a href="{{ route('schedulelineset.edit', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">Edit</button></a>
+                                                    </div>
+                                                    <div style="margin-left:auto;margin-right:auto;">
+                                                        <a href="{{ route('schedulelineset.clone', $schedule_line->id) }}"><button type="button" class="btn btn-success btn-my-success">Clone</button></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="row">
                                                 <div style="margin-left:auto;margin-right:auto;">
-
-                                                    <a href="{{ route('schedulelineset.edit', $schedule_line->id) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">Edit</button></a>
+                                                    <form action="{{ route('schedulelineset.edit', $schedule_line->id) }}" method="GET" class="get">
+                                                        <input type="hidden" name="_method" value="GET">
+                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                        @csrf
+                                                        {{ method_field('GET') }}
+                                                        <button type="submit" class="btn-primary btn-my-edit pull-left">zEdit</button>
+                                                    </form>
                                                 </div>
                                                 <div style="margin-left:auto;margin-right:auto;">
-
+                                                    <form action="{{ route('schedulelineset.clone', $schedule_line->id) }}" method="GET" class="get">
+                                                        <input type="hidden" name="_method" value="GET">
+                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                        @csrf
+                                                        {{ method_field('GET') }}
+                                                        <button type="submit" class="btn btn-success btn-my-success">zClone</button>
+                                                    </form>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">    
+                                                <div style="margin-left:auto;margin-right:auto;">
                                                     <form action="{{ route('schedulelineset.destroy', $schedule_line->id) }}" method="POST" class="delete">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                                         <input type="hidden" name="next_selection" value="{{ $next_selection }}">
                                                         @csrf
                                                         {{ method_field('DELETE') }}
-                                                        <button type="submit" onclick="return confirm('Delete Line {{$schedule_line->line}}?')" class="btn btn-danger btn-my-delete">Delete</button>
+                                                        <button type="submit" onclick="return confirm('Delete Line {{$schedule_line->line}}?')" class="btn btn-danger btn-my-delete" style="margin-top:0.5rem;">Delete</button>
                                                     </form>
                                                 </div>
                                             </div>

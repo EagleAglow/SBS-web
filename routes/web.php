@@ -117,6 +117,8 @@ Route::prefix('admins')->group(function () {
     Route::resource('/schedulelineset','ScheduleLineSetController')->except(['create']);
     // handles new scheduleline in selected schedule
     Route::get('/schedulelinset{schedule_id}','ScheduleLineSetController@create')->name('schedulelineset.create');
+    // clone line
+    Route::get('/schedulelinset/clone{schedule_id}','ScheduleLineSetController@clone')->name('schedulelineset.clone');
 
     // schedules
     Route::resource('/schedules','ScheduleController');

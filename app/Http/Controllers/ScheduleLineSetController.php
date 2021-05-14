@@ -96,7 +96,7 @@ class ScheduleLineSetController extends Controller {
             'trap'=>'0',
             'list_codes' => $list_codes,
             'line_groups' => $line_groups,
-            ]);
+            ])->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
     }
  
 
@@ -110,6 +110,10 @@ class ScheduleLineSetController extends Controller {
             // try to get it from session (used by destroy and create)
             $schedule_id = session('schedule_id');
         }
+
+
+
+        
 
 //////
 
@@ -322,6 +326,27 @@ class ScheduleLineSetController extends Controller {
         $line_group_id = $request['line_group_id'];
         $action = 'store';
 
+        if (!isset($schedule_id)){
+            // try to get it from session (used by destroy and create)
+            $schedule_id = session('schedule_id');
+        }
+
+        $my_selection = $request['my_selection'];
+        if (!isset($my_selection)){
+           // try to get it from session (used by destroy and create)
+           $my_selection = session('my_selection');
+           if (!isset($my_selection)){
+               // final fallback
+               $my_selection = 'all';
+           }
+       }
+       $next_selection = $request['next_selection'];
+       if (!isset($next_selection)){
+           // try to get it from session (used by destroy and create)
+           $next_selection = session('next_selection');
+       }
+
+
 // the following works, keep for fall back
 //        $this->validate($request, [ 
 //          'line'=>new DummyFail( 'Message passed to rule class')
@@ -373,7 +398,7 @@ class ScheduleLineSetController extends Controller {
 
         // put schedule_id in session
         flash('Schedule Line'. $schedule_line->line.' added!')->success();
-        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id]);
+        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
     }
  
  
@@ -384,13 +409,28 @@ class ScheduleLineSetController extends Controller {
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-    public function edit($id) {
+    public function edit(Request $request, $id) {
         $schedule_line = ScheduleLine::findOrFail($id);
+
+        $my_selection = $request['my_selection'];
+        if (!isset($my_selection)){
+           // try to get it from session (used by destroy and create)
+           $my_selection = session('my_selection');
+           if (!isset($my_selection)){
+               // final fallback
+               $my_selection = 'all';
+           }
+        }
+        $next_selection = $request['next_selection'];
+        if (!isset($next_selection)){
+           // try to get it from session (used by destroy and create)
+           $next_selection = session('next_selection');
+        }
 
         $groups = LineGroup::all('id','code'); //Get id & code for all groups
         $schedules = Schedule::all('id','title'); //Get id & title for all schedules
         $shifts = ShiftCode::all('id','name','begin_time','end_time'); //Get id, code, times for all shift codes
-        return view('admins.schedulelineset.edit', compact('schedule_line','groups','schedules','shifts'));
+        return view('admins.schedulelineset.edit', compact('schedule_line','groups','schedules','shifts'))->with(['my_selection' => $my_selection, 'next_selection' => $next_selection]);
     }
  
     /**
@@ -456,13 +496,94 @@ class ScheduleLineSetController extends Controller {
         }
 
         $schedule_line->save();
+        $my_selection = $request['my_selection'];
+        if (!isset($my_selection)){
+           // try to get it from session (used by destroy and create)
+           $my_selection = session('my_selection');
+           if (!isset($my_selection)){
+               // final fallback
+               $my_selection = 'all';
+           }
+       }
+       $next_selection = $request['next_selection'];
+       if (!isset($next_selection)){
+           // try to get it from session (used by destroy and create)
+           $next_selection = session('next_selection');
+       }
 
         // put schedule_id in session
         flash('Schedule Line: '. $schedule_line->line.' updated!')->success();
-        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id]);
+        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
 
     }
 
+
+    public function clone(Request $request, $id) {
+        $schedule_line = ScheduleLine::findOrFail($id);
+        $schedule_id = $schedule_line->schedule_id;
+        $line = $schedule_line->line;
+
+        $my_selection = $request['my_selection'];
+        if (!isset($my_selection)){
+           // try to get it from session (used by destroy and create)
+           $my_selection = session('my_selection');
+           if (!isset($my_selection)){
+               // final fallback
+               $my_selection = 'all';
+           }
+        }
+        $next_selection = $request['next_selection'];
+        if (!isset($next_selection)){
+           // try to get it from session (used by destroy and create)
+           $next_selection = session('next_selection');
+        }
+
+        $schedule_line_clone = new ScheduleLine();
+        // need to set a unique line number/letter for the clone - append lowercase a, b, c, etc.
+        // if already has a letter, start with next
+        if ((ord(substr($line,-1)) >= 97) && (ord(substr($line,-1)) <= 122)) {
+            $count = (ord(substr($line,-1)) +1);
+            $line = substr($line,0,strlen($line) -1);
+        } else {
+            $count = 97;  // start here, produces lowercase "a"
+        }
+        do {
+            $test_line = $line . chr($count);
+            $matches = ScheduleLine::where('schedule_id',$schedule_id)->where('line',$test_line)->count();
+            $count = $count +1;    
+        } while (($matches != 0) && ($count < (97 + 25)));
+        if ($count >= (97 + 25)){
+            // failed
+            // put schedule_id in session
+            flash('Schedule Line: '. $schedule_line->line.' was not cloned! Could not generate unique line number.')->warning()->important();
+            return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
+        }
+
+        $schedule_line_clone->line = $test_line;
+        $schedule_line_clone->line_natural = ScheduleLine::natural($test_line);
+        $schedule_line_clone->schedule_id = $schedule_line->schedule_id;
+        $schedule_line_clone->line_group_id = $schedule_line->line_group_id;
+        $schedule_line_clone->comment = $schedule_line->comment;
+        $schedule_line_clone->blackout = $schedule_line->blackout;
+        $schedule_line_clone->nexus = $schedule_line->nexus;
+        $schedule_line_clone->barge = $schedule_line->barge;
+        $schedule_line_clone->offsite = $schedule_line->offsite;
+        // get shift for each day
+        for ($n = 1; $n <= 56; $n++) {
+            $d = 'day_' . substr(('00' . $n),-2);
+            $schedule_line_clone->$d = $schedule_line->$d;
+        }
+
+        $schedule_line_clone->save();
+
+        $my_selection = $request['my_selection'];
+        $next_selection = $request['next_selection'];
+
+        // put schedule_id in session
+        flash('Schedule Line: '. $schedule_line->line.' cloned to: ' . $test_line . '.')->success();
+        return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
+    }
+ 
 
     /**
     * Remove the specified resource from storage.
@@ -478,7 +599,19 @@ class ScheduleLineSetController extends Controller {
         $schedule_line->delete();
 
         $my_selection = $request['my_selection'];
+        if (!isset($my_selection)){
+           // try to get it from session (used by destroy and create)
+           $my_selection = session('my_selection');
+           if (!isset($my_selection)){
+               // final fallback
+               $my_selection = 'all';
+           }
+        }
         $next_selection = $request['next_selection'];
+        if (!isset($next_selection)){
+           // try to get it from session (used by destroy and create)
+           $next_selection = session('next_selection');
+        }
 
         // put schedule_id in session
         flash('Schedule Line deleted!')->success();
