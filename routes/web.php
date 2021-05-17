@@ -71,6 +71,7 @@ Route::get('/lang/{lang}', 'LocalizationController@index')->name('lang');
 Route::get('/bidders/dash/ics/{id}', 'BidderDashController@ics')->name('bidders.dash.ics');
 
 
+
 // future - remove HomeController ??
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admins/dash', 'AdminDashController@index')->name('admins.dash');
@@ -78,6 +79,10 @@ Route::get('/bidders/dash', 'BidderDashController@index')->name('bidders.dash');
 Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervisors.dash');
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
 
+
+
+// show selected schedule to anyone
+Route::resource('/users/scheduleshow', 'UserScheduleShowController');
 
 // show progress scoreboard to admins / supervisors
 Route::get('users/progress', 'ProgressScoreboardController@index')->name('users.progress');
@@ -112,7 +117,7 @@ Route::prefix('admins')->group(function () {
     Route::resource('/linegroups','LineGroupController');
     // manage shift code table
     Route::resource('/shiftcodes','ShiftCodeController');
-    // a sected schedule with its schedule lines
+    // a selected schedule with its schedule lines
 //    Route::resource('/schedulelineset','ScheduleLineSetController');
     Route::resource('/schedulelineset','ScheduleLineSetController')->except(['create']);
     // handles new scheduleline in selected schedule
@@ -202,8 +207,6 @@ Route::prefix('admins')->group(function () {
 
 
 
-// show selected schedule to anyone
-Route::resource('users/scheduleshow', 'UserScheduleShowController');
 
 // show selected scheduleline to active bidder
 Route::resource('/bidder/bid', 'BidByBidderController');
@@ -213,3 +216,8 @@ Route::post('/bidder/setbid{id}', 'BidByBidderController@setbid')->name('bidder.
 // supervisor bidding
 Route::resource('/supervisor/bidfor', 'BidBySupervisorController');
 Route::post('/supervisor/setbidfor{id}', 'BidBySupervisorController@setbidfor')->name('supervisor.setbidfor');
+
+// show selected schedule line to anyone - single line view
+Route::get('/zoom/line/{id}', 'ZoomController@line');
+
+

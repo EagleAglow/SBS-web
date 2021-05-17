@@ -122,6 +122,10 @@
         $trap = '?';
     }
 
+    if (!isset($page)){
+        $page = 1;
+    }
+
 @endphp
 
 
@@ -180,8 +184,8 @@
                                     <div class="row text-right">
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="first_day" value="{{ $first_day }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -211,8 +215,8 @@
                                     <div class="row">
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="first_day" value="{{ $first_day }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -242,8 +246,8 @@
                                     <div class="row text-right">
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
-                                            <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
+                                            <input type="hidden" name="first_day" value="{{ $first_day }}">
+                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -398,9 +402,11 @@
                                                 } else {
                                                     echo '<div><span class="line-number">';
                                                 }
+                                                // line_group
+                                                $line_group_code = App\LineGroup::where('id',$schedule_line->line_group_id)->get()->first()->code
                                                 @endphp
                                                 {{ $schedule_line->line }}</span>
-                                                <span class="line-group">{{  App\LineGroup::where('id',$schedule_line->line_group_id)->get()->first()->code  }}</span>
+                                                <span class="line-group">{{  $line_group_code  }}</span>
                                                 @php
                                                 // comment
                                                 $comment = $schedule_line->comment; 
@@ -635,7 +641,21 @@
                                                         @endif
                                                     @endif
 
+                                                    <form action="{{ url('zoom/line', $schedule_line->id ) }}" method="GET">
+                                                        <input type="hidden" name="id" value="{{ $schedule_line->id }}">
+                                                        <input type="hidden" name="line_group_code" value="{{ $line_group_code }}">
+                                                        <input type="hidden" name="first_day" value="{{ $first_day }}">
+                                                        <input type="hidden" name="last_day" value="{{ $last_day }}">
+                                                        <input type="hidden" name="page" value="{{ $page }}">
+                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                        <input type="hidden" name="show_all" value={{$show_all}}>
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-primary btn-my-edit float-right">Zoom</button>
+                                                    </form>
+
                                                     </div>
+
                                                 </div>
                                             </td>
                                         </tr>
