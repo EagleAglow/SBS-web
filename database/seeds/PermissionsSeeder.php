@@ -128,5 +128,21 @@ class PermissionsSeeder extends Seeder
         $role3->givePermissionTo('schedule-manage');
         $role4->givePermissionTo('role-permission-manage');
 
+        // mirror bidders - these bidders may be gone a lot, so when they bid,
+        // they get a clone of the schedule line, the original line remains to be bid
+        // there are no extra permissions for this role
+        Role::create(['name' => 'flag-mirror']);   // mirror bidder
+
+        // snapshot bidders - these bidders are expected to be gone for most of the bidding
+        // schedule period, but if they return, they would pick from the lines that would
+        // have been available for their seniority at the time of bidding
+        // there are no extra permissions for this role
+        Role::create(['name' => 'flag-snapshot']);   // snapshot bidder
+
+        // suspended bidders - bidders that miss their bidding times are set aside (suspended)
+        // when they are available, they would bid next due to their seniority
+        // there are no extra permissions for this role
+        Role::create(['name' => 'flag-suspended']);   // suspended bidder
+
     }
 }

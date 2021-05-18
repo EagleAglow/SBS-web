@@ -89,15 +89,34 @@
                             <div class="col-md-6 my-group">   
                             @foreach ($roles as $role)
                                 @if(strpos($role->name, 'bid-for-') === false )
-                                    @if(strpos($role->name, 'bidder-active') === false )
+                                    @if(strpos($role->name, 'flag-') === false )
+                                        @if(strpos($role->name, 'bidder-active') === false )
+                                            <div>
+                                            <input type="checkbox" name="roles[]" value="{{ $role->id }}"
+                                                @php
+                                                    if ($user->hasRole($role->name)){ echo ' checked="checked">'; } else { echo '>'; }
+                                                @endphp
+                                                &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
+                                            </div>
+                                        @endif
+                                    @endif
+                                @endif
+                            @endforeach                        
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">{{ __('Flags') }}</label>
+                            <div class="col-md-6 my-group">   
+                            @foreach ($roles as $role)
+                                @if(strpos($role->name, 'flag-') !== false )
                                         <div>
                                         <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                                             @php
                                                 if ($user->hasRole($role->name)){ echo ' checked="checked">'; } else { echo '>'; }
                                             @endphp
-                                            &nbsp;<label for={{ $role->name }}>{{ ucfirst($role->name) }}</label>
+                                            &nbsp;<label for={{ $role->name }}>{{ ucfirst(substr($role->name,5)) }}</label>
                                         </div>
-                                    @endif
                                 @endif
                             @endforeach                        
                             </div>
