@@ -521,6 +521,7 @@ class ScheduleLineSetController extends Controller {
     public function clone(Request $request, $id) {
         $schedule_line = ScheduleLine::findOrFail($id);
         $schedule_id = $schedule_line->schedule_id;
+        $line_group_id = $schedule_line->line_group_id;
         $line = $schedule_line->line;
 
         $my_selection = $request['my_selection'];
@@ -540,19 +541,22 @@ class ScheduleLineSetController extends Controller {
 
         $schedule_line_clone = new ScheduleLine();
         // need to set a unique line number/letter for the clone - append lowercase a, b, c, etc.
-        // if already has a letter, start with next
+        // if already has a letter, start with next unused
         if ((ord(substr($line,-1)) >= 97) && (ord(substr($line,-1)) <= 122)) {
-            $count = (ord(substr($line,-1)) +1);
-            $line = substr($line,0,strlen($line) -1);
+            $chr_number = (ord(substr($line,-1)) );
+            $line_number = substr($line,0,(strlen($line) -1));
         } else {
-            $count = 97;  // start here, produces lowercase "a"
+            $chr_number = 97;  // start here, produces lowercase "a"
+            $line_number = $line;
         }
+
         do {
-            $test_line = $line . chr($count);
-            $matches = ScheduleLine::where('schedule_id',$schedule_id)->where('line',$test_line)->count();
-            $count = $count +1;    
-        } while (($matches != 0) && ($count < (97 + 25)));
-        if ($count >= (97 + 25)){
+            $test_line = $line_number . chr($chr_number);
+            $matches = ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id',$line_group_id)->where('line',$test_line)->count();
+            $chr_number = $chr_number +1;    
+        } while (($matches != 0) && ($chr_number < (97 + 25)));
+
+        if ($chr_number >= (97 + 25)){
             // failed
             // put schedule_id in session
             flash('Schedule Line: '. $schedule_line->line.' was not cloned! Could not generate unique line number.')->warning()->important();
