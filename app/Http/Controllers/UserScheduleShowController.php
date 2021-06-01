@@ -196,7 +196,8 @@ class UserScheduleShowController extends Controller {
         // set 'show_all' to 'yes' or 'no'
         $show_all = $request['show_all'];
         if(!isset($show_all)){
-            $show_all = 'yes';
+//            $show_all = 'yes';
+            $show_all = 'no';
         }
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id

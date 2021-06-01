@@ -52,6 +52,8 @@ class UserController extends Controller {
             $page = 1;
         }
 
+        // display order choices: Alpha, seniority (date only), bid-order (actual field),
+        // "g/s/t" bid order (bid group, seniority, tie-breaker)
         if ($my_selection == 'bid_order'){
             $users = User::orderBy('bid_order')->paginate(25); 
         } else {
@@ -60,8 +62,9 @@ class UserController extends Controller {
             } else {
                 if ($my_selection == 'seniority'){
                     $users = User::orderBy('seniority_date')->paginate(25); 
-                } else {  // $my_selection = "s/t"
-                    $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
+                } else {  // $my_selection = "g/s/t"
+                    // $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
+                    $users = User::join('bidder_groups','bidder_groups.id','=','users.bidder_group_id')->orderBy('order')->orderBy('seniority_date')->orderBy('bidder_tie_breaker')->paginate(25); 
                 }
             }
         }

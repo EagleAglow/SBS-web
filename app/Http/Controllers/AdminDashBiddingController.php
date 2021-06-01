@@ -9,6 +9,7 @@ use App\Param;
 use App\ScheduleLine;
 use App\BidderGroup;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NextBidderMail;
@@ -270,6 +271,8 @@ class AdminDashBiddingController extends Controller
     // clears all bids: all users set 'has_bid' to false/zero
     //                  all schedule lines set 'user_id' to null
     //                  all schedule lines 'bid_at' set to null
+    // deletes any snapshots
+    // deletes any mirrored schedule lines
     // sets parameters: 'bidding-next' to 1
     //                  'bidding_state' to 'ready'
     // clears role: 'bidder-active' from all users
@@ -333,6 +336,13 @@ class AdminDashBiddingController extends Controller
                 foreach($schedule_lines as $schedule_line){
                     $schedule_line->update(['user_id' => null, 'bid_at' => null]);
                 }
+
+                // delete any snapshots
+                DB::table('snapshot')->delete();
+
+                // delete mirror schedule lines
+                DB::table('schedule_lines')->where('mirror',1)->delete();
+
                 // reset parameters
                 $state_param = Param::where('param_name','bidding-state')->first();
                 $state_param->update(['string_value' => 'ready']);
@@ -353,7 +363,8 @@ class AdminDashBiddingController extends Controller
     }
 
     public function start()  // sets parameter: 'bidding_state' to 'running'
-    // assigns role: 'bidder-active' to bidder number 1
+    // assigns role: 'bidder-active' to bidder with lowest bidding order
+    // skipping bidders with flag-deferred or flag-snapshot
     
     {
         if (Auth::user()->hasRole('admin')){
@@ -366,8 +377,18 @@ class AdminDashBiddingController extends Controller
                 return redirect()->route('admins.dashBidding');
             } else {
 
+                // get id list of bidders to skip
+                $skip_ids = array();  //empty array for ids to skip
+                $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
+                $skip_ids = array();
+                foreach($uids as $uid){
+                    $skip_ids[] = $uid->id;
+                }
+
                 // give bidding role to first bidder
-                $user = User::where('bid_order',1)->first();
+//                $user = User::where('bid_order',1)->first();
+                $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();
+
                 $user->assignRole('bidder-active');
                 // set parameter
                 $state_param = Param::where('param_name','bidding-state')->first();
@@ -456,7 +477,11 @@ class AdminDashBiddingController extends Controller
                 $log_item->note = 'Start bidding';
                 $log_item->save();
 
-                flash('Bidding Started...')->success();
+//                flash('Bidding Started...')->success();
+
+$crap = 'undefined';
+
+                flash($crap)->success()->important();
                 return view('admins.dashBidding');
             }
         } else {

@@ -9,65 +9,68 @@
 			<div class="card shadow">
                 <div class="card-header">
                     <div class="flex row">
-						<div class="col-md-5">Admin - Users</div>
+						<div class="col-sm-3">Admin - Users</div>
 
-						<div class="col">
-							<div class="row">
+						<div class="col-sm-6">
 								<form action="{{ url('users' ) }}" method="GET">
 									@if($my_selection == 'alpha')
 										<input type="hidden" name="my_selection" value="seniority">
 										@csrf
 										<button type="submit" class="btn btn-primary btn-shift float-right">
-											<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Alphabetic</span><br>
-											<span style="padding: 0 0.4rem;">By Seniority</span><br>
-											<span style="padding: 0 0.4rem;">By Bid Order</span><br>
-											<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+											<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Alphabetic</span>
+											<span style="padding: 0 0.4rem;">Seniority</span>
+											<span style="padding: 0 0.4rem;">Bid Order</span><br>
+											<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
 										</button>
 									@else
 										@if($my_selection == 'seniority')
 											<input type="hidden" name="my_selection" value="bid_order">
 											@csrf
 											<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-												<span style="padding: 0 0.4rem;">Alphabetic</span><br>
-												<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Seniority</span><br>
-												<span style="padding: 0 0.4rem;">By Bid Order</span><br>
-												<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+												<span style="padding: 0 0.4rem;">Alphabetic</span>
+												<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Seniority</span>
+												<span style="padding: 0 0.4rem;">Bid Order</span><br>
+												<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
 											</button>
 										@else
 											@if($my_selection == 'bid_order')
 												<input type="hidden" name="my_selection" value="s/t">
 												@csrf
 												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-													<span style="padding: 0 0.4rem;">Alphabetic</span><br>
-													<span style="padding: 0 0.4rem;">By Seniority</span><br>
-													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Bid Order</span><br>
-													<span style="padding: 0 0.4rem;">By Seniority/Tie-Breaker</span>
+													<span style="padding: 0 0.4rem;">Alphabetic</span>
+													<span style="padding: 0 0.4rem;">Seniority</span>
+													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Bid Order</span><br>
+													<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
 												</button>
 											@else
 												<input type="hidden" name="my_selection" value="alpha">
 												@csrf
 												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-													<span style="padding: 0 0.4rem;">Alphabetic</span><br>
-													<span style="padding: 0 0.4rem;">By Seniority</span><br>
-													<span style="padding: 0 0.4rem;">By Bid Order</span><br>
-													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">By Seniority/Tie-Breaker</span>
+													<span style="padding: 0 0.4rem;">Alphabetic</span>
+													<span style="padding: 0 0.4rem;">Seniority</span>
+													<span style="padding: 0 0.4rem;">Bid Order</span><br>
+													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
 												</button>
 											@endif
 										@endif
 									@endif
 								</form>
-							</div>
+
 						</div>
+
+						<div class="col">
+                            <div class="text-right">
+								<a href="{{url('admins/export-excel-bid-order/xlsx')}}"><button type="button" class="btn btn-primary">Export Bid Order</button></a>
+                            </div>
+                        </div>
 
 						<div class="col">
                             <div class="text-right">
 								<a href="{{ route('users.create') }}"><button type="button" class="btn btn-success">Add User</button></a>
                             </div>
-                            <div class="text-right">&nbsp;</div>
-                            <div class="text-right">
-								<a href="{{url('admins/export-excel-bid-order/xlsx')}}"><button type="button" class="btn btn-primary">Export Bid Order</button></a>
-                            </div>
-                        </div>
+						</div>
+
+
 					</div>
 				</div>
 

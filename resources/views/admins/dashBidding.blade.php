@@ -86,7 +86,6 @@
                                     }
                                 }
                             }
-
                         }
                     }
 
@@ -117,7 +116,32 @@
                         }
                     }
                     echo '<div class="card-body my-squish"><b>Bidding</b>';
-                    echo '<br>' . $state . ' <br> ' . $bidder . '</div>';
+                    echo '<br>' . $state . ' <br> ' . $bidder;
+                    
+                    // collect mirror bidders
+                    $mirror_list = 'Mirror Bidders: ';
+                    $mirrors = App\User::role('flag-mirror')->get();
+                    if (count($mirrors) == 0){
+                        $mirror_list = $mirror_list . 'None';
+                    } else {
+                        foreach ($mirrors as $mirror){
+                            $mirror_list = $mirror_list . $mirror->name . ', ';
+                        }
+                        $mirror_list = substr_replace($mirror_list ,"",-2);
+                    }
+
+                    // collect snapshot bidders
+                    $snapshot_list = 'Snapshot Bidders: ';
+                    $snapshots = App\User::role('flag-snapshot')->get();
+                    if ($mirrors->count() == 0){
+                        $snapshot_list = $snapshot_list . 'None';
+                    } else {
+                        foreach ($snapshots as $snapshot){
+                            $snapshot_list = $snapshot_list . $snapshot->name . ', ';
+                        }
+                        $snapshot_list = substr_replace($snapshot_list ,"",-2);
+                    }
+                    echo '<br>' . $mirror_list . '<br>' . $snapshot_list . '</div>';
 
                     // see if all users have consistent bidding groups and bidding roles
                     $problem_count = 0;
@@ -291,7 +315,6 @@
 
                 @endphp
                 @if($problem_count ==  0)
-                    
                     <div class="card-body my-squash">Bidding Order: No Problems</div>
                     <div class="card-body my-squash">
                         @if($bidding_state_param == 'running')
@@ -299,14 +322,14 @@
                         @else
                             @if($bidding_state_param == 'paused')
                                 <span><a href="{{ url('admins/continue') }}" class="btn btn-primary" onclick="$('#cover-spin').show(0)">Continue</a></span> &nbsp; &nbsp;
-                                <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This clears all bids. Are you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
+                                <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This deletes any bids, any mirrored lines and any snapshots.\n\nAre you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
                             @else
                                 @if($bidding_state_param == 'complete')
                                     <span><a href="{{url('admins/export-excel-file-bids/xlsx')}}" class="btn btn-primary">Excel Report</a></span> &nbsp; &nbsp;
                                 @else
                                     @if($bidding_state_param == 'reported')
                                         <span><a href="{{url('admins/export-excel-file-bids/xlsx')}}" class="btn btn-primary">Excel Report</a></span> &nbsp; &nbsp;
-                                        <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This clears all bids.\n \n Have you saved and printed a report?\n \n Are you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
+                                        <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This deletes any bids, any mirrored lines and any snapshots.\n\nAre you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
                                     @else
                                         @if($bidding_state_param == 'ready')
                                             @if($active == 0)
@@ -316,7 +339,7 @@
                                                 <span><a href="{{ url('admins/tieclear') }}" onclick="if(confirm('All tie-breaker values will be erased.\nTo get new random tie-breaker values, run FIX.\nAre you sure you want to CLEAR SENIORITY TIES?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Clear Seniority Ties</a></span>
                                             @endif
                                         @else
-                                            <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This clears all bids. Are you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset To Ready</a></span>
+                                            <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This deletes any bids, any mirrored lines and any snapshots.\n\nAre you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset To Ready</a></span>
                                         @endif
                                     @endif
                                 @endif

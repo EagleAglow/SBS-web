@@ -139,10 +139,10 @@ class PermissionsSeeder extends Seeder
         // there are no extra permissions for this role
         Role::create(['name' => 'flag-snapshot']);   // snapshot bidder
 
-        // suspended bidders - bidders that miss their bidding times are set aside (suspended)
+        // deferred bidders - bidders that miss their bidding times are set aside (postponed)
         // when they are available, they would bid next due to their seniority
         // there are no extra permissions for this role
-        Role::create(['name' => 'flag-suspended']);   // suspended bidder
+        Role::create(['name' => 'flag-deferred']);   // deferred bidder
 
     }
 }

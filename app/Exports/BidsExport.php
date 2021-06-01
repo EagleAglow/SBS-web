@@ -118,7 +118,8 @@ class BidsExport implements FromCollection
                                             'sc_45.name as n_45', 'sc_46.name as n_46', 'sc_47.name as n_47', 'sc_48.name as n_48',
                                             'sc_49.name as n_49', 'sc_50.name as n_50', 'sc_51.name as n_51', 'sc_52.name as n_52',
                                             'sc_53.name as n_53', 'sc_54.name as n_54', 'sc_55.name as n_55', 'sc_56.name as n_56')
-                                            ->orderBy('schedule_id')->orderBy('line_group_id')->orderBy('line')->get()->toArray();
+                                            ->orderBy('bid_at')->get()->toArray();
+//                                            ->orderBy('schedule_id')->orderBy('line_group_id')->orderBy('line')->get()->toArray();
  
         // make a collection from combined arrays
         $merge = collect(array_merge($first, $lines)); 

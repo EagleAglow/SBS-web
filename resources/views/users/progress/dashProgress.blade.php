@@ -30,7 +30,6 @@
                         // bidding not in progress - set it to 0 and refresh
                         DB::table('params')->insertOrIgnore([ 'param_name' => 'bidding-next', 'integer_value' => 0, ]);
                     }
-//                    $bidding_next = App\Param::where('param_name','bidding-next')->first()->integer_value;
                     $bidding_next = App\Param::where('param_name','bidding-next')->first();
                     $bidding_next_began = $bidding_next->updated_at;
                     $bidding_next = $bidding_next->integer_value;
@@ -61,7 +60,7 @@
                                 $next_next_email = $bidder_next_next->first()->email;
                                 $next_next_name = $bidder_next_next->first()->name;
                                 if (isset($next_name)){
-                                    $next_next_name = 'Next: ' . ($bidding_next +1) . ' - ' . $next_next_name . ' ( ' . $next_next_email . ' ' . $next_next_phone . ' )';
+                                    $next_next_name = ($bidding_next +1) . ' - ' . $next_next_name . ' ( ' . $next_next_email . ' ' . $next_next_phone . ' )';
                                 } else {
                                     $next_next_name = 'BIDDER FOLLOWING CURRENT BIDDER HAS NO NAME!';
                                 }
@@ -79,12 +78,20 @@
                             if(isset($bidding_next)){
                                 $state = $state . ' <br>Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
                                 $state = $state . ' <br>Bidder ' . $bidding_next . ' has been current bidder for ' . intval( (time() - strtotime($bidding_next_began))/60 ) . ' minutes.';                                 
+                                if (strlen($next_next_name)>0){
+                                    $state = $state . ' <br>Next: ' . $next_next_name;
+                                }
+                            } else {
+                                echo '</div>';
                             }
                         } else {
                             if($bidding_state_param == 'paused'){
                                 $state = 'Paused';
                                 if(isset($bidding_next)){
                                     $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
+                                    if (strlen($next_next_name)>0){
+                                        $state = $state . ' <br>Next: ' . $next_next_name;
+                                    }
                                 }
                             } else {
                                 if($bidding_state_param == 'complete'){
@@ -96,10 +103,9 @@
                                         if($bidding_state_param == 'ready'){
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
-                                                if($bidding_next == 1){
-                                                    $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
-                                                } else {
-                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not First</span>)';
+                                                $state = $state . ' <br> Current: ' . $bidding_next . ' - ' . $next_name . ' ( ' . $next_email . ' ' . $next_phone . ' )';
+                                                if (strlen($next_next_name)>0){
+                                                    $state = $state . ' <br>Next: ' . $next_next_name;
                                                 }
                                             } else {
                                                 $state = $state . ' <br> Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
@@ -114,12 +120,13 @@
 
                         }
                     }
+
                     echo '<div class="card-body squash">' . $state;
-                    if (strlen($next_next_name)>0){
-                        echo '<br>' . $next_next_name . '</div>';
-                    } else {
-                        echo '</div>';
-                    }
+                    // special bidders - mirror, snapshot, suspended
+                    echo '<br>' . $mirror_list;
+                    echo '<br>' . $snapshot_list;
+                    echo '<br>' . $deferred_list;
+                    echo '</div>';
                 @endphp
 
                 <div class="card-body my-squash">

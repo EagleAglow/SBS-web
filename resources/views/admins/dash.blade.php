@@ -10,7 +10,7 @@
                 @include('flash::message')
 
                 <div class="card-body"><b>Bidders By Bidder Group</b><br>
-                   <span style="font-size:0.8rem;">The table shows the number of bidders for each bidder group, and the line groups for which they can bid.</span>
+                   <span style="font-size:0.8rem;">The table shows the number of bidders for each bidder group, and the line groups for which they can bid. "Snapshot" bidders are not counted.</span>
                 </div>
                 <div class="card-body my-squash">
                     <table class="table compact">
@@ -21,7 +21,10 @@
                                 $bidders_by_group = array();
                                 $bidder_sum = 0;
                                 foreach($groups as $group){
-                                    $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
+//                                    $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get());
+                                    // adjust for "snapshot" bidders - they have a bid group id, but do not actually bid
+                                    $bidders_by_group[$group->code] = count(App\User::where('bidder_group_id',$group->id)->get())
+                                                                      - count(App\User::where('bidder_group_id',$group->id)->role('flag-snapshot')->get());
                                 }
                                 echo '<th class="text-center compact">Bidder Group</th>';
                                 foreach($bidders_by_group as $group_code=>$group_count){
