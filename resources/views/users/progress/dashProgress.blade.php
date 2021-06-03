@@ -13,7 +13,7 @@
                     // ---------------------------------- Bidding
                     // get bidding state: 
                     //     none (bidders may not have bid order numbers yet)
-                    //     ready (to begin, next bidder is no. 1)
+                    //     ready (to begin, next bidder is lowest bidding number not "snapshot" or "deferred")
                     //     running, paused
                     //     complete (after last bidder, next bidder is next number)
                     //     reported, supposedly - NOTE: there is no good way to confirm download was saved!
@@ -27,7 +27,7 @@
                     // get bid_order for next bidder
                     $bidding_next = App\Param::where('param_name','bidding-next')->get();
                     if (count($bidding_next) == 0){
-                        // bidding not in progress - set it to 0 and refresh
+                        // bidding not in progress - set it to 0
                         DB::table('params')->insertOrIgnore([ 'param_name' => 'bidding-next', 'integer_value' => 0, ]);
                     }
                     $bidding_next = App\Param::where('param_name','bidding-next')->first();

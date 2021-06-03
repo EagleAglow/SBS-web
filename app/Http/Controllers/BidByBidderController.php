@@ -47,7 +47,6 @@ class BidByBidderController extends Controller
      */
     public function index()
     {
-//        if (Auth::user()->hasAnyRole('bid-for-demo','bid-for-irpa','bid-for-tsu','bid-for-oidp','bid-for-tcom','bid-for-tnon')){
         if (Auth::user()->hasPermission('bid-self')){
                 return view('bidders.dash');
         } else {
@@ -210,13 +209,19 @@ abort('401');  // test to see if we are hitting this
                 }
             }
 
-            // increment next bidder number
-            $next = $next +1;
+            // get id list of bidders to skip
+            $skip_ids = array();  //empty array for ids to skip
+            $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
+            $skip_ids = array();
+            foreach($uids as $uid){
+                $skip_ids[] = $uid->id;
+            }
 
-            // look for a bidder with that number
-            $user = User::where('bid_order', $next)->first();
+            // find next bidder, lowest bid order that has not bid, and not one to be skipped
+            $user = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
             if(isset($user) ){
                 // set next bidder
+                $next = $user->bid_order;
                 $next_param->update(['integer_value' => $next]);
                 $user->assignRole('bidder-active');
 
@@ -272,10 +277,9 @@ abort('401');  // test to see if we are hitting this
                     }
                 }
 
-///// begin second up
-
-                // look for a following bidder
-                $user2 = User::where('bid_order', ($next +1))->first();
+                // look for a following bidder, skipping the one above...
+                $skip_ids[] = $user->id;
+                $user2 = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
                 if(isset($user2) ){
 
                     // send email to next bidder?
@@ -331,11 +335,9 @@ abort('401');  // test to see if we are hitting this
                     }
                 }
 
-////// end second up
-
             } else {
                 // complete
-                $next_param->update(['integer_value' => 1]);
+                $next_param->update(['integer_value' => 0]);
                 $state_param = Param::where('param_name','bidding-state')->first();
                 $state_param->update(['string_value' => 'complete']);
 

@@ -210,13 +210,19 @@ abort('401');  // test to see if we are hitting this
                     }
                 }
 
-                // increment next bidder number
-                $next = $next +1;
+                // get id list of bidders to skip
+                $skip_ids = array();  //empty array for ids to skip
+                $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
+                $skip_ids = array();
+                foreach($uids as $uid){
+                    $skip_ids[] = $uid->id;
+                }
 
-                // look for a bidder with that number
-                $who = User::where('bid_order', $next)->first();
+                // find next bidder, lowest bid order that has not bid, and not one to be skipped
+                $who = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
                 if(isset($who) ){
                     // set next bidder 
+                    $next = $who->bid_order;
                     $next_param->update(['integer_value' => $next]);
                     $who->assignRole('bidder-active');
 
@@ -272,8 +278,9 @@ abort('401');  // test to see if we are hitting this
                         }
                     }
 
-                    // look for a bidder with that number
-                    $who2 = User::where('bid_order', ($next +1))->first();
+                    // look for a following bidder, skipping the one above...
+                    $skip_ids[] = $user->id;
+                    $who2 = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
                     if(isset($who2) ){
 
                         // send email to next bidder?
@@ -331,7 +338,7 @@ abort('401');  // test to see if we are hitting this
 
                 } else {
                     // complete
-                    $next_param->update(['integer_value' => 1]);
+                    $next_param->update(['integer_value' => 0]);
                     $state_param = Param::where('param_name','bidding-state')->first();
                     $state_param->update(['string_value' => 'complete']);
 

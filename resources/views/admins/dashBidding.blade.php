@@ -13,9 +13,9 @@
                     // ---------------------------------- Bidding
                     // get bidding state: 
                     //     none (bidders may not have bid order numbers yet)
-                    //     ready (to begin, next bidder is no. 1)
+                    //     ready (to begin, next bidder is lowest bid order, not flagged snapshot or deferred) 
                     //     running, paused
-                    //     complete (after last bidder, next bidder is next number)
+                    //     complete (after last bidder, not flagged snapshot or deferred) 
                     //     reported, supposedly - NOTE: there is no good way to confirm download was saved!
                     $bidding_state_param = App\Param::where('param_name','bidding-state')->get();
                     if (count($bidding_state_param) == 0){

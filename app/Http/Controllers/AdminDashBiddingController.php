@@ -104,17 +104,6 @@ class AdminDashBiddingController extends Controller
                         // build bid group role list
                         $bg_roles = $user->bidder_group->roles;
 
-
-/*                         
-                        $ng_role_list = array();
-                        foreach($bg_roles as $bg_role){
-                            if ( str_starts_with($bg_role->name,'bid-for-') ){
-                                array_push($bg_role_list, $bg_role->name);
-                            }
-                        }
-
- */                        
-
                         // if this user is the active bidder, skip check, just assume data is OK
                         // really don't want to (or need to) change that role in the middle of bidding
                         if (!$user->hasRole('bidder-active')){
@@ -273,7 +262,7 @@ class AdminDashBiddingController extends Controller
     //                  all schedule lines 'bid_at' set to null
     // deletes any snapshots
     // deletes any mirrored schedule lines
-    // sets parameters: 'bidding-next' to 1
+    // sets parameters: 'bidding-next' to lowest (non-zero) bid order, skipping bidders flagged snapshot or deferred
     //                  'bidding_state' to 'ready'
     // clears role: 'bidder-active' from all users
     {
@@ -343,11 +332,22 @@ class AdminDashBiddingController extends Controller
                 // delete mirror schedule lines
                 DB::table('schedule_lines')->where('mirror',1)->delete();
 
+                // get id list of bidders to skip
+                $skip_ids = array();  //empty array for ids to skip
+                $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
+                $skip_ids = array();
+                foreach($uids as $uid){
+                    $skip_ids[] = $uid->id;
+                }
+
+                // find first bidder
+                $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();                
+
                 // reset parameters
                 $state_param = Param::where('param_name','bidding-state')->first();
                 $state_param->update(['string_value' => 'ready']);
                 $next_param = Param::where('param_name','bidding-next')->first();
-                $next_param->update(['integer_value' => 1]);
+                $next_param->update(['integer_value' => $user->bid_order]);
 
                 // log done
                 $log_item = new LogItem();
@@ -385,8 +385,7 @@ class AdminDashBiddingController extends Controller
                     $skip_ids[] = $uid->id;
                 }
 
-                // give bidding role to first bidder
-//                $user = User::where('bid_order',1)->first();
+                // find first bidder
                 $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();
 
                 $user->assignRole('bidder-active');
@@ -396,10 +395,10 @@ class AdminDashBiddingController extends Controller
                 $next_param = Param::where('param_name','bidding-next')->first();
                 // need to toggle value to ensure "updated_at" is changed
                 $next_param->update(['integer_value' => 0]);
-                $next_param->update(['integer_value' => 1]);
+                $next_param->update(['integer_value' => $user->bid_order]);
 
-                // get second bidder - assumes always at least two
-                $user2 = User::where('bid_order',2)->first();
+                // get following bidder - assumes always at least two that are not skipped
+                $user2 = User::whereNotIn('id',$skip_ids)->where('bid_order','>',$user->bid_order)->orderBy('bid_order')->first();
 
                 // send email to bidders?
                 $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
