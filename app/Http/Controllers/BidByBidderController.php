@@ -14,6 +14,7 @@ use App\User;
 use App\Param;
 use App\Pick;
 use App\LogItem;
+use App\Snapshot;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NextBidderMail;
@@ -55,7 +56,6 @@ class BidByBidderController extends Controller
     }
 
 
-    // handle a bid as id it were an edit (which it is, for one item...)
     public function show($id) {
     
         if (Auth::user()->can('bid-now')){
@@ -155,17 +155,68 @@ abort('401');  // test to see if we are hitting this
 
 
     // handle a bid as if it were an edit update (which it is, for one item...)
+    // except for "mirror" bidders - clone the schedule line, assign it to them, leave the original unchanged
     public function setbid($id) {
-
-        
         if (Auth::user()->can('bid-now')){
             $schedule_line = ScheduleLine::findOrFail($id);
-            // set this user id for this schedule line
-            $schedule_line->user_id = Auth::user()->id;
-            // set date/time of bid on schedule line
-            $when = date('Y-m-d g:i:s');
-            $schedule_line->bid_at = $when;
-            $schedule_line->save();
+
+            // clone the line for mirror bidder
+            if (Auth::user()->hasRole('flag-mirror')){
+                $schedule_id = $schedule_line->schedule_id;
+                $line_group_id = $schedule_line->line_group_id;
+                $line = $schedule_line->line;
+                $schedule_line_clone = new ScheduleLine();
+                // need to set a unique line number/letter for the clone - append lowercase a, b, c, etc.
+                // if already has a letter, start with next unused
+                if ((ord(substr($line,-1)) >= 97) && (ord(substr($line,-1)) <= 122)) {
+                    $chr_number = (ord(substr($line,-1)) );
+                    $line_number = substr($line,0,(strlen($line) -1));
+                } else {
+                    $chr_number = 97;  // start here, produces lowercase "a"
+                    $line_number = $line;
+                }
+        
+                do {
+                    $test_line = $line_number . chr($chr_number);
+                    $matches = ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id',$line_group_id)->where('line',$test_line)->count();
+                    $chr_number = $chr_number +1;    
+                } while (($matches != 0) && ($chr_number < (97 + 25)));
+        
+                if ($chr_number >= (97 + 25)){
+                    // failed
+                    flash('Bid Failed! (Unable to clone original line)')->danger()->important();
+                    return redirect()->route('bidders.dash'); 
+                }
+        
+                $schedule_line_clone->line = $test_line;
+                $schedule_line_clone->line_natural = ScheduleLine::natural($test_line);
+                $schedule_line_clone->schedule_id = $schedule_line->schedule_id;
+                $schedule_line_clone->line_group_id = $schedule_line->line_group_id;
+                $schedule_line_clone->comment = $schedule_line->comment . ', Mirror Of Line ' . $line;
+                $schedule_line_clone->blackout = $schedule_line->blackout;
+                $schedule_line_clone->nexus = $schedule_line->nexus;
+                $schedule_line_clone->barge = $schedule_line->barge;
+                $schedule_line_clone->offsite = $schedule_line->offsite;
+                // set this user id for this cloned schedule line
+                $schedule_line_clone->user_id = Auth::user()->id;
+                // set date/time of bid on schedule line
+                $when = date('Y-m-d g:i:s');
+                $schedule_line_clone->bid_at = $when;
+
+                // get shift for each day
+                for ($n = 1; $n <= 56; $n++) {
+                    $d = 'day_' . substr(('00' . $n),-2);
+                    $schedule_line_clone->$d = $schedule_line->$d;
+                }
+                $schedule_line_clone->save();
+            } else {
+                // set this user id for this schedule line
+                $schedule_line->user_id = Auth::user()->id;
+                // set date/time of bid on schedule line
+                $when = date('Y-m-d g:i:s');
+                $schedule_line->bid_at = $when;
+                $schedule_line->save();
+            }
 
             // get next bidder (which is actually THIS bidder, at the moment)
             $next_param = Param::where('param_name','bidding-next')->first();
@@ -220,6 +271,41 @@ abort('401');  // test to see if we are hitting this
             // find next bidder, lowest bid order that has not bid, and not one to be skipped
             $user = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
             if(isset($user) ){
+
+                // handle snapshot bidders (with bid orders before this bidder) that have not yet been "snapshotted"
+                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->where('bid_order','<',$user->bid_order)->select('id','bid_order')->orderBy('bid_order')->get();
+                foreach($snap_users as $snap_user){
+                    // create snapshot of lines that this user could bid
+                    // identify correct line groups - store ids in $list_codes
+                    $role_names = $snap_user->getRoleNames();
+                    $list_ids = array();  //empty array for line group ids
+                    foreach ($role_names as $role_name) {
+                        if (strpos($role_name, 'bid-for-') !== false) {
+                            $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                            $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
+                        }
+                    }
+                    // get active schedule
+                    $active_sched = Schedule::select('id')->where('active', 1)->get();
+                    if ($active_sched->count() > 0){
+                        $active_sched_id = $active_sched->first()->id;
+                        // get schedule lines (not yet taken) for those groups
+                        $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
+                        ->whereNull('user_id')->orderBy('line_natural')->get();
+                        foreach ($schedule_lines as $schedule_line){
+                            // put line in snapshots
+                            $snapshot = new Snapshot();
+                            $snapshot->schedule_line_id = $schedule_line->id;
+                            $snapshot->user_id = $snap_user->id;
+                            $snapshot->save();
+                        }
+                    }
+                    // log
+                    $log_item = new LogItem();
+                    $log_item->note = 'Saved snapshot for: ' . $snap_user->name;
+                    $log_item->save();
+                }
+
                 // set next bidder
                 $next = $user->bid_order;
                 $next_param->update(['integer_value' => $next]);
@@ -336,6 +422,75 @@ abort('401');  // test to see if we are hitting this
                 }
 
             } else {
+
+                // handle left-over snapshot bidders that have not yet been "snapshotted"
+                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->select('id','bid_order')->orderBy('bid_order')->get();
+                foreach($snap_users as $snap_user){
+                    // create snapshot of lines that this user could bid
+                    // identify correct line groups - store ids in $list_codes
+                    $role_names = $snap_user->getRoleNames();
+                    $list_ids = array();  //empty array for line group ids
+                    foreach ($role_names as $role_name) {
+                        if (strpos($role_name, 'bid-for-') !== false) {
+                            $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                            $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
+                        }
+                    }
+                    // get active schedule
+                    $active_sched = Schedule::select('id')->where('active', 1)->get();
+                    if ($active_sched->count() > 0){
+                        $active_sched_id = $active_sched->first()->id;
+                        // get schedule lines (not yet taken) for those groups
+                        $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
+                        ->whereNull('user_id')->orderBy('line_natural')->get();
+                        foreach ($schedule_lines as $schedule_line){
+                            // put line in snapshots
+                            $snapshot = new Snapshot();
+                            $snapshot->schedule_line_id = $schedule_line->id;
+                            $snapshot->user_id = $snap_user->id;
+                            $snapshot->save();
+                        }
+                    }
+                    // log
+                    $log_item = new LogItem();
+                    $log_item->note = 'Saved snapshot for: ' . $snap_user->name;
+                    $log_item->save();
+                }
+
+                // also, snapshot any left-over deferred bidders - reusing variable names!!!
+                $snap_users = User::role(['flag-deferred'])->where('has_bid',0)->select('id','bid_order')->orderBy('bid_order')->get();
+                foreach($snap_users as $snap_user){
+                    // create snapshot of lines that this user could bid
+                    // identify correct line groups - store ids in $list_codes
+                    $role_names = $snap_user->getRoleNames();
+                    $list_ids = array();  //empty array for line group ids
+                    foreach ($role_names as $role_name) {
+                        if (strpos($role_name, 'bid-for-') !== false) {
+                            $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                            $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
+                        }
+                    }
+                    // get active schedule
+                    $active_sched = Schedule::select('id')->where('active', 1)->get();
+                    if ($active_sched->count() > 0){
+                        $active_sched_id = $active_sched->first()->id;
+                        // get schedule lines (not yet taken) for those groups
+                        $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
+                        ->whereNull('user_id')->orderBy('line_natural')->get();
+                        foreach ($schedule_lines as $schedule_line){
+                            // put line in snapshots
+                            $snapshot = new Snapshot();
+                            $snapshot->schedule_line_id = $schedule_line->id;
+                            $snapshot->user_id = $snap_user->id;
+                            $snapshot->save();
+                        }
+                    }
+                    // log
+                    $log_item = new LogItem();
+                    $log_item->note = 'Saved snapshot for deferred bidder: ' . $snap_user->name;
+                    $log_item->save();
+                }
+
                 // complete
                 $next_param->update(['integer_value' => 0]);
                 $state_param = Param::where('param_name','bidding-state')->first();

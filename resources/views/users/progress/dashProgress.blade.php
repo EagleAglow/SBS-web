@@ -112,7 +112,11 @@
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported
-                                            $state = 'Not Ready' . $bidding_state_param;
+                                            if ($active == 0){
+                                                $state = 'Not Ready &#9724; No Active Schedule';
+                                            } else {
+                                                $state = 'Not Ready &#9724; Schedule Is Active';
+                                            }
                                         }
                                     }
                                 }

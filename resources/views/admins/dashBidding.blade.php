@@ -71,17 +71,17 @@
                                         if($bidding_state_param == 'ready'){
                                             $state = 'Ready To Begin';
                                             if(isset($bidding_next)){
-                                                if($bidding_next == 1){
-                                                    $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
-                                                } else {
-                                                    $state = $state . ' <br> Current: ' . $next_name . ' (<span style="color:red;">Unexpected Error: Not 1</span>)';
-                                                }
+                                                $state = $state . ' <br> Current: ' . $next_name . ' (Order: ' . $bidding_next . ')';
                                             } else {
                                                 $state = $state . ' <br> Current: <span style="color:red;">Unexpected Error: No Value For Current Bidder</span>';
                                             }
                                         } else {
                                             // state is none of: running, paused, complete, ready, reported
-                                            $state = 'Not Ready' . $bidding_state_param;
+                                            if ($active == 0){
+                                                $state = 'Not Ready &#9724; No Active Schedule';
+                                            } else {
+                                                $state = 'Not Ready &#9724; Schedule Is Active';
+                                            }
                                         }
                                     }
                                 }
@@ -121,7 +121,7 @@
                     // collect mirror bidders
                     $mirror_list = 'Mirror Bidders: ';
                     $mirrors = App\User::role('flag-mirror')->get();
-                    if (count($mirrors) == 0){
+                    if ($mirrors->count(0) == 0){
                         $mirror_list = $mirror_list . 'None';
                     } else {
                         foreach ($mirrors as $mirror){
@@ -133,7 +133,7 @@
                     // collect snapshot bidders
                     $snapshot_list = 'Snapshot Bidders: ';
                     $snapshots = App\User::role('flag-snapshot')->get();
-                    if ($mirrors->count() == 0){
+                    if ($snapshots->count() == 0){
                         $snapshot_list = $snapshot_list . 'None';
                     } else {
                         foreach ($snapshots as $snapshot){

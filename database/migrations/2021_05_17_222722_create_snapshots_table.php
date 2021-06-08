@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSnapshotTable extends Migration
+class CreateSnapshotsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateSnapshotTable extends Migration
      */
     public function up()
     {
-        Schema::create('snapshot', function (Blueprint $table) {
+        Schema::create('snapshots', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('snapshot_at')->nullable();
             $table->unsignedBigInteger('schedule_line_id')->unsigned();
             $table->foreign('schedule_line_id')->references('id')->on('schedule_lines')
                 ->onDelete('cascade');
@@ -33,6 +32,6 @@ class CreateSnapshotTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('snapshot');
+        Schema::dropIfExists('snapshots');
     }
 }

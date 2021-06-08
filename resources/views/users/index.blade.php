@@ -34,7 +34,7 @@
 											</button>
 										@else
 											@if($my_selection == 'bid_order')
-												<input type="hidden" name="my_selection" value="s/t">
+												<input type="hidden" name="my_selection" value="g/s/t">
 												@csrf
 												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
 													<span style="padding: 0 0.4rem;">Alphabetic</span>

@@ -64,7 +64,7 @@ class UserController extends Controller {
                     $users = User::orderBy('seniority_date')->paginate(25); 
                 } else {  // $my_selection = "g/s/t"
                     // $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
-                    $users = User::join('bidder_groups','bidder_groups.id','=','users.bidder_group_id')->orderBy('order')->orderBy('seniority_date')->orderBy('bidder_tie_breaker')->paginate(25); 
+                    $users = User::join('bidder_groups','bidder_groups.id','=','users.bidder_group_id')->select('users.*','bidder_groups.order')->orderBy('order')->orderBy('seniority_date')->orderBy('bidder_tie_breaker')->paginate(25); 
                 }
             }
         }

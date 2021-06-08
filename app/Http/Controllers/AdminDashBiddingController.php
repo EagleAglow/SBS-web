@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Param;
+use App\Schedule;
 use App\ScheduleLine;
 use App\BidderGroup;
+use App\LineGroup;
+use App\Snapshot;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -326,21 +329,27 @@ class AdminDashBiddingController extends Controller
                     $schedule_line->update(['user_id' => null, 'bid_at' => null]);
                 }
 
+                // clear has_snapshot from users
+                $users = User::where('has_snapshot',1);
+                foreach($users as $user){
+                    $user->update(['has_snapshot' => 0]);
+                }
+
                 // delete any snapshots
-                DB::table('snapshot')->delete();
+                DB::table('snapshots')->delete();
 
                 // delete mirror schedule lines
                 DB::table('schedule_lines')->where('mirror',1)->delete();
 
                 // get id list of bidders to skip
-                $skip_ids = array();  //empty array for ids to skip
+                $skip_ids = array();  //empty array
                 $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
                 $skip_ids = array();
                 foreach($uids as $uid){
                     $skip_ids[] = $uid->id;
                 }
 
-                // find first bidder
+                // find first bidder (not snapshot, not deferred)
                 $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();                
 
                 // reset parameters
@@ -378,16 +387,51 @@ class AdminDashBiddingController extends Controller
             } else {
 
                 // get id list of bidders to skip
-                $skip_ids = array();  //empty array for ids to skip
+                $skip_ids = array();  //empty array
                 $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
                 $skip_ids = array();
                 foreach($uids as $uid){
                     $skip_ids[] = $uid->id;
                 }
 
-                // find first bidder
+                // find first bidder that is not skipped
                 $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();
 
+                // handle snapshot bidders (with bid orders before this bidder) that have not yet been "snapshotted"
+                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->where('bid_order','<',$user->bid_order)->select('id','bid_order')->orderBy('bid_order')->get();
+                foreach($snap_users as $snap_user){
+                    // create snapshot of lines that this user could bid
+                    // identify correct line groups - store ids in $list_codes
+                    $role_names = $snap_user->getRoleNames();
+                    $list_ids = array();  //empty array for line group ids
+                    foreach ($role_names as $role_name) {
+                        if (strpos($role_name, 'bid-for-') !== false) {
+                            $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                            $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
+                        }
+                    }
+                    // get active schedule
+                    $active_sched = Schedule::select('id')->where('active', 1)->get();
+                    if ($active_sched->count() > 0){
+                        $active_sched_id = $active_sched->first()->id;
+                        // get schedule lines (not yet taken) for those groups
+                        $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
+                        ->whereNull('user_id')->orderBy('line_natural')->get();
+                        foreach ($schedule_lines as $schedule_line){
+                            // put line in snapshots
+                            $snapshot = new Snapshot();
+                            $snapshot->schedule_line_id = $schedule_line->id;
+                            $snapshot->user_id = $snap_user->id;
+                            $snapshot->save();
+                        }
+                    }
+                    // log
+                    $log_item = new LogItem();
+                    $log_item->note = 'Saved snapshot for: ' . $snap_user->name;
+                    $log_item->save();
+                }
+
+                // done with snapshots, proceed to real bidding
                 $user->assignRole('bidder-active');
                 // set parameter
                 $state_param = Param::where('param_name','bidding-state')->first();
@@ -470,17 +514,12 @@ class AdminDashBiddingController extends Controller
                     }
                 }
 
-
                 // log
                 $log_item = new LogItem();
                 $log_item->note = 'Start bidding';
                 $log_item->save();
 
-//                flash('Bidding Started...')->success();
-
-$crap = 'undefined';
-
-                flash($crap)->success()->important();
+                flash('Bidding Started...')->success();
                 return view('admins.dashBidding');
             }
         } else {

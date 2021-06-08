@@ -40,7 +40,8 @@
                 <div class="card-body my-squash">
                     Import file must use the format of the export file, including header row. Do not use codes/names for groups/roles that are not already in the
                     system. Email address is the index key. Existing admin users are not modified. Other existing entries are updated. No users are deleted. New
-                    users get a random password (and password reset email if the box is checked). For names/email with extended ASCII characters, use the CSV format! 
+                    users get a random password (and password reset email if the box is checked). <span style="color:red;">For names/email with extended (non-ASCII)
+                    characters, use UTF-8 encoding!</span> One way to do that is to open the CSV file with Windows Notepad, then: File | Save As | Encoding | UTF-8.
                 </div>
 
                 <div class="card-body my-squash">
