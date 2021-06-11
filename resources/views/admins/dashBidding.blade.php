@@ -312,6 +312,8 @@
                             }
                         }
                     }
+                    
+                    $bidding_state_param = 'complete';
 
                 @endphp
                 @if($problem_count ==  0)
@@ -325,10 +327,16 @@
                                 <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This deletes any bids, any mirrored lines and any snapshots.\n\nAre you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
                             @else
                                 @if($bidding_state_param == 'complete')
-                                    <span><a href="{{url('admins/export-excel-file-bids/xlsx')}}" class="btn btn-primary">Excel Report</a></span> &nbsp; &nbsp;
+                                    <span><a href="{{url('admins/export-excel-file-bids/xlsx')}}" class="btn btn-primary">Excel Bidding Report</a></span> &nbsp; &nbsp;
+                                    @if(DB::table('snapshots')->count() > 0)
+                                        <span><a href="{{url('admins/export-excel-file-snapshots/xlsx')}}" class="btn btn-primary">Excel Snapshot Report</a></span> &nbsp; &nbsp;
+                                    @endif
                                 @else
                                     @if($bidding_state_param == 'reported')
                                         <span><a href="{{url('admins/export-excel-file-bids/xlsx')}}" class="btn btn-primary">Excel Report</a></span> &nbsp; &nbsp;
+                                        @if(DB::table('snapshots')->count() > 0)
+                                            <span><a href="{{url('admins/export-excel-file-snapshots/xlsx')}}" class="btn btn-primary">Excel Snapshot Report</a></span> &nbsp; &nbsp;
+                                        @endif
                                         <span><a href="{{ url('admins/reset') }}" onclick="if(confirm('This deletes any bids, any mirrored lines and any snapshots.\n\nAre you sure you want to RESET BIDDING?')){$('#cover-spin').show(0);return true;} else {return false;}" class="btn btn-danger">Reset</a></span>
                                     @else
                                         @if($bidding_state_param == 'ready')

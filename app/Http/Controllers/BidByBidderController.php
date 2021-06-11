@@ -424,7 +424,7 @@ abort('401');  // test to see if we are hitting this
             } else {
 
                 // handle left-over snapshot bidders that have not yet been "snapshotted"
-                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->select('id','bid_order')->orderBy('bid_order')->get();
+                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->orderBy('bid_order')->get();
                 foreach($snap_users as $snap_user){
                     // create snapshot of lines that this user could bid
                     // identify correct line groups - store ids in $list_codes
@@ -451,6 +451,8 @@ abort('401');  // test to see if we are hitting this
                             $snapshot->save();
                         }
                     }
+                    // tag user
+                    $snap_user->update(['has_snapshot' => 1]);
                     // log
                     $log_item = new LogItem();
                     $log_item->note = 'Saved snapshot for: ' . $snap_user->name;

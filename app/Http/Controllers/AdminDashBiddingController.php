@@ -329,7 +329,7 @@ class AdminDashBiddingController extends Controller
                     $schedule_line->update(['user_id' => null, 'bid_at' => null]);
                 }
 
-                // clear has_snapshot from users
+                // clear "has_snapshot" from users
                 $users = User::where('has_snapshot',1);
                 foreach($users as $user){
                     $user->update(['has_snapshot' => 0]);
@@ -349,7 +349,7 @@ class AdminDashBiddingController extends Controller
                     $skip_ids[] = $uid->id;
                 }
 
-                // find first bidder (not snapshot, not deferred)
+                // find first bidder (a bidder that is not snapshot or deferred)
                 $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();                
 
                 // reset parameters
@@ -398,7 +398,7 @@ class AdminDashBiddingController extends Controller
                 $user = User::whereNotIn('id',$skip_ids)->where('bid_order','>',0)->orderBy('bid_order')->first();
 
                 // handle snapshot bidders (with bid orders before this bidder) that have not yet been "snapshotted"
-                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->where('bid_order','<',$user->bid_order)->select('id','bid_order')->orderBy('bid_order')->get();
+                $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->where('bid_order','<',$user->bid_order)->orderBy('bid_order')->get();
                 foreach($snap_users as $snap_user){
                     // create snapshot of lines that this user could bid
                     // identify correct line groups - store ids in $list_codes
@@ -425,6 +425,8 @@ class AdminDashBiddingController extends Controller
                             $snapshot->save();
                         }
                     }
+                    // tag user
+                    $snap_user->update(['has_snapshot' => 1]);
                     // log
                     $log_item = new LogItem();
                     $log_item->note = 'Saved snapshot for: ' . $snap_user->name;

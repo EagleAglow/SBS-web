@@ -120,17 +120,19 @@
 							@endphp
 
 							<td>
-								<div class="row">
-									<div style="margin-left:auto;margin-right:auto;">
-										<a href="{{ route('users.edit', $user->id) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">Edit</button></a>
-									</div>
-									<div style="margin-left:auto;margin-right:auto;">
-										<form action="{{ route('users.destroy', $user->id) }}" method="POST" class="delete">
-											<input type="hidden" name="_method" value="DELETE">
-												@csrf
-												{{ method_field('DELETE') }}
-											<button type="submit" onclick="return confirm('Delete {{$user->name}}?')" class="btn btn-danger">Delete</button>
-										</form>
+								<div class="col">
+									<div class="row">
+										<div style="margin-left:auto;margin-right:auto;">
+											<a href="{{ route('users.edit', $user->id) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">Edit</button></a>
+										</div>
+										<div style="margin-left:auto;margin-right:auto;">
+											<form action="{{ route('users.destroy', $user->id) }}" method="POST" class="delete">
+												<input type="hidden" name="_method" value="DELETE">
+													@csrf
+													{{ method_field('DELETE') }}
+												<button type="submit" onclick="return confirm('Delete {{$user->name}}?')" class="btn btn-danger">Delete</button>
+											</form>
+										</div>
 									</div>
 								</div>
 							</td>
