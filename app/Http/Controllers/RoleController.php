@@ -110,7 +110,7 @@ class RoleController extends Controller {
         // 
 //        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'bid-for-tcom', 'bid-for-tnon', 'bid-for-oidp', 'bid-for-irpa', 'bid-for-tsu', 'bid-for-demo');
         // remove hard-coded references except for superuser, admin, supervisor, bidder-active
-        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active');
+        $keep = array('superuser', 'admin', 'supervisor', 'bidder-active', 'flag-mirror', 'flag-snapshot', 'flag-deferred');
         if (in_array($role->name,$keep)){
             flash('You cannot change the "' . $role->name . '" role! (Used internally)')->warning()->important();
             return redirect()->route('roles.index');

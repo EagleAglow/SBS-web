@@ -313,8 +313,6 @@
                         }
                     }
                     
-                    $bidding_state_param = 'complete';
-
                 @endphp
                 @if($problem_count ==  0)
                     <div class="card-body my-squash">Bidding Order: No Problems</div>
