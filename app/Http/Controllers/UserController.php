@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\BidderGroup;
 use App\Param;
+use App\LogItem;
 use Auth;
 use DB;
 
@@ -28,7 +29,15 @@ use Dotunj\LaraTwilio\Facades\LaraTwilio;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewUserMail;
 
-
+// bidder mail
+use App\Mail\ActiveBidderMail;
+use App\Mail\ActiveBidderTestMail;
+use App\Mail\NextBidderMail;
+use App\Mail\NextBidderTestMail;
+use App\Mail\DeferredBidderMail;
+use App\Mail\DeferredBidderTestMail;
+use App\Mail\UndeferredBidderMail;
+use App\Mail\UndeferredBidderTestMail;
 
 class UserController extends Controller {
 
@@ -388,8 +397,13 @@ class UserController extends Controller {
             }        
             // get flag state passed to controller
             $flag_id = Role::where('name','flag-deferred')->first()->id;
-            if (in_array($flag_id,$roles)){
-                $after_edit = 'Y';
+            // were any roles passed?
+            if (isset($roles)){
+                if (in_array($flag_id,$roles)){
+                    $after_edit = 'Y';
+                } else {
+                    $after_edit = 'N';
+                }
             } else {
                 $after_edit = 'N';
             }
@@ -839,7 +853,8 @@ class UserController extends Controller {
 
                     // set next bidder
                     $next = $bid_user->bid_order;
-                    $next_param->update(['integer_value' => $next]);
+                    $next_param = Param::where('param_name','bidding-next')->first();
+                    $next_param->update(['integer_value' => $next]); 
                     $bid_user->assignRole('bidder-active');
 
                     // send email to next bidder?
@@ -1025,6 +1040,7 @@ class UserController extends Controller {
                     }
 
                     // complete
+                    $next_param = Param::where('param_name','bidding-next')->first();
                     $next_param->update(['integer_value' => 0]);
                     $state_param = Param::where('param_name','bidding-state')->first();
                     $state_param->update(['string_value' => 'complete']);
