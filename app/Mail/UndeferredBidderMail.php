@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class DeferredBidderMail extends Mailable
+class UndeferredBidderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -35,8 +35,8 @@ class DeferredBidderMail extends Mailable
         $url = $this->url;
         $from_name = $this->from_name;
         $app_bid_phone = $this->app_bid_phone;
-        return $this->subject('Deferred Bidder Mail')
-            ->markdown('mailtemplates.deferredbidder')
+        return $this->subject('Un-deferred Bidder Mail')
+            ->markdown('mailtemplates.undeferredbidder')
             ->with([
                 'name' => $name, 
                 'url' =>  $url,

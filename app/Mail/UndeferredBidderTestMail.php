@@ -35,7 +35,7 @@ class UndeferredBidderTestMail extends Mailable
         $url = $this->url;
         $from_name = $this->from_name;
         $app_bid_phone = $this->app_bid_phone;
-        return $this->subject('Deferred Bidder Test Mail')
+        return $this->subject('Un-deferred Bidder Test Mail')
             ->markdown('mailtemplates.undeferredbiddertest')
             ->with([
                 'name' => $name,
