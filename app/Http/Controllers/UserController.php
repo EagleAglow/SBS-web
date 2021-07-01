@@ -410,7 +410,6 @@ class UserController extends Controller {
             if (($before_edit == 'N') And ($after_edit=='Y')){
                 // newly deferred, bidding in progress
 
-                $msg = $msg . ' newly deferrred';
 // add a pile of code similar to BidByBidder controller... =============================================================================================
 
                 $user->assignRole('flag-deferred');
@@ -448,7 +447,7 @@ class UserController extends Controller {
                         } else {
                             // send to deferred bidder
 
-                            Mail::to($user->email)->send(new DeferrredBidderMail($user->name));
+                            Mail::to($user->email)->send(new DeferredBidderMail($user->name));
                             $note = 'Email for deferred bidder sent to: ' . $user->name . ' (' . $user->email . ')';
                             $log_item = new LogItem();
                             $log_item->note = $note;
@@ -737,10 +736,7 @@ class UserController extends Controller {
 
             if (($before_edit == 'Y') And ($after_edit=='N')){
                 // newly "un-deferred", bidding in progress
-
-                $msg = $msg . ' newly un-deferrred';
-// add another pile of code... ========================================================================================================================
-
+                // note: if bidding was completed before the "un-defer" edit, this bidder was included in snapshots
                 $user->removeRole('flag-deferred');
 
                 // log "un-deferment"
@@ -802,258 +798,6 @@ class UserController extends Controller {
                         }
                     }
                 }
-
-                // find next bidder, which is probably this user, but we won't assume that
-                // get id list of bidders to skip
-                $skip_ids = array();  //empty array for ids to skip
-                $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
-                $skip_ids = array();
-                foreach($uids as $uid){
-                    $skip_ids[] = $uid->id;
-                }
-
-                // find next bidder, lowest bid order that has not bid, and not one to be skipped
-                // variable "$user" is the one being edited, so the rest of this section will use "$bid_user"
-                $bid_user = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
-                if(isset($bid_user) ){
-
-                    // handle snapshot bidders (with bid orders before this bidder) that have not yet been "snapshotted"
-                    $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->where('bid_order','<',$bid_user->bid_order)->select('id','bid_order')->orderBy('bid_order')->get();
-                    foreach($snap_users as $snap_user){
-                        // create snapshot of lines that this user could bid
-                        // identify correct line groups - store ids in $list_codes
-                        $role_names = $snap_user->getRoleNames();
-                        $list_ids = array();  //empty array for line group ids
-                        foreach ($role_names as $role_name) {
-                            if (strpos($role_name, 'bid-for-') !== false) {
-                                $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                                $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
-                            }
-                        }
-                        // get active schedule
-                        $active_sched = Schedule::select('id')->where('active', 1)->get();
-                        if ($active_sched->count() > 0){
-                            $active_sched_id = $active_sched->first()->id;
-                            // get schedule lines (not yet taken) for those groups
-                            $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
-                            ->whereNull('user_id')->orderBy('line_natural')->get();
-                            foreach ($schedule_lines as $schedule_line){
-                                // put line in snapshots
-                                $snapshot = new Snapshot();
-                                $snapshot->schedule_line_id = $schedule_line->id;
-                                $snapshot->user_id = $snap_user->id;
-                                $snapshot->save();
-                            }
-                        }
-                        // log
-                        $log_item = new LogItem();
-                        $log_item->note = 'Saved snapshot for: ' . $snap_user->name;
-                        $log_item->save();
-                    }
-
-                    // set next bidder
-                    $next = $bid_user->bid_order;
-                    $next_param = Param::where('param_name','bidding-next')->first();
-                    $next_param->update(['integer_value' => $next]); 
-                    $bid_user->assignRole('bidder-active');
-
-                    // send email to next bidder?
-                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
-                    if(isset($param_next_bidder_email_on_or_off)){
-                        if($param_next_bidder_email_on_or_off == 'on'){
-                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
-                            if($param_all_email_to_test_address_on_or_off == 'on'){
-                                $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
-                                if(isset($param_email_test_address)){
-                                    if(strlen($param_email_test_address) > 0){
-                                        // send mail to test address
-                                        Mail::to($param_email_test_address)->send(new ActiveBidderTestMail($bid_user->name));
-                                    }
-                                }
-                            } else {
-                                // send to bidder
-                                Mail::to($bid_user->email)->send(new ActiveBidderMail($bid_user->name));
-                                $note = 'Email for active bidder sent to: ' . $bid_user->name . ' (' . $bid_user->email . ')';
-                                $log_item = new LogItem();
-                                $log_item->note = $note;
-                                $log_item->save();
-                            }
-                        }
-                    }
-
-                    // send text to next bidder?
-                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
-                    if(isset($param_next_bidder_text_on_or_off)){
-                        if($param_next_bidder_text_on_or_off == 'on'){
-                            $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
-                            if($param_all_text_to_test_phone_on_or_off == 'on'){
-                                $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
-                                if(isset($param_text_test_phone)){
-                                    if(strlen($param_text_test_phone) > 0){
-                                        // send text to test phone number
-                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
-                                    }
-                                }
-                            } else {
-                                // send to bidder, if they have a number
-                                if (isset($bid_user->phone_number)){
-                                    if (strlen($bid_user->phone_number)>0){
-                                        LaraTwilio::notify($user->phone_number, 'Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
-                                        $note = 'Text for active bidder sent to: ' . $bid_user->name . ' (' . $bid_user->phone_number . ')';
-                                        $log_item = new LogItem();
-                                        $log_item->note = $note;
-                                        $log_item->save();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // look for a following bidder, skipping the one above...
-                    $skip_ids[] = $bid_user->id;
-                    $user2 = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
-                    if(isset($user2) ){
-
-                        // send email to next bidder?
-                        $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
-                        if(isset($param_next_bidder_email_on_or_off)){
-                            if($param_next_bidder_email_on_or_off == 'on'){
-                                $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
-                                if($param_all_email_to_test_address_on_or_off == 'on'){
-                                    $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
-                                    if(isset($param_email_test_address)){
-                                        if(strlen($param_email_test_address) > 0){
-                                            // send mail to test address
-                                            Mail::to($param_email_test_address)->send(new NextBidderTestMail($user2->name));
-                                        }
-                                    }
-                                } else {
-                                    // send to bidder
-                                    Mail::to($user2->email)->send(new NextBidderMail($user2->name));
-                                    $note = 'Email for "next" bidder sent to: ' . $user2->name . ' (' . $user2->email . ')';
-                                    $log_item = new LogItem();
-                                    $log_item->note = $note;
-                                    $log_item->save();
-                                }
-                            }
-                        }
-
-                        // send text to next bidder?
-                        $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
-                        if(isset($param_next_bidder_text_on_or_off)){
-                            if($param_next_bidder_text_on_or_off == 'on'){
-                                $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
-                                if($param_all_text_to_test_phone_on_or_off == 'on'){
-                                    $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
-                                    if(isset($param_text_test_phone)){
-                                        if(strlen($param_text_test_phone) > 0){
-                                            // send text to test phone number
-                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
-                                        }
-                                    }
-                                } else {
-                                    // send to bidder, if they have a number
-                                    if (isset($user2->phone_number)){
-                                        if (strlen($user2->phone_number)>0){
-                                            LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
-                                            $note = 'Text for "next" bidder sent to: ' . $user2->name . ' (' . $user2->phone_number . ')';
-                                            $log_item = new LogItem();
-                                            $log_item->note = $note;
-                                            $log_item->save();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                } else {
-
-                    // handle left-over snapshot bidders that have not yet been "snapshotted"
-                    $snap_users = User::role(['flag-snapshot'])->where('has_snapshot',0)->orderBy('bid_order')->get();
-                    foreach($snap_users as $snap_user){
-                        // create snapshot of lines that this user could bid
-                        // identify correct line groups - store ids in $list_codes
-                        $role_names = $snap_user->getRoleNames();
-                        $list_ids = array();  //empty array for line group ids
-                        foreach ($role_names as $role_name) {
-                            if (strpos($role_name, 'bid-for-') !== false) {
-                                $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                                $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
-                            }
-                        }
-                        // get active schedule
-                        $active_sched = Schedule::select('id')->where('active', 1)->get();
-                        if ($active_sched->count() > 0){
-                            $active_sched_id = $active_sched->first()->id;
-                            // get schedule lines (not yet taken) for those groups
-                            $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
-                            ->whereNull('user_id')->orderBy('line_natural')->get();
-                            foreach ($schedule_lines as $schedule_line){
-                                // put line in snapshots
-                                $snapshot = new Snapshot();
-                                $snapshot->schedule_line_id = $schedule_line->id;
-                                $snapshot->user_id = $snap_user->id;
-                                $snapshot->save();
-                            }
-                        }
-                        // tag user
-                        $snap_user->update(['has_snapshot' => 1]);
-                        // log
-                        $log_item = new LogItem();
-                        $log_item->note = 'Saved snapshot for: ' . $snap_user->name;
-                        $log_item->save();
-                    }
-
-                    // also, snapshot any left-over deferred bidders - reusing variable names!!!
-                    $snap_users = User::role(['flag-deferred'])->where('has_bid',0)->select('id','bid_order')->orderBy('bid_order')->get();
-                    foreach($snap_users as $snap_user){
-                        // create snapshot of lines that this user could bid
-                        // identify correct line groups - store ids in $list_codes
-                        $role_names = $snap_user->getRoleNames();
-                        $list_ids = array();  //empty array for line group ids
-                        foreach ($role_names as $role_name) {
-                            if (strpos($role_name, 'bid-for-') !== false) {
-                                $look4 = strtoupper(str_replace('bid-for-','',$role_name));
-                                $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
-                            }
-                        }
-                        // get active schedule
-                        $active_sched = Schedule::select('id')->where('active', 1)->get();
-                        if ($active_sched->count() > 0){
-                            $active_sched_id = $active_sched->first()->id;
-                            // get schedule lines (not yet taken) for those groups
-                            $schedule_lines = ScheduleLine::where('schedule_id',$active_sched_id)->whereIn('line_group_id',$list_ids)
-                            ->whereNull('user_id')->orderBy('line_natural')->get();
-                            foreach ($schedule_lines as $schedule_line){
-                                // put line in snapshots
-                                $snapshot = new Snapshot();
-                                $snapshot->schedule_line_id = $schedule_line->id;
-                                $snapshot->user_id = $snap_user->id;
-                                $snapshot->save();
-                            }
-                        }
-                        // log
-                        $log_item = new LogItem();
-                        $log_item->note = 'Saved snapshot for deferred bidder: ' . $snap_user->name;
-                        $log_item->save();
-                    }
-
-                    // complete
-                    $next_param = Param::where('param_name','bidding-next')->first();
-                    $next_param->update(['integer_value' => 0]);
-                    $state_param = Param::where('param_name','bidding-state')->first();
-                    $state_param->update(['string_value' => 'complete']);
-
-                    // log complete
-                    $log_item = new LogItem();
-                    $log_item->note = 'Bidding complete';
-                    $log_item->save();
-                }
-
-// end of another pile of code ================================================================================================================================
-
-
             }
         }
 
@@ -1084,7 +828,7 @@ class UserController extends Controller {
             }
         }
 
-        flash('User successfully edited. ' . $msg)->success()->important();
+        flash('User successfully edited. ' . $msg)->success();
         return redirect()->route('users.index');
     }
 

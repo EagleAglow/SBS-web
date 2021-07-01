@@ -367,7 +367,7 @@ abort('401');  // test to see if we are hitting this
                     }
 
                     // look for a following bidder, skipping the one above...
-                    $skip_ids[] = $user->id;
+                    $skip_ids[] = $who->id;
                     $who2 = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
                     if(isset($who2) ){
 

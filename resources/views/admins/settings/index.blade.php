@@ -89,7 +89,7 @@
 								@enderror
 							</div>
 							<div class="col-sm-3">
-								<input class="btn btn-primary btn-settings float-right" type="submit" value="SEND" onclick="javascript:if(confirm('Take a moment to review and proof-read the message:\n\nHello LASTNAME, Firstname -\n'+document.getElementById('bulkmailmsg').value+'\nRegards,\nSchedule Bid System\n\nAre you sure you want to send this?')){return true;}else{return false;}">
+								<input class="btn btn-primary btn-settings float-right" type="submit" value="SEND" onclick="javascript:if(confirm('Take a moment to review and proof-read the message:\n\nHello LASTNAME, Firstname -\n'+document.getElementById('bulkmailmsg').value+'\nRegards,\nSchedule Bid System\n\nAre you sure you want to send this TO ALL USERS?')){return true;}else{return false;}">
 							</div>
 						</div>
                     </form>
@@ -192,7 +192,7 @@
 								@enderror
 							</div>
 							<div class="col-sm-3">
-								<input class="btn btn-primary btn-settings float-right" type="submit" value="SEND" onclick="javascript:if(confirm('Take a moment to review and proof-read the message:\n\nHello LASTNAME, Firstname - '+document.getElementById('bulktextmsg').value+'\n\nAre you sure you want to send this?')){return true;}else{return false;}">
+								<input class="btn btn-primary btn-settings float-right" type="submit" value="SEND" onclick="javascript:if(confirm('Take a moment to review and proof-read the message:\n\nHello LASTNAME, Firstname - '+document.getElementById('bulktextmsg').value+'\n\nAre you sure you want to send this TO ALL USERS (with phone numbers)?')){return true;}else{return false;}">
 							</div>
 						</div>
                     </form>

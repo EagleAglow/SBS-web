@@ -19,6 +19,8 @@ use App\Mail\NextBidderMail;
 use App\Mail\NextBidderTestMail;
 use App\Mail\ActiveBidderMail;
 use App\Mail\ActiveBidderTestMail;
+use App\Mail\PauseMail;
+use App\Mail\PauseTestMail;
 
 use App\LogItem;
 use DB;
@@ -540,7 +542,7 @@ class AdminDashBiddingController extends Controller
                 flash('Unable to pause!')->warning()->important();
                 return redirect()->route('admins.dashBidding');
             } else {
-                // remove role from active bidder (or bidders, in case of operator error)
+                // remove role from active bidder (or bidders, although not likely)
                 $active_bidders = User::role('bidder-active')->get();
                 foreach ($active_bidders as $active_bidder){
                     $active_bidder->removeRole('bidder-active');                    
@@ -554,6 +556,70 @@ class AdminDashBiddingController extends Controller
                 $log_item = new LogItem();
                 $log_item->note = 'Pause bidding';
                 $log_item->save();
+
+                // notifications to next bidders (by bid order) that have not yet bid
+                // get id list of bidders to skip
+                $skip_ids = array();  //empty array
+                $uids = User::role(['flag-snapshot','flag-deferred'])->select('id')->get();
+                $skip_ids = array();
+                foreach($uids as $uid){
+                    $skip_ids[] = $uid->id;
+                }
+
+                $users = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->limit(2)->get();
+                foreach ($users as $user){
+                    // send pause email
+                    $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_email_on_or_off)){
+                        if($param_next_bidder_email_on_or_off == 'on'){
+                            $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                            if($param_all_email_to_test_address_on_or_off == 'on'){
+                                $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                                if(isset($param_email_test_address)){
+                                    if(strlen($param_email_test_address) > 0){
+                                        // send mail to test address
+                                        Mail::to($param_email_test_address)->send(new PauseTestMail($user->name));
+                                    }
+                                }
+                            } else {
+                                // send to bidder
+                                Mail::to($user->email)->send(new PauseMail($user->name));
+                                $note = 'Pause email sent to: ' . $user->name . ' (' . $user->email . ')';
+                                $log_item = new LogItem();
+                                $log_item->note = $note;
+                                $log_item->save();
+                            }
+                        }
+                    }
+
+                    // send pause text
+                    $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                    if(isset($param_next_bidder_text_on_or_off)){
+                        if($param_next_bidder_text_on_or_off == 'on'){
+                            $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+                            if($param_all_text_to_test_phone_on_or_off == 'on'){
+                                $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                                if(isset($param_text_test_phone)){
+                                    if(strlen($param_text_test_phone) > 0){
+                                        // send text to test phone number
+                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it continues, or call: ' . config('extra.app_bid_phone'));
+                                    }
+                                }
+                            } else {
+                                // send to bidder, if they have a number
+                                if (isset($user->phone_number)){
+                                    if (strlen($user->phone_number)>0){
+                                        LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it continues, or call: ' . config('extra.app_bid_phone'));
+                                        $note = 'Pause text sent to: ' . $user->name . ' (' . $user->phone_number . ')';
+                                        $log_item = new LogItem();
+                                        $log_item->note = $note;
+                                        $log_item->save();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
                 flash('Bidding Paused...')->success();
                 return view('admins.dashBidding');
@@ -592,6 +658,116 @@ class AdminDashBiddingController extends Controller
                         // set parameter
                         $state_param = Param::where('param_name','bidding-state')->first();
                         $state_param->update(['string_value' => 'running']);
+
+                        // send email to next (now the current/active) bidder
+                        $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                        if(isset($param_next_bidder_email_on_or_off)){
+                            if($param_next_bidder_email_on_or_off == 'on'){
+                                $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                                if($param_all_email_to_test_address_on_or_off == 'on'){
+                                    $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                                    if(isset($param_email_test_address)){
+                                        if(strlen($param_email_test_address) > 0){
+                                            // send mail to test address
+                                            Mail::to($param_email_test_address)->send(new ActiveBidderTestMail($user->name));
+                                        }
+                                    }
+                                } else {
+                                    // send to bidder
+                                    Mail::to($user->email)->send(new ActiveBidderMail($user->name));
+                                    $note = 'Email for active bidder sent to: ' . $user->name . ' (' . $user->email . ')';
+                                    $log_item = new LogItem();
+                                    $log_item->note = $note;
+                                    $log_item->save();
+                                }
+                            }
+                        }
+
+                        // send text to next (now the current/active) bidder
+                        $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                        if(isset($param_next_bidder_text_on_or_off)){
+                            if($param_next_bidder_text_on_or_off == 'on'){
+                                $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+                                if($param_all_text_to_test_phone_on_or_off == 'on'){
+                                    $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                                    if(isset($param_text_test_phone)){
+                                        if(strlen($param_text_test_phone) > 0){
+                                            // send text to test phone number
+                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                        }
+                                    }
+                                } else {
+                                    // send to bidder, if they have a number
+                                    if (isset($user->phone_number)){
+                                        if (strlen($user->phone_number)>0){
+                                            LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                            $note = 'Text for active bidder sent to: ' . $user->name . ' (' . $user->phone_number . ')';
+                                            $log_item = new LogItem();
+                                            $log_item->note = $note;
+                                            $log_item->save();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // look for a following bidder, skipping the one above...
+                        $skip_ids[] = $user->id;
+                        $user2 = User::whereNotIn('id',$skip_ids)->where('has_bid',0)->where('bid_order','>',0)->orderBy('bid_order')->first();
+                        if(isset($user2) ){
+
+                            // send email to next bidder?
+                            $param_next_bidder_email_on_or_off = Param::where('param_name','next-bidder-email-on-or-off')->first()->string_value;
+                            if(isset($param_next_bidder_email_on_or_off)){
+                                if($param_next_bidder_email_on_or_off == 'on'){
+                                    $param_all_email_to_test_address_on_or_off = Param::where('param_name','all-email-to-test-address-on-or-off')->first()->string_value;
+                                    if($param_all_email_to_test_address_on_or_off == 'on'){
+                                        $param_email_test_address = Param::where('param_name','email-test-address')->first()->string_value;
+                                        if(isset($param_email_test_address)){
+                                            if(strlen($param_email_test_address) > 0){
+                                                // send mail to test address
+                                                Mail::to($param_email_test_address)->send(new NextBidderTestMail($user2->name));
+                                            }
+                                        }
+                                    } else {
+                                        // send to bidder
+                                        Mail::to($user2->email)->send(new NextBidderMail($user2->name));
+                                        $note = 'Email for "next" bidder sent to: ' . $user2->name . ' (' . $user2->email . ')';
+                                        $log_item = new LogItem();
+                                        $log_item->note = $note;
+                                        $log_item->save();
+                                    }
+                                }
+                            }
+
+                            // send text to next bidder?
+                            $param_next_bidder_text_on_or_off = Param::where('param_name','next-bidder-text-on-or-off')->first()->string_value;
+                            if(isset($param_next_bidder_text_on_or_off)){
+                                if($param_next_bidder_text_on_or_off == 'on'){
+                                    $param_all_text_to_test_phone_on_or_off = Param::where('param_name','all-text-to-test-phone-on-or-off')->first()->string_value;
+                                    if($param_all_text_to_test_phone_on_or_off == 'on'){
+                                        $param_text_test_phone = Param::where('param_name','text-test-phone')->first()->string_value;
+                                        if(isset($param_text_test_phone)){
+                                            if(strlen($param_text_test_phone) > 0){
+                                                // send text to test phone number
+                                                LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                            }
+                                        }
+                                    } else {
+                                        // send to bidder, if they have a number
+                                        if (isset($user2->phone_number)){
+                                            if (strlen($user2->phone_number)>0){
+                                                LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                                $note = 'Text for "next" bidder sent to: ' . $user2->name . ' (' . $user2->phone_number . ')';
+                                                $log_item = new LogItem();
+                                                $log_item->note = $note;
+                                                $log_item->save();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                         // log
                         $log_item = new LogItem();
