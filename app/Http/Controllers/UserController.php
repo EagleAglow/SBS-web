@@ -64,6 +64,7 @@ class UserController extends Controller {
 
         // display order choices: Alpha, seniority (date only), bid-order (actual field),
         // "g/s/t" bid order (bid group, seniority, tie-breaker)
+        // also, selection for deferring bidders - show only active bidder and any deferred bidders
         if ($my_selection == 'bid_order'){
             $users = User::orderBy('bid_order')->paginate(25); 
         } else {
@@ -72,9 +73,12 @@ class UserController extends Controller {
             } else {
                 if ($my_selection == 'seniority'){
                     $users = User::orderBy('seniority_date')->paginate(25); 
-                } else {  // $my_selection = "g/s/t"
-                    // $users = User::orderBy('bidder_tie_breaker')->orderBy('seniority_date')->paginate(25); 
-                    $users = User::join('bidder_groups','bidder_groups.id','=','users.bidder_group_id')->select('users.*','bidder_groups.order')->orderBy('order')->orderBy('seniority_date')->orderBy('bidder_tie_breaker')->paginate(25); 
+                } else {
+                    if ($my_selection == 'a/db'){
+                        $users = User::role(['bidder-active','flag-deferred'])->orderBy('bid_order')->paginate(25); 
+                    } else {  // $my_selection = "g/s/t"
+                        $users = User::join('bidder_groups','bidder_groups.id','=','users.bidder_group_id')->select('users.*','bidder_groups.order')->orderBy('order')->orderBy('seniority_date')->orderBy('bidder_tie_breaker')->paginate(25); 
+                    }
                 }
             }
         }
@@ -381,14 +385,14 @@ class UserController extends Controller {
             } 
         }
 
-        // if bidding is in progress, handle changes to flag-deferred
+        // if bidding is in progress or paused, handle changes to flag-deferred
         // if newly deferred or "un-deferred", notify user of state change
         // also, if active bidder, shift to next bidder and notify other bidders
         // if bidding is not in progress, no special handling, just update flag 'role'
         // Note: detecting flag change by comparing roles before/after "sync" does not work
         $state_param = Param::where('param_name','bidding-state')->first();
         $test = $state_param->string_value;
-        if ($test == 'running') {
+        if (($test == 'running') Or ($test == 'paused')) {
             // get flag state before edit
             if ($user->hasRole('flag-deferred')){
                 $before_edit = 'Y';

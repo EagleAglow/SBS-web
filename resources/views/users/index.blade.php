@@ -20,7 +20,8 @@
 											<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Alphabetic</span>
 											<span style="padding: 0 0.4rem;">Seniority</span>
 											<span style="padding: 0 0.4rem;">Bid Order</span><br>
-											<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
+											<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span><br>
+											<span style="padding: 0 0.4rem;">Active and/or Deferred Bidders</span>
 										</button>
 									@else
 										@if($my_selection == 'seniority')
@@ -30,7 +31,8 @@
 												<span style="padding: 0 0.4rem;">Alphabetic</span>
 												<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Seniority</span>
 												<span style="padding: 0 0.4rem;">Bid Order</span><br>
-												<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
+												<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span><br>
+												<span style="padding: 0 0.4rem;">Active and/or Deferred Bidders</span>
 											</button>
 										@else
 											@if($my_selection == 'bid_order')
@@ -40,17 +42,31 @@
 													<span style="padding: 0 0.4rem;">Alphabetic</span>
 													<span style="padding: 0 0.4rem;">Seniority</span>
 													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Bid Order</span><br>
-													<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
+													<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span><br>
+													<span style="padding: 0 0.4rem;">Active and/or Deferred Bidders</span>
 												</button>
 											@else
-												<input type="hidden" name="my_selection" value="alpha">
-												@csrf
-												<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-													<span style="padding: 0 0.4rem;">Alphabetic</span>
-													<span style="padding: 0 0.4rem;">Seniority</span>
-													<span style="padding: 0 0.4rem;">Bid Order</span><br>
-													<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Group-Seniority-Tie-Breaker Order</span>
-												</button>
+												@if($my_selection == 'g/s/t')
+													<input type="hidden" name="my_selection" value="a/db">
+													@csrf
+													<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
+														<span style="padding: 0 0.4rem;">Alphabetic</span>
+														<span style="padding: 0 0.4rem;">Seniority</span>
+														<span style="padding: 0 0.4rem;">Bid Order</span><br>
+														<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Group-Seniority-Tie-Breaker Order</span><br>
+														<span style="padding: 0 0.4rem;">Active and/or Deferred Bidders</span>
+													</button>
+												@else
+													<input type="hidden" name="my_selection" value="alpha">
+													@csrf
+													<button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
+														<span style="padding: 0 0.4rem;">Alphabetic</span>
+														<span style="padding: 0 0.4rem;">Seniority</span>
+														<span style="padding: 0 0.4rem;">Bid Order</span><br>
+														<span style="padding: 0 0.4rem;">Group-Seniority-Tie-Breaker Order</span><br>
+														<span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Active and/or Deferred Bidders</span>
+													</button>
+												@endif
 											@endif
 										@endif
 									@endif
