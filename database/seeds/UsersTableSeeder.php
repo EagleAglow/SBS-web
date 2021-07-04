@@ -74,21 +74,12 @@ class UsersTableSeeder extends Seeder
 
         // create seed users
 
-        // add demo users - bidders
-        // UsersTableSeeder::myBidderFill('Demo Bidder One','one@demo.com','password','demo','1995-01-01');
-        // UsersTableSeeder::myBidderFill('Demo Bidder Two','two@demo.com','password','demo','1995-06-01');
-        // UsersTableSeeder::myBidderFill('Demo Bidder Three','three@demo.com','password','demo','1995-06-01');
-        // UsersTableSeeder::myBidderFill('Demo Bidder Four','four@demo.com','password','demo','1995-06-01');
-        // UsersTableSeeder::myBidderFill('Demo Bidder Five','five@demo.com','password','demo','1996-07-05');
-
-        UsersTableSeeder::myBidderFill('Demo Bidder One','one@quadratomic.com','password','demo','1995-01-01');
-        UsersTableSeeder::myBidderFill('Demo Bidder Two','two@quadratomic.com','password','demo','1995-06-01');
-        UsersTableSeeder::myBidderFill('Demo Bidder Three','three@quadratomic.com','password','demo','1995-06-01');
-        UsersTableSeeder::myBidderFill('Demo Bidder Four','four@quadratomic.com','password','demo','1995-06-01');
-        UsersTableSeeder::myBidderFill('Demo Bidder Five','five@quadratomic.com','password','demo','1996-07-05');
-        UsersTableSeeder::myBidderFill('Demo Bidder Six','six@quadratomic.com','password','demo','1996-07-06');
-        UsersTableSeeder::myBidderFill('Demo Bidder Seven','seven@quadratomic.com','password','demo','1996-07-08');
-
+//        add demo users - bidders
+        UsersTableSeeder::myBidderFill('Demo Bidder One','one@demo.com','password','demo','1995-01-01');
+        UsersTableSeeder::myBidderFill('Demo Bidder Two','two@demo.com','password','demo','1995-06-01');
+        UsersTableSeeder::myBidderFill('Demo Bidder Three','three@demo.com','password','demo','1995-06-01');
+        UsersTableSeeder::myBidderFill('Demo Bidder Four','four@demo.com','password','demo','1995-06-01');
+        UsersTableSeeder::myBidderFill('Demo Bidder Five','five@demo.com','password','demo','1996-07-05');
 
 
 
@@ -145,7 +136,6 @@ $newUser = User::create([
 /////////////////////////////////////////////////////////////////////////
 
 
-/* 
         // add bogus bidders
 
         // TSU 
@@ -426,6 +416,5 @@ $newUser = User::create([
         UsersTableSeeder::myBidderFill("KIRK, Keegan","Keegan.Kirk@Demo.com",'password','REGULAR','1994-01-19');
         UsersTableSeeder::myBidderFill("ROY, Enzo","Enzo.Roy@Demo.com",'password','REGULAR','1994-02-05');
         
-  */                       
     }
 }
