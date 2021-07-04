@@ -307,8 +307,8 @@ class ScheduleLineSetController extends Controller {
     public function create($schedule_id) {
 
         $schedules = Schedule::all('id','title'); //Get id & title code for all schedules
-        $groups = LineGroup::all('id','code'); //Get id & code for all groups
-        $shifts = ShiftCode::all('id','name','begin_time','end_time'); //Get id, code, times for all shift codes
+        $groups = LineGroup::all('id','code')->sortBy('code'); //Get id & code for all groups
+        $shifts = ShiftCode::all('id','name','begin_time','end_time')->sortBy('name');  //Get id, code, times for all shift codes
 
         return view('admins.schedulelineset.create',['schedule_id'=>$schedule_id, 'groups'=>$groups,'schedules'=>$schedules,'shifts'=>$shifts]);
 
