@@ -202,34 +202,56 @@ class UserScheduleShowController extends Controller {
  
         $schedule = Schedule::findOrFail($id);//Get schedule with the given id
         if ($schedule->approved == true){
+            // collection of picks 
+            $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
+
             if($my_selection == 'all'){
                 if($show_all == 'yes'){
+                    // get lines that have not been tagged for the user
+                    $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list_ids)
+                    ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                    // get lines that have been tagged for the user and join
                     $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list_ids)
-                    ->orderBy('line_natural')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines;
+                    ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    // combine and sort
+                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
+                    ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                 } else {
+                    // get lines that have not been tagged for the user
+                    $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->whereIn('line_group_id',$list_ids)
+                    ->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->select('schedule_lines.*', DB::raw('99999 as rank'));
+                    // get lines that have been tagged for the user
                     $schedule_lines = ScheduleLine::where('schedule_id',$id)->whereIn('line_group_id',$list_ids)
-                    ->where('blackout',0)->whereNull('schedule_lines.user_id')->orderBy('line_natural')->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines;
+                    ->where('blackout',0)->whereNull('schedule_lines.user_id')
+                    ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    // combine and sort
+                    ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
+                    ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                 }
+
+
+
             } else {
                 // filter to a single line group
-                // collection of picks 
-                $user_picks = Pick::select('schedule_line_id')->where('user_id','=',$pick_uid)->get()->toArray();
                 if($show_all == 'yes'){
                     // get lines that have not been tagged for the user
                     $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $key_id)
                     ->select('schedule_lines.*', DB::raw('99999 as rank'));
-                    // get lines that have been tagged for the user - join succeeds
+                    // get lines that have been tagged for the user
                     $schedule_lines = ScheduleLine::where('schedule_id',$id)->where('line_group_id',$key_id)
                     ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    // combine and sort
                     ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                     ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                 } else {
                     // get lines that have not been tagged for the user
                     $schedule_lines_not_tagged = ScheduleLine::whereNotIn('id', $user_picks)->where('schedule_id',$id)->where('line_group_id', $key_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
                     ->select('schedule_lines.*', DB::raw('99999 as rank'));
-                    // get lines that have been tagged for the user - join succeeds
+                    // get lines that have been tagged for the user
                     $schedule_lines = ScheduleLine::where('schedule_id',$id)->where('line_group_id',$key_id)->where('blackout',0)->whereNull('schedule_lines.user_id')
                     ->join('picks','schedule_lines.id','=','picks.schedule_line_id')->where('picks.user_id','=', $pick_uid)->select('schedule_lines.*','rank')
+                    // combine and sort
                     ->union($schedule_lines_not_tagged)->orderBy('rank')->orderBy('line_natural')
                     ->paginate(5)->onEachSide(13);; //Get first 5 ScheduleLines
                 }
