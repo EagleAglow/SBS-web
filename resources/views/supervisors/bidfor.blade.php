@@ -89,6 +89,7 @@
                         @method('POST')
                         <input class="btn btn-primary float-right" type="submit" value="Confirm Bid" onclick="if(confirm('{{$confirm_this }} \n\nThis action is NOT reversible! Are you sure you want this line?')){return true;}else{return false;}" >
                     </form>
+                    <button type="button" class="btn btn-primary" style="padding: 0.375rem 0.75rem;" onclick="window.location='{{ URL::previous() }}'">Back / Cancel</button>
                     </div>
                 </div>
 			</div>
