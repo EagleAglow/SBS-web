@@ -88,10 +88,13 @@ class SchedulesImport implements ToModel, WithHeadingRow, WithUpserts
             if (!isset($a_code)){
                 $a_code = '----';
             }
-            if ($a_code == ''){
+            if ($a_code == ''){  // empty
                 $a_code = '----';
             }
-            if (substr($a_code,0,1) == '-'){
+            if (substr($a_code,0,1) == '-'){  // leading dash
+                $a_code = '----';
+            }
+            if (substr($a_code,0,1) == ' '){  // leading space
                 $a_code = '----';
             }
             $code_ids = ShiftCode::select('id')->where('name','=', $a_code)->get();
