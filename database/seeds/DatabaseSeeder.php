@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ShiftCodesTableSeeder::class);
         $this->call(SchedulesTableSeeder::class);
         $this->call(ScheduleLinesTableSeeder::class);
+        $this->call(LineDaysTableSeeder::class);
         // run PermissionsSeeder BEFORE UsersTableSeeder
         $this->call(PermissionsSeeder::class);
         $this->call(UsersTableSeeder::class);
