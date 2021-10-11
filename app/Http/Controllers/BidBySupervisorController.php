@@ -126,12 +126,6 @@ abort('401');  // test to see if we are hitting this
         if (isset($barge)) { $barge = 1; } else { $barge = 0; }
         if (isset($offsite)) { $offsite = 1; } else { $offsite = 0; }
         
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $$d = $request[$d];
-        }
-        
         $schedule_line->line = $line;
         $schedule_line->schedule_id = $schedule_id;
         $schedule_line->line_group_id = $line_group_id;
@@ -140,12 +134,6 @@ abort('401');  // test to see if we are hitting this
         $schedule_line->nexus = $nexus;
         $schedule_line->barge = $barge;
         $schedule_line->offsite = $offsite;
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $schedule_line->$d = $$d;
-        }
-
         $schedule_line->save();
 
         flash('Schedule Line: '. $schedule_line->line.' updated!')->success();
@@ -203,12 +191,6 @@ abort('401');  // test to see if we are hitting this
                     // set date/time of bid on schedule line
                     $when = date('Y-m-d g:i:s');
                     $schedule_line_clone->bid_at = $when;
-
-                    // get shift for each day
-                    for ($n = 1; $n <= 56; $n++) {
-                        $d = 'day_' . substr(('00' . $n),-2);
-                        $schedule_line_clone->$d = $schedule_line->$d;
-                    }
                     $schedule_line_clone->save();
                 } else {
                     $schedule_line->user_id = $who->id;

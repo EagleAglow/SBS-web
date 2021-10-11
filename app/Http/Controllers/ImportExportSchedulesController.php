@@ -53,7 +53,8 @@ class ImportExportSchedulesController extends Controller
     public function exportExcelCSVSchedules($slug) 
     {
         if (Auth::user()->hasRole('admin')){
-            return Excel::download(new SchedulesExport, 'schedules.'.$slug);
+//            return Excel::download(new SchedulesExport(1), 'schedules.'.$slug);  // schedule with id = 1  //  FIX ME LATER
+            return Excel::download(new SchedulesExport, 'schedules.'.$slug);  // original, all schedules dumped
         } else {
             abort('401');
         }

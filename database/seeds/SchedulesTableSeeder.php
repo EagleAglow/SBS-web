@@ -13,6 +13,7 @@ class SchedulesTableSeeder extends Seeder
             // native mySQL format?  - 'YYYY-MM-DD'
             'start' => '2021-04-29',
             'cycle_count' => '3',
+            'cycle_days' => '56',
             // note FALSE = 0
             'approved' => '0',
             'active' => '0',

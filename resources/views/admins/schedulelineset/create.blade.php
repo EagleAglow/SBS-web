@@ -90,19 +90,23 @@
                         </div>
 
                         @php
-                        for ($n = 1; $n <= 56; $n++) {
-                            $d = 'day_' . substr(('00' . $n),-2);
+                        $max_days = App\Schedule::where('id',$schedule_id)->first()->cycle_days;
+                        for ($n = 1; $n <= $max_days; $n++) {
+                            $d = 'day_' . substr(('000' . $n),-3);
                             echo '<!-- ' . $d . ' dropdown  -->';
                             echo '<div class="form-group row">';
-                            echo '<label for="day_01" class="col-md-3 col-form-label text-md-right">';
+                            echo '<label for=" . $d . " class="col-md-3 col-form-label text-md-right">';
                             echo 'Day ' . $n;
                             echo '</label><div class="col-md-6">';
                             echo '<select required class="form-control" name="' . $d . '" id="' . $d . '">';
                             foreach($shifts as $shift){
-                                if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
-                                    $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                if ($shift->name!='<<>>'){  
+                                    if ($shift->name=='----'){
+                                        $cwt = 'Day Off'; } else {
+                                        $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                    }
+                                    echo '<option value="' . $shift->id . '">' . $cwt . '</option>';
                                 }
-                                echo '<option value="' . $shift->id . '">' . $cwt . '</option>';
                             }
                             echo '</select></div></div>';
                         }

@@ -12,7 +12,7 @@ class Schedule extends Model
      * @var array
      */
     protected $fillable = [
-        'id', 'title', 'start', 'cycle_count', 'approved',  'active',
+        'id', 'title', 'start', 'cycle_count', 'cycle_days', 'approved',  'active',
     ];
 
 // hasMany ScheduleLines

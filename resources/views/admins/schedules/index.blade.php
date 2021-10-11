@@ -26,7 +26,8 @@
                             <tr>
                             <th class="text-center" scope="col">Title</th>
                             <th class="text-center" scope="col">Start Date</th>
-                            <th class="text-center" scope="col">Cycles<br></th>
+                            <th class="text-center" scope="col">Days</th>
+                            <th class="text-center" scope="col">Cycles</th>
                             <th class="text-center" scope="col">Last Date</th>
                             <th class="text-center" scope="col">Approved</th>
                             <th class="text-center" scope="col">Active</th>
@@ -38,9 +39,11 @@
                                 <tr>
                                     <td class="text-center">{{ $schedule->title }}</td>
                                     <td class="text-center">{{ date('d-M-Y', strtotime($schedule->start)) }}</td>
+                                    <td class="text-center">{{ $schedule->cycle_days }}</td>
                                     <td class="text-center">{{ $schedule->cycle_count }}</td>
+
                                     @php
-                                    $n = ((($schedule->cycle_count) * 56 ) -1) . ' days';
+                                    $n = ((($schedule->cycle_count) * ($schedule->cycle_days) ) -1) . ' days';
                                     $last =  date_add( date_create( $schedule->start ), date_interval_create_from_date_string($n) );
                                     @endphp
                                     <td class="text-center">{{ date_format( $last,"d-M-Y") }}</td>

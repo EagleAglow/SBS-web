@@ -3,6 +3,8 @@
 @section('content')
 
 @php
+    // days in cycle
+    $max_days = $schedule->cycle_days;
     // days to display
     $delta = '7';
 
@@ -16,21 +18,21 @@
     } else { $cycles = 1; }
 
     if (isset($first_day)){
-        if (($first_day <= 0 ) || ( 57 <= $first_day )){
+        if (($first_day <= 0 ) || ( ($max_days +1) <= $first_day )){
             $first_day = 1;
         }
     } else { $first_day = 1; }
 
     if (isset($last_day)){
-        if (($last_day <= 9 ) || ( 57 <= $last_day )){
+        if (($last_day <= 9 ) || ( ($max_days +1) <= $last_day )){
             $last_day = $first_day + $delta - 1;
         }
     } else {
         $last_day = $first_day + $delta - 1;
     }
     
-    if ( $last_day > 56 ){
-            $last_day = 56;
+    if ( $last_day > $max_days ){
+            $last_day = $max_days;
             $first_day = $last_day - $delta + 1;                                
     }
 
@@ -320,7 +322,7 @@
 
                                 @endphp    
                                 <th class="text-center btn-shift" scope="col">
-                                @if ($last_day < 56)
+                                @if ($last_day < ($max_days -1))
                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                     <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
                                     <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
@@ -361,7 +363,7 @@
                                         }
 
                                         echo '<th class="text-center month-day-row" scope="col">&nbsp;</th></tr>';
-                                        $offset = '+' . ( 55 + $first_day - $last_day ) . ' days';
+                                        $offset = '+' . ( ($max_days -1) + $first_day - $last_day ) . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
 
                                     }
@@ -441,9 +443,12 @@
                                                         echo '<td class="text-center line-code" scope="col">';
                                                     }
 
-                                                    $day_field_name =  'day_' . substr(('00' . $d),-2);
-                                                    $day_shiftcode_id = $schedule_line->$day_field_name;
-                                                    echo App\ShiftCode::find($day_shiftcode_id)->shift_divs . '</td>';
+//     REMOVE LATER                                               $day_field_name =  'day_' . substr(('00' . $d),-2);
+//                                                    $day_shiftcode_id = $schedule_line->$day_field_name;
+//                                                    echo App\ShiftCode::find($day_shiftcode_id)->shift_divs . '</td>';
+ 
+                                                    echo  App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
+
 
                                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                                 }

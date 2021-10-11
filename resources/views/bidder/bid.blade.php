@@ -45,10 +45,8 @@
                             @php
                             $stamp = strtotime( $schedule->start );  // starting date, numeric
 
-                            for ($n = 1; $n <= 56; $n++) {
-                                $d = 'day_' . substr(('00' . $n),-2);
-                                $shift = App\ShiftCode::find($schedule_line->$d);
-
+                            for ($n = 1; $n <= ($schedule->cycle_days); $n++) {
+                                $shift = App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$n));
                                 $day = date('D', $stamp);
                                 echo '<tr><td class="text-center compact">' . $n . '</td>';
                                 echo '<td class="text-center compact">' . $day . '</td>';
@@ -61,12 +59,16 @@
                                     } else {
                                         $calendar = $calendar . ', ' . $d;
                                     }
-                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+56 days");
+                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+" . $schedule->cycle_days . " days");
                                 }
                                 echo '<td class="text-center compact">' . $calendar . '</td>';
 
-                                if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
-                                    $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                if ($shift->name=='<<>>'){
+                                    $cwt = 'Missing Data';
+                                } else {
+                                    if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
+                                        $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                    }
                                 }
                                 echo '<td class="text-center compact">' . $cwt . '</td></tr>';
                                 $stamp = $nextstamp;

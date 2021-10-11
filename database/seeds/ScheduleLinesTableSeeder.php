@@ -24,62 +24,6 @@ class ScheduleLinesTableSeeder extends Seeder
             'line' => $L,
             // special handling for "natural sort
             'line_natural' => ScheduleLine::natural($L),
-            'day_01' => DB::table('shift_codes')->where('name', $d01)->first()->id,
-            'day_02' => DB::table('shift_codes')->where('name', $d02)->first()->id,
-            'day_03' => DB::table('shift_codes')->where('name', $d03)->first()->id,
-            'day_04' => DB::table('shift_codes')->where('name', $d04)->first()->id,
-            'day_05' => DB::table('shift_codes')->where('name', $d05)->first()->id,
-            'day_06' => DB::table('shift_codes')->where('name', $d06)->first()->id,
-            'day_07' => DB::table('shift_codes')->where('name', $d07)->first()->id,
-            'day_08' => DB::table('shift_codes')->where('name', $d08)->first()->id,
-            'day_09' => DB::table('shift_codes')->where('name', $d09)->first()->id,
-            'day_10' => DB::table('shift_codes')->where('name', $d10)->first()->id,
-            'day_11' => DB::table('shift_codes')->where('name', $d11)->first()->id,
-            'day_12' => DB::table('shift_codes')->where('name', $d12)->first()->id,
-            'day_13' => DB::table('shift_codes')->where('name', $d13)->first()->id,
-            'day_14' => DB::table('shift_codes')->where('name', $d14)->first()->id,
-            'day_15' => DB::table('shift_codes')->where('name', $d15)->first()->id,
-            'day_16' => DB::table('shift_codes')->where('name', $d16)->first()->id,
-            'day_17' => DB::table('shift_codes')->where('name', $d17)->first()->id,
-            'day_18' => DB::table('shift_codes')->where('name', $d18)->first()->id,
-            'day_19' => DB::table('shift_codes')->where('name', $d19)->first()->id,
-            'day_20' => DB::table('shift_codes')->where('name', $d20)->first()->id,
-            'day_21' => DB::table('shift_codes')->where('name', $d21)->first()->id,
-            'day_22' => DB::table('shift_codes')->where('name', $d22)->first()->id,
-            'day_23' => DB::table('shift_codes')->where('name', $d23)->first()->id,
-            'day_24' => DB::table('shift_codes')->where('name', $d24)->first()->id,
-            'day_25' => DB::table('shift_codes')->where('name', $d25)->first()->id,
-            'day_26' => DB::table('shift_codes')->where('name', $d26)->first()->id,
-            'day_27' => DB::table('shift_codes')->where('name', $d27)->first()->id,
-            'day_28' => DB::table('shift_codes')->where('name', $d28)->first()->id,
-            'day_29' => DB::table('shift_codes')->where('name', $d29)->first()->id,
-            'day_30' => DB::table('shift_codes')->where('name', $d30)->first()->id,
-            'day_31' => DB::table('shift_codes')->where('name', $d31)->first()->id,
-            'day_32' => DB::table('shift_codes')->where('name', $d32)->first()->id,
-            'day_33' => DB::table('shift_codes')->where('name', $d33)->first()->id,
-            'day_34' => DB::table('shift_codes')->where('name', $d34)->first()->id,
-            'day_35' => DB::table('shift_codes')->where('name', $d35)->first()->id,
-            'day_36' => DB::table('shift_codes')->where('name', $d36)->first()->id,
-            'day_37' => DB::table('shift_codes')->where('name', $d37)->first()->id,
-            'day_38' => DB::table('shift_codes')->where('name', $d38)->first()->id,
-            'day_39' => DB::table('shift_codes')->where('name', $d39)->first()->id,
-            'day_40' => DB::table('shift_codes')->where('name', $d40)->first()->id,
-            'day_41' => DB::table('shift_codes')->where('name', $d41)->first()->id,
-            'day_42' => DB::table('shift_codes')->where('name', $d42)->first()->id,
-            'day_43' => DB::table('shift_codes')->where('name', $d43)->first()->id,
-            'day_44' => DB::table('shift_codes')->where('name', $d44)->first()->id,
-            'day_45' => DB::table('shift_codes')->where('name', $d45)->first()->id,
-            'day_46' => DB::table('shift_codes')->where('name', $d46)->first()->id,
-            'day_47' => DB::table('shift_codes')->where('name', $d47)->first()->id,
-            'day_48' => DB::table('shift_codes')->where('name', $d48)->first()->id,
-            'day_49' => DB::table('shift_codes')->where('name', $d49)->first()->id,
-            'day_50' => DB::table('shift_codes')->where('name', $d50)->first()->id,
-            'day_51' => DB::table('shift_codes')->where('name', $d51)->first()->id,
-            'day_52' => DB::table('shift_codes')->where('name', $d52)->first()->id,
-            'day_53' => DB::table('shift_codes')->where('name', $d53)->first()->id,
-            'day_54' => DB::table('shift_codes')->where('name', $d54)->first()->id,
-            'day_55' => DB::table('shift_codes')->where('name', $d55)->first()->id,
-            'day_56' => DB::table('shift_codes')->where('name', $d56)->first()->id,
          ]);
     }
 
@@ -89,7 +33,8 @@ class ScheduleLinesTableSeeder extends Seeder
         DB::table('schedule_lines')->delete();
 
         // DEMO lines
-        ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','1','0','0','0','1','07AW','07AW','----','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','----','----', );
+//        ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','1','0','0','0','1','07AW','07AW','----','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','----','----', );
+        ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','1','0','0','0','1','10BB','07AW','----','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','----','----', );
         ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','1','0','0','0','2','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW','07AW','----','----','----','----','07AW','07AW','07AW','07AW','----','----','07AW','07AW','----', );
         ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','0','0','0','0','3','10BB','10BB','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','10BB','10BB','10BB','10BB','----','----','----','----','10BB','10BB','10BB','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW','07AW','----','----','----','----','10BB','10BB', );
         ScheduleLinesTableSeeder::myFill('DEMO','10 Hour Shift','0','0','0','0','4','07AW','----','----','----','----','10BB','10BB','10BB','10BB','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','----','07AW','07AW','07AW','07AW','----','----','----','----','10BB','10BB','10BB','----','----','07AW','07AW','07AW','----','----','07AW','07AW','07AW','----','----','07AW','07AW','----','----','07AW','07AW','07AW', );

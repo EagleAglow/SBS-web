@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use App\ShiftCode;
+use App\LineDay;
 use App\ScheduleLine; 
 use App\LineGroup;
 use App\Schedule; 
@@ -71,7 +72,6 @@ class ScheduleLineSetController extends Controller {
 
         $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines
 
-
         if($my_selection == 'all'){
             $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->whereIn('line_group_id',$list_ids)
             ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
@@ -81,9 +81,6 @@ class ScheduleLineSetController extends Controller {
             $schedule_lines = ScheduleLine::where('schedule_id',$schedule_id)->where('line_group_id', $key_id)
             ->orderBy('line_natural')->paginate(5)->onEachSide(13); //Get first 5 ScheduleLines;
         }
-
-
-
 
         return view('admins.schedulelineset.index',
             ['schedule_lines'=>$schedule_lines,
@@ -100,11 +97,6 @@ class ScheduleLineSetController extends Controller {
     }
  
 
-    /**
-    * Display a listing of the resource, offset from start
-    *
-    * @return \Illuminate\Http\Response
-    */
     public function show(Request $request, $schedule_id) {
         if (!isset($schedule_id)){
             // try to get it from session (used by destroy and create)
@@ -268,6 +260,10 @@ class ScheduleLineSetController extends Controller {
         if (!isset($cycles)){
             $cycles = Schedule::where('id',$schedule_id)->first()->cycle_count;
         }
+        $max_days = $request['max_days'];
+        if (!isset($max_days)){
+            $max_days = Schedule::where('id',$schedule_id)->first()->cycle_days;
+        }
 
         $first_day = $request['first_day'];
         if (!isset($first_day)){
@@ -287,6 +283,7 @@ class ScheduleLineSetController extends Controller {
             'schedule_title'=>$schedule_title,
             'start_date'=>$start_date,
             'cycles'=>$cycles,
+            'max_days'=>$max_days,
             'first_day'=>$first_day,
             'last_day'=>$last_day,
             'page'=>$page,
@@ -371,12 +368,6 @@ class ScheduleLineSetController extends Controller {
         if (isset($barge)) { $barge = 1; } else { $barge = 0; }
         if (isset($offsite)) { $offsite = 1; } else { $offsite = 0; }
 
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $$d = $request[$d];
-        }
-
         $schedule_line = new ScheduleLine();
         // special handling for "natural sort"
         $schedule_line->line = $line;
@@ -388,13 +379,20 @@ class ScheduleLineSetController extends Controller {
         $schedule_line->nexus = $nexus;
         $schedule_line->barge = $barge;
         $schedule_line->offsite = $offsite;
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $schedule_line->$d = $$d;
-        }
-
         $schedule_line->save();
+        $schedule_line_id = $schedule_line->id;  // capture id in cast it is not static - may not be necessary?
+
+        // get shift for each day - update the days
+        $max_days = Schedule::where('id',$schedule_id)->first()->cycle_days;
+        for ($n = 1; $n <= $max_days; $n++) {
+            $d = 'day_' . substr(('000' . $n),-3);
+            $$d = $request[$d];
+            $line_day = new LineDay();
+            $line_day->schedule_line_id = $schedule_line_id;
+            $line_day->day_number = $n;
+            $line_day->shift_code_id = $$d;
+            $line_day->save();
+        }
 
         // put schedule_id in session
         flash('Schedule Line'. $schedule_line->line.' added!')->success();
@@ -473,12 +471,6 @@ class ScheduleLineSetController extends Controller {
         if (isset($barge)) { $barge = 1; } else { $barge = 0; }
         if (isset($offsite)) { $offsite = 1; } else { $offsite = 0; }
         
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $$d = $request[$d];
-        }
-        
         $schedule_line->line = $line; 
         // special handling for "natural sort"
         $schedule_line->line_natural = ScheduleLine::natural($line);
@@ -489,13 +481,20 @@ class ScheduleLineSetController extends Controller {
         $schedule_line->nexus = $nexus;
         $schedule_line->barge = $barge;
         $schedule_line->offsite = $offsite;
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $schedule_line->$d = $$d;
+ 
+        $schedule_line->save();
+        $schedule_line_id = $schedule_line->id;  // capture id in cast it is not static - may not be necessary?
+
+        // get shift for each day - update the days
+        $max_days = Schedule::where('id',$schedule_id)->first()->cycle_days;
+        for ($n = 1; $n <= $max_days; $n++) {
+            $d = 'day_' . substr(('000' . $n),-3);
+            $$d = $request[$d];
+            $line_day = LineDay::where('schedule_line_id',$schedule_line_id)->where('day_number',$n)->first();
+            $line_day->shift_code_id = $$d;
+            $line_day->save();
         }
 
-        $schedule_line->save();
         $my_selection = $request['my_selection'];
         if (!isset($my_selection)){
            // try to get it from session (used by destroy and create)
@@ -572,13 +571,17 @@ class ScheduleLineSetController extends Controller {
         $schedule_line_clone->nexus = $schedule_line->nexus;
         $schedule_line_clone->barge = $schedule_line->barge;
         $schedule_line_clone->offsite = $schedule_line->offsite;
-        // get shift for each day
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $schedule_line_clone->$d = $schedule_line->$d;
-        }
 
         $schedule_line_clone->save();
+        $schedule_line_clone_id = $schedule_line_clone->id;  // id of new schedule line
+        // clone line_days that belong to $schedule_line (i.e., original schedule_line)
+
+        $days = LineDay::where('schedule_line_id',$schedule_line->id)->get();
+        foreach ($days as $day){
+            $line_day_clone = $day->replicate();
+            $line_day_clone->schedule_line_id = $schedule_line_clone_id;
+            $line_day_clone->save();
+        }
 
         $my_selection = $request['my_selection'];
         $next_selection = $request['next_selection'];
@@ -587,7 +590,7 @@ class ScheduleLineSetController extends Controller {
         flash('Schedule Line: '. $schedule_line->line.' cloned to: ' . $test_line . '.')->success();
         return redirect()->route('schedulelineset.index')->with(['schedule_id' => $schedule_id, 'my_selection' => $my_selection, 'next_selection' => $next_selection]);
     }
- 
+
 
     /**
     * Remove the specified resource from storage.
@@ -600,6 +603,7 @@ class ScheduleLineSetController extends Controller {
         // get schedule_id, so we can return it.
         $schedule_id = $schedule_line->schedule_id;
 
+        LineDay::where('schedule_line_id',$schedule_line->id)->delete();  // remove all linked days
         $schedule_line->delete();
 
         $my_selection = $request['my_selection'];

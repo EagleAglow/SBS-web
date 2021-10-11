@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Schedule;
 use App\ScheduleLine;
+use App\LineDay;
+use App\ShiftCode;
 use App\LogItem;
+use DB;
 
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
@@ -51,12 +54,14 @@ class ScheduleController extends Controller {
         $title = $request['title'];
         $start = $request['start'];
         $cycle_count = $request['cycle_count'];
+        $cycle_days = $request['cycle_days'];
         $active = $request['active'];
         $approved = $request['approved'];
 
         $this->validate($request, [
             'title'=>'required|unique:schedules,title',
             'cycle_count'=>'required|numeric|min:1|max:4',
+            'cycle_days'=> 'required|numeric|min:7|max:366',
             'start'=>'required|date',            
         ]);
 
@@ -68,13 +73,14 @@ class ScheduleController extends Controller {
         $schedule = new Schedule();
         $schedule->title = $title;
         $schedule->cycle_count = $cycle_count;
+        $schedule->cycle_days = $cycle_days;
         $schedule->start = $start;
         $schedule->active = $active;
         $schedule->approved = $approved;
         $schedule->save();
 
         // log action
-        $note = 'New Schedule: ' . $title . ' ID/Start/Cycles/Approved/Active=' . $schedule->id . '/' .$start . '/' . $cycle_count . '/' . $approved . '/' . $active;
+        $note = 'New Schedule: ' . $title . ' ID/Start/Days/Cycles/Approved/Active=' . $schedule->id . '/' .$start . '/' . $cycle_days . '/' . $cycle_count . '/' . $approved . '/' . $active;
         $log_item = new LogItem();
         $log_item->note = $note;
         $log_item->save();
@@ -94,6 +100,7 @@ class ScheduleController extends Controller {
         $schedule = Schedule::findOrFail($id);
         $start = $schedule->start;
         $cycle_count = $schedule->cycle_count;
+        $cycle_days = $schedule->cycle_days;
         $active = $schedule->active;
         $approved = $schedule->approved;
         return view('admins.schedules.edit', compact('schedule'));
@@ -112,10 +119,11 @@ class ScheduleController extends Controller {
         $this->validate($request, [
             'title'=>'required|unique:schedules,title,'.$id,
             'cycle_count'=>'required|numeric|min:1|max:4',
+            'cycle_days'=> 'required|numeric|min:7|max:366',
             'start'=>'required|date', 
         ]);           
 
-        $input = $request->only(['title', 'cycle_count', 'start']);
+        $input = $request->only(['title', 'cycle_count', 'cycle_days', 'start']);
         $schedule->fill($input);
         
         // fix for checkboxes
@@ -148,6 +156,39 @@ class ScheduleController extends Controller {
 
         $schedule->save();
 
+        // see if we need to modify the schedule_line day count
+        // ASSUMPTION! - all schedule lines have the same number of days
+        // another ASSUMPTION! - Line_days are 'sane' (e.g., for 5 days, there are 5 records, 1 thru 5)
+        // first see if any day records exist...
+        $how_many = DB::table('line_days')
+                    ->join('schedule_lines','line_days.schedule_line_id','=','schedule_lines.id')
+                    ->where('schedule_lines.schedule_id',$schedule->id)->count();
+        if ($how_many > 0){
+            // get the highest day number
+            $high_day = DB::table('line_days')
+            ->join('schedule_lines','line_days.schedule_line_id','=','schedule_lines.id')
+            ->where('schedule_lines.schedule_id',$schedule->id)->max('day_number');
+
+            if ( $high_day != $schedule->cycle_days ){
+                // make LineDays match - delete any extras, fill new days with 'day off' code
+                $day_off = ShiftCode::where('name','----')->first()->id;
+                $lines = ScheduleLine::where('schedule_id',$schedule->id)->get();
+                foreach ($lines as $line){
+                    LineDay::where('schedule_line_id',$line->id)->where('day_number','>',$schedule->cycle_days)->delete();
+                    $top = LineDay::where('schedule_line_id',$line->id)->max('day_number');
+                    if ($top < $schedule->cycle_days){
+                        for ($n = ($top +1); $n <= $schedule->cycle_days; $n++) {
+                            $line_day = new LineDay();
+                            $line_day->schedule_line_id = $line->id;
+                            $line_day->day_number = $n;
+                            $line_day->shift_code_id = $day_off;
+                            $line_day->save();           
+                        }
+                    }
+                }
+            }
+        }
+
         flash('Schedule: '. $schedule->title.' updated!')->success();
         return redirect()->route('schedules.index');
     }
@@ -164,9 +205,10 @@ class ScheduleController extends Controller {
         $title_old = $schedule->title;
         $start = $schedule->start;
         // set new start date
-        $n = (($schedule->cycle_count) * 56 ) . ' days';
+        $n = (($schedule->cycle_count) * $schedule->cycle_days ) . ' days';
         $start = date_add( date_create( $start ), date_interval_create_from_date_string($n) );
         $cycle_count = $schedule->cycle_count;
+        $cycle_days = $schedule->cycle_days;
         $active = 0;
         $approved = 0;
         $title = 'Begin ' . $start->format('F j, Y');
@@ -178,12 +220,13 @@ class ScheduleController extends Controller {
         $schedule = new Schedule();
         $schedule->title = $title;
         $schedule->cycle_count = $cycle_count;
+        $schedule->cycle_days = $cycle_days;
         $schedule->start = $start;
         $schedule->active = $active;
         $schedule->approved = $approved;
         $schedule->save();
 
-        // retrieve id (of last saved schedule record) to be used by schedule lines
+        // capture id (of last saved schedule record) to be used by schedule lines
         $schedule_id = $schedule->id;
         $items = ScheduleLine::all()->except('id','created_at','updated_at')->where('schedule_id',$id);
 
@@ -198,12 +241,18 @@ class ScheduleController extends Controller {
             $schedule_line->blackout = $item->blackout;
             $schedule_line->barge = $item->barge;
             $schedule_line->offsite = $item->offsite;
-            // set 56 days of shift codes
-            for ($n = 1; $n <= 56; $n++) {
-                $d = 'day_' . substr(('00' . $n),-2);
-                $schedule_line->$d = $item->$d;
-            }            
             $schedule_line->save();
+            // capture id (of last saved schedule_line record) to be used by new LineDays
+            $new_schedule_line_id = $schedule_line->id;
+            // clone line_days that belong to $item (i.e., old schedule_line)
+            $old_schedule_line_id = $item->id;
+
+            $days = LineDay::where('schedule_line_id',$old_schedule_line_id)->get();
+            foreach ($days as $day){
+                $line_day_clone = $day->replicate();
+                $line_day_clone->schedule_line_id = $new_schedule_line_id;
+                $line_day_clone->save();
+            }
         }
 
         // log action
@@ -234,6 +283,11 @@ class ScheduleController extends Controller {
             flash('Schedule WAS NOT DELETED. You can not remove the only schedule from system.')->warning()->important();
             return redirect()->route('schedules.index');
         }
+        // remove all associated linedays
+        $res = DB::table('line_days')
+        ->join('schedule_lines','line_days.schedule_line_id','=','schedule_lines.id')
+        ->where('schedule_lines.schedule_id',$schedule->id)->delete();
+
         // remove all associated schedulelines...
         $res=ScheduleLine::where('schedule_id',$id)->delete();
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\ShiftCode;
 use App\ScheduleLine;
+use DayLine;
 
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
@@ -98,7 +99,12 @@ class ShiftCodeController extends Controller {
             flash('Shift Code: '. $shift_code->name.' indicates "Day Off", and CAN NOT BE CHANGED!')->warning()->important();
             return redirect()->route('shiftcodes.index');
         } else {
-            return view('admins.shiftcodes.edit', compact('shift_code'));
+            if ($shift_code->name == '<<>>'){
+                flash('Shift Code: '. $shift_code->name.' indicates "Missing Data", and CAN NOT BE CHANGED!')->warning()->important();
+                return redirect()->route('shiftcodes.index');
+            } else {
+                return view('admins.shiftcodes.edit', compact('shift_code'));
+            }
         }
     }
  
@@ -137,11 +143,11 @@ class ShiftCodeController extends Controller {
             flash('Shift Code: '. $shift_code->name.' indicates "Day Off", and CAN NOT BE DELETED!')->warning()->important();
             return redirect()->route('shiftcodes.index');
         }
-        $count = 0;
-        for ($n = 1; $n <= 56; $n++) {
-            $d = 'day_' . substr(('00' . $n),-2);
-            $count = $count + ScheduleLine::where($d,$id)->count();
+        if ($shift_code->name == '<<>>'){
+            flash('Shift Code: '. $shift_code->name.' indicates "Missing Data", and CAN NOT BE DELETED!')->warning()->important();
+            return redirect()->route('shiftcodes.index');
         }
+        $count = DayLine::where('shift_code_id',$shift_code->id)->count;
         if ($count == 0){
             $shift_code->delete();
             flash('Shift Code: '. $shift_code->name.' deleted!')->success();

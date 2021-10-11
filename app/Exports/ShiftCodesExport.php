@@ -21,7 +21,7 @@ class ShiftCodesExport implements FromCollection
         // another array
 //        $codes = DB::table('shift_codes')->select('name', 'begin_time', 'end_time')->get()->toArray();
 //        $codes = DB::select(DB::raw( "SELECT name, DATE_FORMAT('begin_time', '%H:%i') AS 'begin-time', DATE_FORMAT('end_time', '%H:%i') AS 'end-time' FROM 'shift_codes';" ))->get()->toArray();
-        $codes = DB::select(DB::raw( "SELECT name, DATE_FORMAT(begin_time, '%H:%i'), DATE_FORMAT(end_time, '%H:%i') FROM shift_codes WHERE name <> '----' ORDER BY name;" ));
+        $codes = DB::select(DB::raw( "SELECT name, DATE_FORMAT(begin_time, '%H:%i'), DATE_FORMAT(end_time, '%H:%i') FROM shift_codes WHERE ((name <> '----') AND (name <> '<<>>')) ORDER BY name;" ));
         // make a collection from combined arrays
         $merge = collect(array_merge($first, $codes)); 
         return $merge;

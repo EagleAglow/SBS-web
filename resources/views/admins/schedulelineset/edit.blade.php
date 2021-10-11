@@ -105,26 +105,29 @@
                         </div>
 
                         @php
-                        for ($n = 1; $n <= 56; $n++) {
-                            $d = 'day_' . substr(('00' . $n),-2);
+                        $max_days = App\Schedule::where('id',$schedule_line->schedule_id)->first()->cycle_days;
+                        for ($n = 1; $n <= $max_days; $n++) {
+                            $d = 'day_' . substr(('000' . $n),-3);
                             echo '<!-- ' . $d . ' dropdown  -->';
                             echo '<div class="form-group row">';
-                            echo '<label for="day_01" class="col-md-3 col-form-label text-md-right">';
+                            echo '<label for=" . $d . " class="col-md-3 col-form-label text-md-right">';
                             echo 'Day ' . $n;
                             echo '</label><div class="col-md-6">';
                             echo '<select required class="form-control" name="' . $d . '" id="' . $d . '">';
+
+                            $line_day = App\LineDay::where('schedule_line_id',$schedule_line->id)->where('day_number',$n)->first();
                             foreach($shifts as $shift){
-                                if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
-                                    $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                if ($shift->name!='<<>>'){
+                                    if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
+                                        $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
+                                    }
+                                    if ($shift->id==$line_day->shift_code_id){
+                                        $v = '<option value="' . $shift->id . '" selected>';
+                                    } else {
+                                        $v = '<option value="' . $shift->id . '">';
+                                    }
+                                    echo $v . $cwt . '</option>';
                                 }
-                                if ($shift->id==$schedule_line->$d){
-                                    $v = '<option value="' . $shift->id . '" selected>';
-                                } else {
-                                    $v = '<option value="' . $shift->id . '">';
-                                }
-
-
-                                echo $v . $cwt . '</option>';
                             }
                             echo '</select></div></div>';
                         }

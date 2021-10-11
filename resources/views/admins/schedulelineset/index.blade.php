@@ -2,6 +2,8 @@
 
 @section('content')
     @php
+        // get total days
+        if (!isset($max_days)){  $max_days = App\Schedule::where('id',$schedule_id)->first()->cycle_days;  }
         // days to display
         $delta = '7';
         if (!isset($page)){ $page = 1; }
@@ -12,26 +14,26 @@
         } else { $cycles = 1; }
 
         if (isset($first_day)){
-            if (($first_day <= 0 ) || ( 57 <= $first_day )){
+            if (($first_day <= 0 ) || ( ($max_days +1) <= $first_day )){
                 $first_day = 1;
             }
         } else { $first_day = 1; }
 
         if (isset($last_day)){
-            if (($last_day <= 9 ) || ( 57 <= $last_day )){
+            if (($last_day <= 9 ) || ( ($max_days +1) <= $last_day )){
                 $last_day = $first_day + $delta - 1;
             }
         } else {
             $last_day = $first_day + $delta - 1;
         }
         
-        if ( $last_day > 56 ){
-                $last_day = 56;
+        if ( $last_day > $max_days ){
+                $last_day = $max_days;
                 $first_day = $last_day - $delta + 1;                                
         }
     @endphp
 
-<div class="container">
+    <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card shadow">
@@ -118,6 +120,7 @@
                                 <input type="hidden" name="schedule_title" value="{{ $schedule_title }}">
                                 <input type="hidden" name="start_date" value="{{ $start_date }}">
                                 <input type="hidden" name="cycles" value="{{ $cycles }}">
+                                <input type="hidden" name="max_days" value="{{ $max_days }}">
                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
                                 <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
@@ -151,11 +154,12 @@
 
                             @endphp    
                             <th class="text-center btn-shift" scope="col">
-                            @if ($last_day < 56)
+                            @if ($last_day < $max_days)
                             <form action="{{ route('schedulelineset.show', $schedule_id) }}" method="GET">
                                 <input type="hidden" name="schedule_title" value="{{ $schedule_title }}">
                                 <input type="hidden" name="start_date" value="{{ $start_date }}">
                                 <input type="hidden" name="cycles" value="{{ $cycles }}">
+                                <input type="hidden" name="max_days" value="{{ $max_days }}">
                                 <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
                                 <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
@@ -276,7 +280,7 @@
                                                 } else {
                                                     echo '<td class="text-center line-code" scope="col">';
                                                 }
-                                                echo App\ShiftCode::find($schedule_line->getCode($d))->shift_divs . '</td>';
+                                                echo App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
 
                                                 $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                             }
@@ -323,7 +327,7 @@
                                 @php
                                     // things to include with pagination 
                                     $params = array('schedule_id'=>$schedule_id, 'schedule_title'=>$schedule_title, 'start_date'=>$start_date,
-                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'last_day'=>$last_day, 'my_selection'=>$my_selection,
+                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'last_day'=>$last_day, 'max_days'=>$max_days, 'my_selection'=>$my_selection,
                                         'next_selection'=>$next_selection  );
                                 @endphp
                                 {{$schedule_lines->appends($params)->links() }}    

@@ -39,6 +39,18 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="cycle_days" class="col-md-3 col-form-label text-md-right">{{ __('Days') }}</label>
+                            <div class="col-md-3">
+                                <input id="cycle_days" type="text" class="form-control @error('cycle_days') is-invalid @enderror" name="cycle_days" value="{{ old('cycle_days') ? old('cycle_days') : $schedule->cycle_days }}" required autocomplete="cycle_days" autofocus>
+                                @error('cycle_count')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="cycle_count" class="col-md-3 col-form-label text-md-right">{{ __('Cycles') }}</label>
                             <div class="col-md-2">
                                 <input id="cycle_count" type="text" class="form-control @error('cycle_count') is-invalid @enderror" name="cycle_count" value="{{ old('cycle_count') ? old('cycle_count') : $schedule->cycle_count }}" required autocomplete="cycle_count" autofocus>

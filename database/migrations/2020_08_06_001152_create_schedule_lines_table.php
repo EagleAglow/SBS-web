@@ -32,12 +32,6 @@ class CreateScheduleLinesTable extends Migration
             $table->boolean('barge')->default(false);
             $table->boolean('offsite')->default(false);
 
-            // 56 day shift code pattern
-            for ($n = 1; $n <= 56; $n++) {
-                $d = 'day_' . substr(('00' . $n),-2);
-                $table->unsignedBigInteger($d)->nullable()->default(Null);
-                $table->foreign($d)->references('id')->on('shift_codes');
-            }
             $table->timestamps();
         });
     }

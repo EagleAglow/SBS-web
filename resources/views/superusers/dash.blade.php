@@ -20,10 +20,6 @@
                 </div>
 
                 <div class="card-body my-squash">
-                    <span><a href="{{ url('superusers/schedulelines') }}" class="btn btn-primary">ALL Schedule Lines</a></span> &nbsp; &nbsp;
-                </div>   
-
-                <div class="card-body my-squash">
                     <a href="{{ url('superusers/picks') }}" class="btn btn-primary">Bidder Tagged Lines</a>
                 </div>
 

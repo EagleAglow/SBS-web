@@ -9,7 +9,7 @@
 		<div class="col-md-10">
 			<div class="card mt-5 shadow">
 				<div class="card-header"><h5>Add Schedule</h5>
-                <h6>{{ __('Schedules are blocks of one or more 56 day cycles. Schedules must not overlap, or have gaps between them. This page only adds a new schedule title.  Use CLONE on the index page to make a new schedule.')}}</h6>
+                <h6>{{ __('Schedules are blocks of one or more multi-day cycles. Schedules must not overlap, or have gaps between them. This page only adds a new schedule title.  Use CLONE on the index page to make a new schedule.')}}</h6>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('schedules.store') }}" accept-charset="UTF-8">

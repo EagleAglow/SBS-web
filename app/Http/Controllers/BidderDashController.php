@@ -73,19 +73,20 @@ class BidderDashController extends Controller
             // build ics file
             $linefeed = chr(13) . chr(10);
             $ics = 'BEGIN:VCALENDAR' . $linefeed;
-            $ics = $ics . 'PRODID:-//SBS//Shift Bid System//EN' . $linefeed;
+            $ics = $ics . 'PRODID:-//SBS//Shift Bid System//EN' . $linefeed; 
             $ics = $ics . 'VERSION:2.0' . $linefeed;  
 
             $stamp = strtotime( $start_date );
             $row_number = 0;  // included in UID (unique identifier)
             for ($c = 1; $c <= $cycles; $c++){  //cycles
-                for ($n = 1; $n <= 56; $n++) {  // 1 to 56 days
+                for ($n = 1; $n <= $schedule->cycle_days; $n++) {  
                     $day = date("l, j F Y", $stamp);   // result like: Saturday, 10 March 2021
-                    $d = 'day_' . substr(('00' . $n),-2);   // field name
-                    $shift = ShiftCode::where('id', $schedule_line->$d)->get()->first();
+
+                    $shift = ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$n));
                     $shift_code = $shift->name;                              // e.g., 06BX
-                    if ($shift_code == '----'){
-                        // skipping days off
+
+                    if (($shift_code == '----') or ($shift_code == '<<>>')){
+                        // skipping days off or missing data
                     } else {
                         // begin event section
                         $ics = $ics . 'BEGIN:VEVENT' . $linefeed;

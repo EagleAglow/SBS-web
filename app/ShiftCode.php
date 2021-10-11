@@ -21,18 +21,24 @@ class ShiftCode extends Model
      */
     public function getBeginShortAttribute()
     {
-        if ($this->name=='----'){
+        if ($this->name=='----'){   // day off
             return '----';
         } else {
+            if ($this->name=='<<>>'){    // missing data
+                return '<<>>';
+            }
             return date('H:i',strtotime($this->begin_time));
         }
     }
 
     public function getEndShortAttribute()
     {
-        if ($this->name=='----'){
+        if ($this->name=='----'){   // day off
             return '----';
         } else {
+            if ($this->name=='<<>>'){    // missing data
+                return '<<>>';
+            }
             return date('H:i',strtotime($this->end_time));
         }
     }
@@ -46,12 +52,16 @@ class ShiftCode extends Model
     //
     public function getShiftDivsAttribute()
     {
-        if (($this->shift_code) != '----') {
-            $divs = '<div class="shift-code">' . $this->name . '</div>';
-            $divs = $divs . '<div class="shift-begin">' . $this->begin_short . '</div>';
-            $divs = $divs . '<div class="shift-end">' . $this->end_short . '</div>';
-        } else {
+        if (($this->shift_code) == '----'){
             $divs = '&nbsp;';
+        } else {
+            if (($this->shift_code) == '<<>>') {
+                $divs = '&nbsp;';
+            } else {
+                $divs = '<div class="shift-code">' . $this->name . '</div>';
+                $divs = $divs . '<div class="shift-begin">' . $this->begin_short . '</div>';
+                $divs = $divs . '<div class="shift-end">' . $this->end_short . '</div>';
+            }
         }
         return $divs;
     }
@@ -70,10 +80,14 @@ class ShiftCode extends Model
     //
     public function getCodeWithTimesAttribute()
     {
-        if (($this->shift_code) != '----') {
-            $cwt = $this->name . '(' . $this->begin_short . ' - ' . $this->end_short . ')';
-        } else {
+        if (($this->shift_code) == '----'){
             $cwt = '---- (Off)';
+        } else {
+            if (($this->shift_code) == '<<>>') {
+                $cwt = '(Missing Data)';
+            } else {
+                $cwt = $this->name . '(' . $this->begin_short . ' - ' . $this->end_short . ')';
+            }
         }
         return $cwt;
     }
