@@ -99,7 +99,7 @@ class ShiftCodeController extends Controller {
             flash('Shift Code: '. $shift_code->name.' indicates "Day Off", and CAN NOT BE CHANGED!')->warning()->important();
             return redirect()->route('shiftcodes.index');
         } else {
-            if ($shift_code->name == '<<>>'){
+            if ($shift_code->name == '????'){
                 flash('Shift Code: '. $shift_code->name.' indicates "Missing Data", and CAN NOT BE CHANGED!')->warning()->important();
                 return redirect()->route('shiftcodes.index');
             } else {
@@ -143,7 +143,7 @@ class ShiftCodeController extends Controller {
             flash('Shift Code: '. $shift_code->name.' indicates "Day Off", and CAN NOT BE DELETED!')->warning()->important();
             return redirect()->route('shiftcodes.index');
         }
-        if ($shift_code->name == '<<>>'){
+        if ($shift_code->name == '????'){
             flash('Shift Code: '. $shift_code->name.' indicates "Missing Data", and CAN NOT BE DELETED!')->warning()->important();
             return redirect()->route('shiftcodes.index');
         }

@@ -34,7 +34,7 @@ class SchedulesImport implements ToCollection, WithHeadingRow, WithUpserts
     public function collection(Collection $rows)
     {
         // use missing data code for any errors
-        $error_id = ShiftCode::select('id')->where('name','=', '<<>>')->get()->first()->id;
+        $error_id = ShiftCode::select('id')->where('name','=', '????')->get()->first()->id;
 
         // look for a schedule titled "Import Errors" - if not found, create it
         $schedules = Schedule::select('id')->where('title','=', 'Import Errors')->get();
@@ -101,10 +101,10 @@ class SchedulesImport implements ToCollection, WithHeadingRow, WithUpserts
             for ($n = 0; $n <= ($max_days -1); $n++) {
                 $a_code = $days[$n];
                 if (!isset($a_code)){   // null?
-                    $a_code = '<<>>';
+                    $a_code = '????';
                 }
                 if ($a_code == ''){  // empty
-                    $a_code = '<<>>';
+                    $a_code = '????';
                 }
                 // accept leading dash for day off  - note same tests below for actual import
                 if (substr($a_code,0,1) == '-'){  // leading dash

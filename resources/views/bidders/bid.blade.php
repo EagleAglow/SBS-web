@@ -113,7 +113,7 @@
                             echo '</label><div class="col-md-6">';
                             echo '<select required class="form-control" name="' . $d . '" id="' . $d . '">';
                             foreach($shifts as $shift){
-                                if ($shift->name=='<<>>'){
+                                if ($shift->name=='????'){
                                     $cwt = 'Missing Data';
                                 } else {
                                     if ($shift->name=='----'){ $cwt = 'Day Off'; } else {

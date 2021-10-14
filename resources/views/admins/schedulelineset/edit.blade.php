@@ -117,7 +117,7 @@
 
                             $line_day = App\LineDay::where('schedule_line_id',$schedule_line->id)->where('day_number',$n)->first();
                             foreach($shifts as $shift){
-                                if ($shift->name!='<<>>'){
+                                if ($shift->name!='????'){
                                     if ($shift->name=='----'){ $cwt = 'Day Off'; } else {
                                         $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
                                     }

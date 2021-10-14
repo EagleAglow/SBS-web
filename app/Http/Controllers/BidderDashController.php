@@ -85,7 +85,7 @@ class BidderDashController extends Controller
                     $shift = ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$n));
                     $shift_code = $shift->name;                              // e.g., 06BX
 
-                    if (($shift_code == '----') or ($shift_code == '<<>>')){
+                    if (($shift_code == '----') or ($shift_code == '????')){
                         // skipping days off or missing data
                     } else {
                         // begin event section

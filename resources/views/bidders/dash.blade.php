@@ -60,7 +60,7 @@
                                 }
                                 echo '<td class="text-center compact">' . $calendar . '</td>';
 
-                                if ($shift->name=='<<>>'){
+                                if ($shift->name=='????'){
                                     $cwt = 'Missing Data';
                                 } else {
                                     if ($shift->name=='----'){ $cwt = 'Day Off'; } else {

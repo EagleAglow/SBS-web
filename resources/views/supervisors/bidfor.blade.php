@@ -47,7 +47,7 @@
                         </thead>
                         <tbody>
                             @php
-                            $max_days = App\Schedules::where('id',$schedule_line->schedule_id)->first()->cycle_days;
+                            $max_days = $schedule->cycle_days;
                             $stamp = strtotime( $schedule->start );  // starting date, numeric
 
                             for ($n = 1; $n <= $max_days; $n++) {
@@ -69,7 +69,7 @@
                                 }
                                 echo '<td class="text-center compact">' . $calendar . '</td>';
 
-                                if ($shift->name=='<<>>'){
+                                if ($shift->name=='????'){
                                     $cwt = 'Missing Data';
                                 } else {
                                     if ($shift->name=='----'){ $cwt = 'Day Off'; } else {

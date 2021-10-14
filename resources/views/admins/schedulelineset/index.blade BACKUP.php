@@ -2,7 +2,7 @@
 
 @section('content')
     @php
-        // get total days in cycle
+        // get total days
         if (!isset($max_days)){  $max_days = App\Schedule::where('id',$schedule_id)->first()->cycle_days;  }
         // days to display
         $delta = '7';
@@ -12,21 +12,25 @@
                 $cycles = 1;
             }
         } else { $cycles = 1; }
-        // first day - default to first block
-        if (!isset($first_day)){
-            $first_day = 1; 
+
+        if (isset($first_day)){
+            if (($first_day <= 0 ) || ( ($max_days +1) <= $first_day )){
+                $first_day = 1;
+            }
+        } else { $first_day = 1; }
+
+        if (isset($last_day)){
+            if (($last_day <= 9 ) || ( ($max_days +1) <= $last_day )){
+                $last_day = $first_day + $delta - 1;
+            }
         } else {
-            // sanity check
-            if ( $first_day <= 0 ){ 
-               $first_day = 1; 
-            }
-            if ( ($first_day + $delta) > $max_days ){ 
-                $first_day = $max_days -$delta +1;                                               
-            }
+            $last_day = $first_day + $delta - 1;
         }
-        $last_day = $first_day + $delta - 1;
-        // days to offset display of next cycle (not used for single cycles)
-        $offset_days = $max_days -$last_day +$first_day -2;
+        
+        if ( $last_day > $max_days ){
+                $last_day = $max_days;
+                $first_day = $last_day - $delta + 1;                                
+        }
     @endphp
 
     <div class="container">
@@ -67,7 +71,8 @@
                                 <div class="row">
                                     <div>
                                     <form action="{{ route('schedulelineset.show', $schedule_id) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day }}">
+                                        <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                        <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                         <input type="hidden" name="page" value="1">
                                         <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                         <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -117,6 +122,7 @@
                                 <input type="hidden" name="cycles" value="{{ $cycles }}">
                                 <input type="hidden" name="max_days" value="{{ $max_days }}">
                                 <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
+                                <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
                                 <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                 <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -131,8 +137,9 @@
                             @php
                                 $stamp = strtotime( $start_date );
                                 if ($first_day>1){
-                                    $offset = '+' . $first_day . ' days';
+                                    $offset = '+' . ($first_day - 1) . ' days';
                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
+
                                 }
 
                                 for ($d = $first_day; $d <= $last_day; $d++) {
@@ -154,6 +161,7 @@
                                 <input type="hidden" name="cycles" value="{{ $cycles }}">
                                 <input type="hidden" name="max_days" value="{{ $max_days }}">
                                 <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
+                                <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                 <input type="hidden" name="page" value="{{ $page }}">
                                 <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                 <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -170,7 +178,7 @@
                                 echo '<!-- cycle dayes  -->';
                                 $stamp = strtotime( $start_date );
                                 if ($first_day>1){
-                                    $offset = '+' . $first_day . ' days';
+                                    $offset = '+' . ($first_day - 1) . ' days';
                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                 }
 
@@ -190,7 +198,7 @@
                                     }
 
                                     echo '<th class="text-center month-day-row" scope="col">&nbsp;</th></tr>';
-                                    $offset = '+' . $offset_days . ' days';
+                                    $offset = '+' . ( ($max_days -1) + $first_day - $last_day ) . ' days';
                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
 
                                 }
@@ -200,7 +208,7 @@
 
                                 $stamp = strtotime( $start_date );
                                 if ($first_day>1){
-                                    $offset = '+' . $first_day . ' days';
+                                    $offset = '+' . ($first_day - 1) . ' days';
                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                     }
                                 $day = date('D', $stamp);
@@ -261,7 +269,7 @@
                                         @php
                                             $stamp = strtotime( $start_date );
                                             if ($first_day>1){
-                                                $offset = '+' . $first_day . ' days';
+                                                $offset = '+' . ($first_day - 1) . ' days';
                                                 $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                             }
 
@@ -319,7 +327,7 @@
                                 @php
                                     // things to include with pagination 
                                     $params = array('schedule_id'=>$schedule_id, 'schedule_title'=>$schedule_title, 'start_date'=>$start_date,
-                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'max_days'=>$max_days, 'my_selection'=>$my_selection,
+                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'last_day'=>$last_day, 'max_days'=>$max_days, 'my_selection'=>$my_selection,
                                         'next_selection'=>$next_selection  );
                                 @endphp
                                 {{$schedule_lines->appends($params)->links() }}    

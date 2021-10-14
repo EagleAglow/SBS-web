@@ -3,38 +3,33 @@
 @section('content')
 
 @php
-    // days in cycle
+    // get total days in cycle
     $max_days = $schedule->cycle_days;
     // days to display
     $delta = '7';
-
-    $cycles = $schedule->cycle_count;
     if (!isset($page)){ $page = 1; }
-
+    // cycles
+    $cycles = $schedule->cycle_count;
     if (isset($cycles)){
         if (($cycles <= 0 ) || ( 5 <= $cycles )){
             $cycles = 1;
         }
     } else { $cycles = 1; }
-
-    if (isset($first_day)){
-        if (($first_day <= 0 ) || ( ($max_days +1) <= $first_day )){
-            $first_day = 1;
-        }
-    } else { $first_day = 1; }
-
-    if (isset($last_day)){
-        if (($last_day <= 9 ) || ( ($max_days +1) <= $last_day )){
-            $last_day = $first_day + $delta - 1;
-        }
+    // first day - default to first block
+    if (!isset($first_day)){
+        $first_day = 1; 
     } else {
-        $last_day = $first_day + $delta - 1;
+        // sanity check
+        if ( $first_day <= 0 ){ 
+            $first_day = 1; 
+        }
+        if ( ($first_day + $delta) > $max_days ){ 
+            $first_day = $max_days -$delta +1;                                               
+        }
     }
-    
-    if ( $last_day > $max_days ){
-            $last_day = $max_days;
-            $first_day = $last_day - $delta + 1;                                
-    }
+    $last_day = $first_day + $delta - 1;
+    // days to offset display of next cycle (not used for single cycles)
+    $offset_days = $max_days -$last_day +$first_day -2;
 
     $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
 
@@ -187,7 +182,6 @@
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -218,7 +212,6 @@
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -249,7 +242,6 @@
                                         <div>
                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                             <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                             <input type="hidden" name="page" value="1">
                                             <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                             <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -290,7 +282,6 @@
                                 @if ($first_day > 1)
                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                     <input type="hidden" name="first_day" value="{{ $first_day - $delta }}">
-                                    <input type="hidden" name="last_day" value="{{ $last_day - $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
                                     <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                     <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -306,7 +297,7 @@
                                 @php
                                     $stamp = strtotime( $schedule->start );
                                     if ($first_day>1){
-                                        $offset = '+' . ($first_day - 1) . ' days';
+                                        $offset = '+' . $first_day . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                     }
 
@@ -322,10 +313,9 @@
 
                                 @endphp    
                                 <th class="text-center btn-shift" scope="col">
-                                @if ($last_day < ($max_days -1))
+                                @if ($last_day < $max_days)
                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                     <input type="hidden" name="first_day" value="{{ $first_day + $delta }}">
-                                    <input type="hidden" name="last_day" value="{{ $last_day + $delta }}">
                                     <input type="hidden" name="page" value="{{ $page }}">
                                     <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                     <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -343,7 +333,7 @@
                                     echo '<!-- cycle dayes  -->';
                                     $stamp = strtotime( $schedule->start );
                                     if ($first_day>1){
-                                        $offset = '+' . ($first_day - 1) . ' days';
+                                        $offset = '+' . $first_day . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                     }
 
@@ -363,7 +353,7 @@
                                         }
 
                                         echo '<th class="text-center month-day-row" scope="col">&nbsp;</th></tr>';
-                                        $offset = '+' . ( ($max_days -1) + $first_day - $last_day ) . ' days';
+                                        $offset = '+' . $offset_days . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
 
                                     }
@@ -373,7 +363,7 @@
 
                                     $stamp = strtotime( $schedule->start );
                                     if ($first_day>1){
-                                        $offset = '+' . ($first_day - 1) . ' days';
+                                        $offset = '+' . $first_day . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                         }
                                     $day = date('D', $stamp);
@@ -425,13 +415,12 @@
 
                                                 @endphp
                                                 </div>
-
                                             </td>
 
                                             @php
                                                 $stamp = strtotime( $schedule->start );
                                                 if ($first_day>1){
-                                                    $offset = '+' . ($first_day - 1) . ' days';
+                                                    $offset = '+' . $first_day . ' days';
                                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                                 }
 
@@ -442,13 +431,7 @@
                                                     } else {
                                                         echo '<td class="text-center line-code" scope="col">';
                                                     }
-
-//     REMOVE LATER                                               $day_field_name =  'day_' . substr(('00' . $d),-2);
-//                                                    $day_shiftcode_id = $schedule_line->$day_field_name;
-//                                                    echo App\ShiftCode::find($day_shiftcode_id)->shift_divs . '</td>';
- 
-                                                    echo  App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
-
+                                                    echo App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
 
                                                     $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                                 }
@@ -512,7 +495,6 @@
                                                                         @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) == 0)   
                                                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                                 <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                                <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="tag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -525,7 +507,6 @@
                                                                         @else
                                                                             <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                                 <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                                <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                                 <input type="hidden" name="page" value="{{ $page }}">
                                                                                 <input type="hidden" name="pick" value="untag">
                                                                                 <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -538,7 +519,6 @@
                                                                             @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) > 0)
                                                                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                                     <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                                    <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                                     <input type="hidden" name="pick" value="boost">
                                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -558,7 +538,6 @@
                                                                 @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) == 0)
                                                                     <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                         <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                        <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="tag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -571,7 +550,6 @@
                                                                 @else
                                                                     <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                         <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                        <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="untag">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -584,7 +562,6 @@
                                                                     @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) > 0)
                                                                         <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                             <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                            <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                             <input type="hidden" name="page" value="{{ $page }}">
                                                                             <input type="hidden" name="pick" value="boost">
                                                                             <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -603,7 +580,6 @@
                                                             @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) == 0)
                                                                 <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                     <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                    <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="tag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -616,7 +592,6 @@
                                                             @else
                                                                 <form action="{{ url('users/scheduleshow', $schedule->id ) }}" method="GET">
                                                                     <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                    <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                                     <input type="hidden" name="pick" value="untag">
                                                                     <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -629,7 +604,6 @@
                                                                 @if(count(App\Pick::where('user_id',Auth::user()->id)->where('schedule_line_id',$schedule_line->id)->get()) > 0)
                                                                     <form action="{{ url('users/scheduleshow' , $schedule->id ) }}" method="GET">
                                                                         <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                                        <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                                         <input type="hidden" name="pick" value="boost">
                                                                         <input type="hidden" name="schedule_line_id" value="{{ $schedule_line->id }}">
@@ -650,7 +624,6 @@
                                                         <input type="hidden" name="id" value="{{ $schedule_line->id }}">
                                                         <input type="hidden" name="line_group_code" value="{{ $line_group_code }}">
                                                         <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                                        <input type="hidden" name="last_day" value="{{ $last_day }}">
                                                         <input type="hidden" name="page" value="{{ $page }}">
                                                         <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                                         <input type="hidden" name="next_selection" value="{{ $next_selection }}">
@@ -670,7 +643,7 @@
 
                                     @php
                                         // things to include with pagination 
-                                        $params = array( 'first_day'=>$first_day,'last_day'=>$last_day,'my_selection'=>$my_selection,'next_selection'=>$next_selection,'show_all'=>$show_all);
+                                        $params = array( 'first_day'=>$first_day,'my_selection'=>$my_selection,'next_selection'=>$next_selection,'show_all'=>$show_all);
                                     @endphp
 
                                     {{ $schedule_lines->appends($params)->links() }}    

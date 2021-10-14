@@ -24,8 +24,8 @@ class ShiftCode extends Model
         if ($this->name=='----'){   // day off
             return '----';
         } else {
-            if ($this->name=='<<>>'){    // missing data
-                return '<<>>';
+            if ($this->name=='????'){    // missing data
+                return '????';
             }
             return date('H:i',strtotime($this->begin_time));
         }
@@ -36,8 +36,8 @@ class ShiftCode extends Model
         if ($this->name=='----'){   // day off
             return '----';
         } else {
-            if ($this->name=='<<>>'){    // missing data
-                return '<<>>';
+            if ($this->name=='????'){    // missing data
+                return '????';
             }
             return date('H:i',strtotime($this->end_time));
         }
@@ -55,7 +55,7 @@ class ShiftCode extends Model
         if (($this->shift_code) == '----'){
             $divs = '&nbsp;';
         } else {
-            if (($this->shift_code) == '<<>>') {
+            if (($this->shift_code) == '????') {
                 $divs = '&nbsp;';
             } else {
                 $divs = '<div class="shift-code">' . $this->name . '</div>';
@@ -83,7 +83,7 @@ class ShiftCode extends Model
         if (($this->shift_code) == '----'){
             $cwt = '---- (Off)';
         } else {
-            if (($this->shift_code) == '<<>>') {
+            if (($this->shift_code) == '????') {
                 $cwt = '(Missing Data)';
             } else {
                 $cwt = $this->name . '(' . $this->begin_short . ' - ' . $this->end_short . ')';

@@ -100,7 +100,7 @@
                             echo '</label><div class="col-md-6">';
                             echo '<select required class="form-control" name="' . $d . '" id="' . $d . '">';
                             foreach($shifts as $shift){
-                                if ($shift->name!='<<>>'){  
+                                if ($shift->name!='????'){  
                                     if ($shift->name=='----'){
                                         $cwt = 'Day Off'; } else {
                                         $cwt = $shift->name . '  (' . $shift->begin_short . ' - ' . $shift->end_short . ')';
