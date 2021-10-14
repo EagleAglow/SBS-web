@@ -47,7 +47,7 @@
                         <img src="/img/SBS_WebLogo.png" width="161" height="44" class="d-inline-block align-top" alt="">
                     </a>
                     <div style="font-size:0.7rem;margin-right:1rem;margin-top:0rem;">
-                    Port: {{ config('app.app_port') }} &nbsp; &nbsp; Version: 8SEPT2021
+                    Port: {{ config('app.app_port') }} &nbsp; &nbsp; Version: 13OCT2021
                         @if(config('app.debug'))
                             <br><span style="color:red;"><b>DEBUG MODE!</b></span>
                         @endif
