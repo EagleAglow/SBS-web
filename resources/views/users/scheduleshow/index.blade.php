@@ -28,8 +28,8 @@
         }
     }
     $last_day = $first_day + $delta - 1;
-    // days to offset display of next cycle (not used for single cycles)
-    $offset_days = $max_days -$last_day +$first_day -2;
+//    // days to offset display of next cycle (not used for single cycles)
+//    $offset_days = $max_days -$last_day +$first_day -2;
 
     $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
 
@@ -297,19 +297,22 @@
                                 @php
                                     $stamp = strtotime( $schedule->start );
                                     if ($first_day>1){
-                                        $offset = '+' . $first_day . ' days';
+//                                        $offset = '+' . $first_day . ' days';
+                                        $offset = '+' . ($max_days -$delta) . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                     }
 
                                     for ($d = $first_day; $d <= $last_day; $d++) {
-                                        $day = date('D', $stamp);
-                                        if ($day=='Sat' OR $day=='Sun') {
-                                            echo '<th class="text-center week-end" scope="col">' . $d . '</th>';
-                                        } else {
-                                            echo '<th class="text-center" scope="col">' . $d . '</th>';
-                                        }
-                                        $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
-                                    }
+                                    echo '<th class="text-center" scope="col">' . $d . '</th>';
+
+//                                    $day = date('D', $stamp);
+//                                    if ($day=='Sat' OR $day=='Sun') {
+//                                        echo '<th class="text-center week-end" scope="col">' . $d . 'z</th>';
+//                                    } else {
+//                                        echo '<th class="text-center" scope="col">' . $d . 'x</th>';
+//                                    }
+                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
+                                }
 
                                 @endphp    
                                 <th class="text-center btn-shift" scope="col">
@@ -333,7 +336,8 @@
                                     echo '<!-- cycle dayes  -->';
                                     $stamp = strtotime( $schedule->start );
                                     if ($first_day>1){
-                                        $offset = '+' . $first_day . ' days';
+                                        $offset = '+' . ($first_day -1). ' days';
+// really wrong here                  $offset = '+' . ($max_days -$delta) . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
                                     }
 
@@ -345,40 +349,43 @@
                                             $day = date('D', $stamp);
                                             $d = date('M j', $stamp);
                                             if ($day=='Sat' OR $day=='Sun') {
-                                                echo '<th class="text-center week-end month-day-row" scope="col">' . $d . '</th>';
-                                            } else {
-                                                echo '<th class="text-center month-day-row" scope="col">' . $d . '</th>';
-                                            }
+                                            echo '<th class="text-center week-end month-day-row" scope="col">' . $day . '<br />' . $d . '</th>';
+                                        } else {
+                                            echo '<th class="text-center month-day-row" scope="col">' . $day . '<br />' . $d . '</th>';
+                                        }
                                             $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
                                         }
 
                                         echo '<th class="text-center month-day-row" scope="col">&nbsp;</th></tr>';
-                                        $offset = '+' . $offset_days . ' days';
+                                        //                                    $offset = '+' . $offset_days . ' days';
+                                    $offset = '+' . ($max_days -$delta) . ' days';
                                         $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
 
                                     }
 
-                                    echo '<!-- weekday names  -->';
-                                    echo '<tr><th class="text-center" scope="col">Bid Line</th>';
+                                    //                                echo '<!-- weekday names  -->';
+//                                echo '<tr><th class="text-center" scope="col">Bid Line</th>';
 
-                                    $stamp = strtotime( $schedule->start );
-                                    if ($first_day>1){
-                                        $offset = '+' . $first_day . ' days';
-                                        $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
-                                        }
-                                    $day = date('D', $stamp);
+//                                $stamp = strtotime( $start_date );
 
-                                    for ($d = $first_day; $d <= $last_day; $d++) {
-                                        if ($day=='Sat' OR $day=='Sun') {
-                                            echo '<th class="text-center week-end" scope="col">' . $day . '</th>';
-                                        } else {
-                                            echo '<th class="text-center" scope="col">' . $day . '</th>';
-                                        }
-                                        $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
-                                        $day = date('D', $stamp);
-                                    }
-                                    
-                                    echo '<th class="text-center" scope="col">Action</th></tr>';
+//                                if ($first_day>1){
+//       WRONG                      $offset = '+' . $first_day . ' days';
+//                                    $offset = '+' . ($max_days -$delta) . ' days';
+//                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
+//                                    }
+//                                $day = date('D', $stamp);
+//
+//                                for ($d = $first_day; $d <= $last_day; $d++) {
+//                                    if ($day=='Sat' OR $day=='Sun') {
+//                                        echo '<th class="text-center week-end" scope="col">' . $day . '</th>';
+//                                    } else {
+//                                        echo '<th class="text-center" scope="col">' . $day . '</th>';
+//                                    }
+//                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
+//                                    $day = date('D', $stamp);
+//                                }
+//
+//                                echo '<th class="text-center" scope="col">Action</th></tr>';
                                 @endphp
                                 </thead>
 
@@ -420,21 +427,24 @@
                                             @php
                                                 $stamp = strtotime( $schedule->start );
                                                 if ($first_day>1){
-                                                    $offset = '+' . $first_day . ' days';
-                                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
-                                                }
+//                                                $offset = '+' . $first_day . ' days';
+                                                $offset = '+' . ($max_days -$delta) . ' days';
+                                                $stamp = strtotime( date( 'Y/m/d', $stamp ) . $offset);
+                                            }
 
-                                                for ($d = $first_day; $d <= $last_day; $d++) {
-                                                    $day = date('D', $stamp);
-                                                    if ($day=='Sat' OR $day=='Sun') {
-                                                        echo '<td class="text-center line-code week-end" scope="col">';
-                                                    } else {
-                                                        echo '<td class="text-center line-code" scope="col">';
-                                                    }
-                                                    echo App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
+                                            for ($d = $first_day; $d <= $last_day; $d++) {
+                                                echo '<td class="text-center line-code" scope="col">';
 
-                                                    $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
-                                                }
+//                                                $day = date('D', $stamp);
+//                                                if ($day=='Sat' OR $day=='Sun') {
+//                                                    echo '<td class="text-center line-code week-end" scope="col">';
+//                                                } else {
+//                                                    echo '<td class="text-center line-code" scope="col">';
+//                                                }
+                                                echo App\ShiftCode::find($schedule_line->getCodeOfDay($schedule_line->id,$d))->shift_divs . '</td>';
+
+                                                $stamp = strtotime( date( 'Y/m/d', $stamp ) . "+1 days");
+                                            }
                                             @endphp
                                             <td>
                                                 <div class="row">

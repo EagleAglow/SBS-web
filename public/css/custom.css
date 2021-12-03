@@ -29,9 +29,7 @@ th.text-left.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0;  }
 td.text-left.compact {font-size: 0.75rem; padding:0 0 0 0; margin:0;  }
 table.table.compact {margin-bottom:0;} 
 
-
-th.week-end { border-left: 3px solid #38c172;border-right: 3px solid #38c172;}
-td.week-end { border-left: 3px solid #38c172;border-right: 3px solid #38c172;}
+th.week-end { border-left: 2px solid white;border-right: 2px solid white;background-color: #cde6f7;}
 
 div.shift-begin  { margin: 0; padding:0; font-size:0.7rem; color:#000;}
 div.shift-end  { margin: 0; padding:0; font-size:0.7rem; color:#000;}
