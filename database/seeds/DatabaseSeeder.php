@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PicksTableSeeder::class);
         $this->call(ParamsTableSeeder::class);
         $this->call(LogItemsTableSeeder::class);
+        $this->call(ExtrasTableSeeder::class);
     }
 }

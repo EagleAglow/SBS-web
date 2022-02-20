@@ -23,11 +23,12 @@
                     <a href="{{ url('superusers/picks') }}" class="btn btn-primary">Bidder Tagged Lines</a>
                 </div>
 
+                <div class="card-body my-squash">
+                    <a href="{{ url('superusers/info') }}" class="btn btn-primary">PHP Info</a>
+                </div>                
+
             </div>
         </div>
     </div>
-    @php
-//     echo phpinfo();
-    @endphp
 </div>
 @endsection

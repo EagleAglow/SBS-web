@@ -49,6 +49,16 @@ class ParamsTableSeeder extends Seeder
             // control "auto bidding" (takes highest ranking user pick for bid)
             DB::table('params')->insertOrIgnore([ 'param_name' => 'autobid-on-or-off', 'string_value' => 'off', ]);
 
+            // overtime calling: OT-call-state: none (initial or after overtime table erased), ready (to begin, next to call is no. 1),
+            //                                  running, paused, complete (after last one called)
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-call-state', 'string_value' => 'none', ]);
+
+            // next to call for OT: order value of overtime table; either 1 or actual next counter number (running/paused). Wraps to 1 after last call
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-call-next', 'integer_value' => 1, ]);
+
+            // message for OT: message to be sent by text or email
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-message', 'string_value' => 'Undefined message!', ]);
+
         }
     }
 }

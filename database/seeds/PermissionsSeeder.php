@@ -48,6 +48,9 @@ class PermissionsSeeder extends Seeder
         // add/edit/delete users
         Permission::create(['name' => 'role-permission-manage']);
 
+        // create permission to use overtime callup pages, will be assigned to supervisor role
+        Permission::create(['name' => 'OT-manage']);
+
         // create roles and assign initial permissions - used below for bidder groups
         $role1 = Role::create(['name' => 'bid-for-demo']);   // can bid for demonstration lines
         $role1->givePermissionTo('bid-self');
@@ -113,6 +116,8 @@ class PermissionsSeeder extends Seeder
         // supervisor role is ONLY for bidding someone else
         // a real person who is a supervisor can have an additional role for bidding themselves 
         $role2->givePermissionTo('bid-agent');
+        // manage overtime pages
+        $role2->givePermissionTo('OT-manage');
 
         $role3 = Role::create(['name' => 'admin']);
         $role3->givePermissionTo('schedule-edit');

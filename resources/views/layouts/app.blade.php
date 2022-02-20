@@ -100,6 +100,9 @@
                                     @if( !Request::is('supervisors/dash'))
                                         <a class="dropdown-item" href="{{ route('supervisors.dash') }}">Supervisor</a>
                                     @endif
+                                    @if( !Request::is('supervisors/overtime'))
+                                        <a class="dropdown-item" href="{{ route('supervisors.overtime') }}">Overtime</a>
+                                    @endif
                                 @endrole
                                 @role('admin')
                                     @if( !Request::is('admins/dash'))

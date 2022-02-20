@@ -77,6 +77,9 @@ Route::get('/bidders/dash/ics/{id}', 'BidderDashController@ics')->name('bidders.
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admins/dash', 'AdminDashController@index')->name('admins.dash');
 Route::get('/bidders/dash', 'BidderDashController@index')->name('bidders.dash');
+
+Route::get('/supervisors/overtime', 'OvertimeController@index')->name('supervisors.overtime');
+
 Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervisors.dash');
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
 
@@ -107,6 +110,7 @@ Route::prefix('superusers')->group(function () {
     Route::post('/schedulelines/show','ScheduleLineController@show')->name('schedulelines.show');
 
 
+    Route::resource('/info','InfoController');  // PHP info page
     Route::resource('/picks','PickController');
 });
 

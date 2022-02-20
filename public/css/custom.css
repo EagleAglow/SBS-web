@@ -258,3 +258,9 @@ to {transform:rotate(360deg);}
   border: 3px solid #a5cff1;
   border-radius: 0.25rem;
 }
+
+/* overtime pages */
+div.card-header.OT {
+  background-color:rgb(154, 240, 137);
+  border-bottom: 1px solid rgba(154, 240, 137, 0.507);
+}
