@@ -22,7 +22,7 @@ class ExtrasTableSeeder extends Seeder
             'email' => '',
             'text_number' => '',
             'voice_number' => '',
-            'call_order' => '1',
+            'offered' => 1.3,
         ]);
 
         DB::table('extras')->insertOrIgnore([
@@ -30,7 +30,7 @@ class ExtrasTableSeeder extends Seeder
             'email' => '',
             'text_number' => '',
             'voice_number' => '',
-            'call_order' => '2',
+            'offered' => 18.3,
         ]);
 
         DB::table('extras')->insertOrIgnore([
@@ -38,7 +38,7 @@ class ExtrasTableSeeder extends Seeder
             'email' => '',
             'text_number' => '',
             'voice_number' => '',
-            'call_order' => '3',
+            'offered' => 27.4,
         ]);
 
         DB::table('extras')->insertOrIgnore([
@@ -46,7 +46,7 @@ class ExtrasTableSeeder extends Seeder
             'email' => '',
             'text_number' => '',
             'voice_number' => '',
-            'call_order' => '4',
+            'offered' => 57.1,
         ]);
 
     }

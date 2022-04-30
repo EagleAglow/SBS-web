@@ -54,10 +54,16 @@ class ParamsTableSeeder extends Seeder
             DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-call-state', 'string_value' => 'none', ]);
 
             // next to call for OT: order value of overtime table; either 1 or actual next counter number (running/paused). Wraps to 1 after last call
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-call-next', 'integer_value' => 1, ]);
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-call-next', 'integer_value' => 0, ]);
 
             // message for OT: message to be sent by text or email
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-message', 'string_value' => 'Undefined message!', ]);
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-message', 'string_value' => '', ]);
+
+            // cycle time between people - seconds
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-cycle-time', 'integer_value' => 30, ]);   
+
+            // start time while waiting to cycle to next person
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-ref-time' ]);  // default to null
 
         }
     }

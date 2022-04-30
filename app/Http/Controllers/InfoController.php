@@ -34,4 +34,5 @@ class InfoController extends Controller {
             abort('401');
         }
     }
+
 }

@@ -78,8 +78,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/admins/dash', 'AdminDashController@index')->name('admins.dash');
 Route::get('/bidders/dash', 'BidderDashController@index')->name('bidders.dash');
 
-Route::get('/supervisors/overtime', 'OvertimeController@index')->name('supervisors.overtime');
-
 Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervisors.dash');
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
 
@@ -108,7 +106,6 @@ Route::prefix('superusers')->group(function () {
     Route::resource('/schedulelines','ScheduleLineController')->except(['show']);
     // handles pagination
     Route::post('/schedulelines/show','ScheduleLineController@show')->name('schedulelines.show');
-
 
     Route::resource('/info','InfoController');  // PHP info page
     Route::resource('/picks','PickController');
@@ -222,6 +219,16 @@ Route::post('/bidder/setbid{id}', 'BidByBidderController@setbid')->name('bidder.
 // supervisor bidding
 Route::resource('/supervisor/bidfor', 'BidBySupervisorController');
 Route::post('/supervisor/setbidfor{id}', 'BidBySupervisorController@setbidfor')->name('supervisor.setbidfor');
+
+// supervisor OT callin page
+Route::get('/supervisors/overtime', 'OvertimeController@index')->name('supervisors.overtime');
+Route::post('/supervisors/overtime/setmsg', 'OvertimeController@setmsg')->name('supervisors.overtime.setmsg');
+Route::get('/supervisors/overtime/start', 'OvertimeController@start')->name('supervisors.overtime.start');
+Route::get('/supervisors/overtime/pause', 'OvertimeController@pause')->name('supervisors.overtime.pause');
+Route::get('/supervisors/overtime/reset', 'OvertimeController@reset')->name('supervisors.overtime.reset');
+Route::get('/supervisors/overtime/resume', 'OvertimeController@resume')->name('supervisors.overtime.resume');
+
+
 
 // show selected schedule line to anyone - single line view
 Route::get('/zoom/line/{id}', 'ZoomController@line');
