@@ -87,45 +87,41 @@
                         </form>
                     </div>
 
-                    <div class="card-body my-squash2">
+                    <div class="card-body my-squash">
+                        <!-- Progress bar HTML -->
+                        <div class="progress" onclick="window.location.reload(true);">
+                            <div class="progress-bar" style="min-width: 20px;"></div>
+                        </div>
                             
-                        <!-- jQuery Script for countdown timer, from: https://stackoverflow.com/questions/20618355/how-to-write-a-countdown-timer-in-javascript -->
+                        <!-- jQuery Script - shows progress bar until refresh -->
                         <script type="text/javascript">
-                            function startTimer(duration, display) {
-                                var start = Date.now(),
-                                    diff,
-                                    minutes,
-                                    seconds;
-                                function timer() {
-                                    // get the number of seconds that have elapsed since 
-                                    // startTimer() was called
-                                    diff = duration - (((Date.now() - start) / 1000) | 0);
+                            var i = 40;
+                            function makeProgress(){
+                                if(i < 100){
+                                    i = i + 1;
+                                    $(".progress-bar").css("width", i + "%").text("6 Second Refresh Cycle...");
+                                } else {
+                                    <!-- reload from server, skip browser cache, but still get wierd problem with multiple hits on controller code
 
-                                    // does the same job as parseInt truncates the float
-                                    minutes = (diff / 60) | 0;
-                                    seconds = (diff % 60) | 0;
+                                   // window.location.reload(true);
+                                    -->
+                                }
+                                // Wait for sometime before running this script again
+                                // 100-40 => 60 increments of 0.5 seconds => 30 second refresh
 
-//                                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                               
 
-                                    if (diff > 0) {
-                                        display.textContent = minutes + ":" + seconds; 
-
+                                @php
+                                    if($state_param->string_value == 'running'){
+                                       //   echo 'setTimeout("makeProgress()", 500);';
+                                        echo 'setTimeout("makeProgress()", 100);';   // temporarily SIX seconds, normally longer (30?)
                                     } else {
-                                        // we're done on this person - NOTE: timer keeps running...
-                                        //display.textContent = minutes + ":" + seconds; 
-                                        display.textContent = "This one is done"; 
-                                        document.getElementById('active_person').style.backgroundColor='#ddf';
-                                        document.getElementById( 'next_active_person' ).style.display = 'inline';
-
-
+                                        echo 'clearTimeout("makeProgress()");';
+                                        echo 'i = 40;';
                                     }
-                                };
-                                // we don't want to wait a full second before the timer starts
-                                timer();
-                                setInterval(timer, 1000);
-
+                                @endphp
                             }
+                            makeProgress();
                         </script>
                     </div>
 
@@ -138,7 +134,9 @@
                     <a href="{{ url('supervisors/overtime/resume' ) }}"><button type="button" class="btn btn-primary">Resume</button></a>
                     <a href="{{ url('supervisors/overtime/reset' ) }}"><button type="button"  onclick="if(confirm('This only resets the call list. It does not change the message.\n\nAre you sure you want to RESET?')){return true;} else {return false;}" class="btn btn-primary">Reset</button></a>
 
-                    <div style="display:inline-block;float:right;"><span id="time" style="font-size:200%;">05:00</span></div>
+<div>See: https://stackoverflow.com/questions/20618355/how-to-write-a-countdown-timer-in-javascript<\div>
+                    <div>Registration closes in <span id="time">05:00</span> minutes!</div>
+
 
                     @else
                         @if($state_param->string_value=='paused')
@@ -181,7 +179,7 @@
                                 <tbody>
                                     @foreach($extras as $extra)
                                         @if (($extra->active == 1) and ($state_param->string_value == 'running'))
-                                        <tr id="active_person" style="background-color:#9af089;">
+                                        <tr style="background-color:#9af089;">
                                             <td class="text-center">{{ $extra->offered }}</td>
                                             <td class="text-center">{{ $extra->name }}</td>
                                             <td class="text-center">
@@ -209,8 +207,7 @@
                                             </td>
                                             <td>
                                                 <div style="margin-left:auto;margin-right:auto;">
-                                                    <a href="{{ url('#' ) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">>Next!</button></a>
-                                                    <div id="next_active_person" style="display:none;">Click me now...</div>
+                                                    <a href="{{ url('#' ) }}"><button type="button" class="btn btn-primary btn-my-edit pull-left">Next!</button></a>
                                                 </div>
                                             </td>
                                         </tr>

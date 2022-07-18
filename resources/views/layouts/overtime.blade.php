@@ -118,6 +118,13 @@
         $('div.alert').not('.alert-important').delay(1100).hide(900);  // closes flash message
         $('#flash-overlay-modal').modal();
 
+        // for countdown timer
+        window.onload = function () {
+            var fiveMinutes = 60 * 5,
+                display = document.querySelector('#time');
+            startTimer(fiveMinutes, display);
+        };
+
         // textarea character counter
         // from: https://laracasts.com/discuss/channels/general-discussion/suggestions-counting-characters-in-a-textarea
         (function($) {
