@@ -118,11 +118,16 @@
         $('div.alert').not('.alert-important').delay(1100).hide(900);  // closes flash message
         $('#flash-overlay-modal').modal();
 
-        // for countdown timer
+        // for timer
         window.onload = function () {
-            var fiveMinutes = 60 * 5,
-                display = document.querySelector('#time');
-            startTimer(fiveMinutes, display);
+            //var beganWhen = Date.now();
+            var display = document.querySelector('#time');
+            @php
+                $ref_time = App\Param::where('param_name','OT-ref-time')->first()->date_time_value;
+                $ref_time = strtotime($ref_time);
+                $cycle_time = App\Param::where('param_name','OT-cycle-time')->first()->integer_value;
+                echo "startTimer(" . $cycle_time . ", " . $ref_time . ", display);"
+            @endphp
         };
 
         // textarea character counter

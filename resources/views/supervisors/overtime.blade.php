@@ -89,17 +89,24 @@
 
                     <div class="card-body my-squash2">
                             
-                        <!-- jQuery Script for countdown timer, from: https://stackoverflow.com/questions/20618355/how-to-write-a-countdown-timer-in-javascript -->
+                        <!-- jQuery Script for timer, see: https://stackoverflow.com/questions/20618355/how-to-write-a-countdown-timer-in-javascript -->
                         <script type="text/javascript">
-                            function startTimer(duration, display) {
-                                var start = Date.now(),
-                                    diff,
+                            function startTimer(delta, reference, display) {
+                                var diff,
                                     minutes,
                                     seconds;
                                 function timer() {
                                     // get the number of seconds that have elapsed since 
                                     // startTimer() was called
-                                    diff = duration - (((Date.now() - start) / 1000) | 0);
+                                    // Note: Date.now is millisec, reference is seconds
+                                    //diff = (((Date.now() - reference) / 1000) | 0);
+                                    diff = ((Date.now()/1000 - reference) | 0);
+
+                                    // change appearance
+                                    if (diff > delta){
+                                        display.style.color = "red";
+                                    }
+
 
                                     // does the same job as parseInt truncates the float
                                     minutes = (diff / 60) | 0;
@@ -107,19 +114,8 @@
 
 //                                    minutes = minutes < 10 ? "0" + minutes : minutes;
                                     seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                                    if (diff > 0) {
-                                        display.textContent = minutes + ":" + seconds; 
-
-                                    } else {
-                                        // we're done on this person - NOTE: timer keeps running...
-                                        //display.textContent = minutes + ":" + seconds; 
-                                        display.textContent = "This one is done"; 
-                                        document.getElementById('active_person').style.backgroundColor='#ddf';
-                                        document.getElementById( 'next_active_person' ).style.display = 'inline';
-
-
-                                    }
+                                    display.textContent = minutes + ":" + seconds;
+                                    
                                 };
                                 // we don't want to wait a full second before the timer starts
                                 timer();

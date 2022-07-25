@@ -60,7 +60,7 @@ class ParamsTableSeeder extends Seeder
             DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-message', 'string_value' => '', ]);
 
             // cycle time between people - seconds
-            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-cycle-time', 'integer_value' => 30, ]);   
+            DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-cycle-time', 'integer_value' => 120, ]);   
 
             // start time while waiting to cycle to next person
             DB::table('params')->insertOrIgnore([ 'param_name' => 'OT-ref-time' ]);  // default to null

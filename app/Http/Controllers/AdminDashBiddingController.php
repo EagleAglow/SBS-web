@@ -489,15 +489,17 @@ class AdminDashBiddingController extends Controller
                             if(isset($param_text_test_phone)){
                                 if(strlen($param_text_test_phone) > 0){
                                     // send texts to test phone number
-                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
-                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                    // LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
+                                    LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified when the current bidder is done.');
                                 }
                             }
                         } else {
                             // send to active bidder, if they have a number
                             if (isset($user->phone_number)){
                                 if (strlen($user->phone_number)>0){
-                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                    // LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                    LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
                                     $note = 'Text for active bidder sent to: ' . $user->name . ' (' . $user->phone_number . ')';
                                     $log_item = new LogItem();
                                     $log_item->note = $note;
@@ -507,7 +509,7 @@ class AdminDashBiddingController extends Controller
                             // send to next bidder, if they have a number
                             if (isset($user2->phone_number)){
                                 if (strlen($user2->phone_number)>0){
-                                    LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                    LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified when the current bidder is done.');
                                     $note = 'Text for "next" bidder sent to: ' . $user2->name . ' (' . $user2->phone_number . ')';
                                     $log_item = new LogItem();
                                     $log_item->note = $note;
@@ -602,14 +604,14 @@ class AdminDashBiddingController extends Controller
                                 if(isset($param_text_test_phone)){
                                     if(strlen($param_text_test_phone) > 0){
                                         // send text to test phone number
-                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it continues, or call: ' . config('extra.app_bid_phone'));
+                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it resumes, or call: ' . config('extra.app_bid_phone'));
                                     }
                                 }
                             } else {
                                 // send to bidder, if they have a number
                                 if (isset($user->phone_number)){
                                     if (strlen($user->phone_number)>0){
-                                        LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it continues, or call: ' . config('extra.app_bid_phone'));
+                                        LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - Bidding is temporarily suspended. You will be notified if/when it resumes, or call: ' . config('extra.app_bid_phone'));
                                         $note = 'Pause text sent to: ' . $user->name . ' (' . $user->phone_number . ')';
                                         $log_item = new LogItem();
                                         $log_item->note = $note;
@@ -693,14 +695,16 @@ class AdminDashBiddingController extends Controller
                                     if(isset($param_text_test_phone)){
                                         if(strlen($param_text_test_phone) > 0){
                                             // send text to test phone number
-                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                            // LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                            LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
                                         }
                                     }
                                 } else {
                                     // send to bidder, if they have a number
                                     if (isset($user->phone_number)){
                                         if (strlen($user->phone_number)>0){
-                                            LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                            // LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
+                                            LaraTwilio::notify($user->phone_number, 'Hello '. $user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
                                             $note = 'Text for active bidder sent to: ' . $user->name . ' (' . $user->phone_number . ')';
                                             $log_item = new LogItem();
                                             $log_item->note = $note;
@@ -750,14 +754,14 @@ class AdminDashBiddingController extends Controller
                                         if(isset($param_text_test_phone)){
                                             if(strlen($param_text_test_phone) > 0){
                                                 // send text to test phone number
-                                                LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                                LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $user2->name . ' - You will be able to bid soon. You will be notified when the current bidder is done.');
                                             }
                                         }
                                     } else {
                                         // send to bidder, if they have a number
                                         if (isset($user2->phone_number)){
                                             if (strlen($user2->phone_number)>0){
-                                                LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified wihen the current bidder is done.');
+                                                LaraTwilio::notify($user2->phone_number, 'Hello '. $user2->name . ' - You will be able to bid soon. You will be notified when the current bidder is done.');
                                                 $note = 'Text for "next" bidder sent to: ' . $user2->name . ' (' . $user2->phone_number . ')';
                                                 $log_item = new LogItem();
                                                 $log_item->note = $note;

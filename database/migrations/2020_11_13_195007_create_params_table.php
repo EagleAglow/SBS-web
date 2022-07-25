@@ -18,6 +18,8 @@ class CreateParamsTable extends Migration
             $table->string('param_name');  // e.g next-bidder-number
             $table->date('date_value')->nullable();  // for date parameters
             // native format maybe?  - 'YYYY-MM-DD'
+            $table->dateTime('date_time_value')->nullable();  // for date-time parameters
+            // native format maybe?  - 'YYYY-MM-DD hh:mm:ss'
             $table->integer('integer_value')->nullable();  // e.g., next bidder in bidding process
             $table->boolean('boolean_value')->default(false);
             $table->string('string_value')->nullable();

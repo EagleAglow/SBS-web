@@ -221,6 +221,10 @@ class OvertimeController extends Controller
                 $next_up->save();
                 $param->string_value = 'running';
                 $param->save();
+                // set beginning of timer
+                $param = Param::where('param_name','OT-ref-time')->first();
+                $param->date_time_value = now();
+                $param->save();
                 flash('Started...')->success();
             } else {
                 if($param->string_value == 'running'){
