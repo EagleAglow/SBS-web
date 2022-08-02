@@ -155,6 +155,11 @@
                         @endauth
                     </div>
                 @endif
+
+                <div class="center links btn btn-primary">
+                    <a href="{{ url('bidboard') }}">View Bid Board</a>
+                </div>
+
                 @if(config('app.debug'))
                     <div><h4 style="color:red;">WARNING - This site is in DEBUG MODE!</h4></div>
                 @endif 
