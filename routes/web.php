@@ -81,10 +81,6 @@ Route::get('/bidders/dash', 'BidderDashController@index')->name('bidders.dash');
 Route::get('/supervisors/dash', 'SupervisorDashController@index')->name('supervisors.dash');
 Route::get('/superusers/dash', 'SuperuserDashController@index')->name('superusers.dash');
 
-// show board for bids to everyone, even not logged in => guest
-Route::get('/bidboard', 'BidBoardController@index')->name('bidboard');
-// show selected schedule line to anyone not logged in - single line view
-Route::get('/bidboard/line/{id}', 'BidBoardZoomController@line');
 
 
 // show selected schedule to anyone
@@ -231,6 +227,12 @@ Route::get('/supervisors/overtime/start', 'OvertimeController@start')->name('sup
 Route::get('/supervisors/overtime/pause', 'OvertimeController@pause')->name('supervisors.overtime.pause');
 Route::get('/supervisors/overtime/reset', 'OvertimeController@reset')->name('supervisors.overtime.reset');
 Route::get('/supervisors/overtime/resume', 'OvertimeController@resume')->name('supervisors.overtime.resume');
+
+
+// show board for bids to everyone, logged in or not
+Route::resource('/bidboard','BidBoardController')->except(['create']);
+// show selected schedule line to anyone not logged in - single line view
+Route::get('/bidboard/line/{id}', 'BidBoardZoomController@line');
 
 
 

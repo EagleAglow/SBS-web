@@ -3,16 +3,18 @@
 @section('content')
 
 @php
-    // modeled after /schedulelineset/index, but visible to anyone
+    // modeled after /bidboard/index, for logged in users
     // this page can not provide a reserve process, because we don't know who is viewing it...
     //   this means viewer may or may not be a bidder, and if bidder, be the the active bidder
     //   also, any bid group membership is unknown
 
     // get total days in cycle
-    if (!isset($max_days)){  $max_days = App\Schedule::where('id',$schedule_id)->first()->cycle_days;  }
+    $max_days = $schedule->cycle_days;
     // days to display
     $delta = '7';
     if (!isset($page)){ $page = 1; }
+    // cycles
+    $cycles = $schedule->cycle_count;
     if (isset($cycles)){
         if (($cycles <= 0 ) || ( 5 <= $cycles )){
             $cycles = 1;
@@ -31,75 +33,54 @@
         }
     }
     $last_day = $first_day + $delta - 1;
+
+    $param_name_or_taken = App\Param::where('param_name','name-or-taken')->first()->string_value;
+
+    // debugging aid
+    if (!isset($trap)){
+        $trap = '?';
+    }
+
+    if (!isset($page)){
+        $page = 1;
+    }
+
 @endphp
 
-    <div class="container">
+
+<div class="container">
 	<div class="row justify-content-center">
 		<div class="col-md-12">
 			<div class="card shadow">
-
-{{--
+{{-- 
                 <div class="card-header">
-                    <div class="row" style="color:red;font-size:0.85rem;margin-left:0.5rem;">DEBUGGING - REMOVE LATER - my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} /  trap=> {{$trap}}
+                    <div class="row" style="color:red;font-size:0.85rem;margin-left:0.5rem;">
+                      DEBUGGING - REMOVE LATER - my_selection=> {{$my_selection }} / next_selection=> {{$next_selection}} / show_all=> {{$show_all}} / trap=> {{$trap}}
                     </div>
                 </div>
 --}}
 
+
+
+
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-6">
-                            {{ __('Schedule: ') }}{{ $schedule_title }}
+                            {{ __('Schedule: ') }}{{ $schedule->title }}
                         </div>
-{{--
-                        button labels depend on values of: $my_selection, $next_selection, $show_all
-                        if $my_selection = $next_selection, then only one line group is available - don't show button
---}}                            
-
-                        @if( !($my_selection == $next_selection) )
-                            <div class="col">
-                                    <div>
-                                    <form action="{{ route('bidboard.show', $schedule_id) }}" method="GET">
-                                        <input type="hidden" name="first_day" value="{{ $first_day }}">
-                                        <input type="hidden" name="page" value="1">
-                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
-                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
-                                        <input type="hidden" name="go_next" value="yes">
-                                        @csrf
-                                        <button type="submit" class="btn btn-primary btn-shift float-right" style="margin-right:1rem;">
-                                            @foreach($list_codes as $list_code)
-                                                @if($my_selection == $list_code)
-                                                    <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">{{ $list_code }}</span>
-                                                @else
-                                                    <span style="padding:0 0.4rem;">{{ $list_code }}</span>
-                                                @endif
-                                            @endforeach
-                                            @if($my_selection == 'all')
-                                                <span style="border:1px solid white; border-radius:0.15rem; padding:0 0.4rem;">Combined</span>
-                                            @else
-                                                <span style="padding:0 0.4rem;">Combined</span>
-                                            @endif
-                                        </button>
-                                    </form>
-                                    </div>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
                 @include('flash::message')
-                @isset($schedule_lines)
-
+                
                 <div class="card-body my-squash">
                     <div class="table-responsive-md">
                         <table class="table table-striped">
                             <thead><div class="pagination-text"></div>
                             <tr>
-                            <th class="text-left btn-shift" scope="col">Group</th>
-                            <th class="text-left btn-shift" scope="col">Line</th>
-                            <th class="text-left btn-shift" scope="col">Comment</th>
-                            <th class="text-left btn-shift" scope="col">Status</th>
-                            <th class="text-right btn-shift" scope="col">Detail</th>
-                            </tr>
+                            <th class="text-center btn-shift" scope="col">
+
+
                             </thead>
 
                             <tbody>
@@ -107,12 +88,18 @@
                                 @foreach($schedule_lines as $schedule_line)
                                     <tr>
                                         <td class="text-center">
-                                            <span class="line-group">{{ App\LineGroup::where('id',$schedule_line->line_group_id)->get()->first()->code }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="line-number">{{ $schedule_line->line }}</span>
-                                            </td>
-                                        <td>
+                                            @php
+                                            // handle blackout
+                                            if ($schedule_line->blackout == 1){
+                                                echo '<div class="blackout"><span class="blackout"></span><span class="line-number">';
+                                            } else {
+                                                echo '<div><span class="line-number">';
+                                            }
+                                            // line_group
+                                            $line_group_code = App\LineGroup::where('id',$schedule_line->line_group_id)->get()->first()->code
+                                            @endphp
+                                            {{ $schedule_line->line }}</span>
+                                            <span class="line-group">{{  $line_group_code  }}</span>
                                             @php
                                             // comment
                                             $comment = $schedule_line->comment; 
@@ -125,42 +112,39 @@
                                             if ($schedule_line->offsite == 1){
                                                 $comment = $comment . ', OFFSITE';
                                             }
-                                            if ($schedule_line->blackout == 1){
-                                                $comment = $comment . ', BLACK OUT';
-                                            }
-                                            echo '<span class="line-group">' . $comment . '</span>';
+                                            echo '<span class="line-comment">' . $comment . '</span>';
                                             @endphp
-                                        </td>
-                                        <td>
-                                            @if( ($schedule_line->blackout == 1) )
+
+                                            @if( (!$schedule->approved == 1) or ($schedule_line->blackout == 1) )
                                                     <!-- no approved schedule, line id tagged "black out"  -->
                                                     <span style="font-size:0.7rem;text-align:center;margin-top:-0.3rem;color:red;"><b>NOT AVAILABLE</b></span>
                                                 @else
                                                     @if(isset($schedule_line->user_id))
                                                         <!-- has been bid already -->
                                                         <span style="font-size:0.7rem;text-align:center;margin-top:-0.3rem;color:red;"><b>TAKEN</b></span>
-                                                    @else
-                                                        <span style="font-size:0.9rem;text-align:center;margin-top:-0.3rem;color:green;"><b>OPEN</b></span>
                                                     @endif
                                                 @endif
 
+
+                                            </div>
                                         </td>
 
-
-
-
                                         <td>
+                                            <div class="row">
                                                 <div style="margin-left:auto;margin-right:auto;">
                                                 <form action="{{ url('bidboard/line', $schedule_line->id ) }}" method="GET">
                                                     <input type="hidden" name="id" value="{{ $schedule_line->id }}">
+                                                    <input type="hidden" name="line_group_code" value="{{ $line_group_code }}">
                                                     <input type="hidden" name="first_day" value="{{ $first_day }}">
                                                     <input type="hidden" name="page" value="{{ $page }}">
                                                     <input type="hidden" name="my_selection" value="{{ $my_selection }}">
                                                     <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                    <input type="hidden" name="show_all" value={{$show_all}}>
                                                     @csrf
                                                     <button type="submit" class="btn btn-primary btn-my-edit float-right">Zoom</button>
                                                 </form>
 
+                                                </div>
 
                                             </div>
                                         </td>
@@ -171,22 +155,18 @@
 
                                 @php
                                     // things to include with pagination 
-                                    $params = array('schedule_id'=>$schedule_id, 'schedule_title'=>$schedule_title, 'start_date'=>$start_date,
-                                        'cycles'=>$cycles, 'first_day'=>$first_day, 'max_days'=>$max_days, 'my_selection'=>$my_selection,
-                                        'next_selection'=>$next_selection  );
+                                    $params = array( 'first_day'=>$first_day,'my_selection'=>$my_selection,'next_selection'=>$next_selection,'show_all'=>$show_all);
                                 @endphp
-                                {{$schedule_lines->appends($params)->links() }}    
+                                {{ $schedule_lines->appends($params)->links() }}    
+
                             </tbody>
                         </table>
                     </div>
                 </div>
-                @else
-                    <div class="card-body my-squash">Schedules lines not found!</div>
-                    </div>
-                @endisset
             </div>
         </div>
     </div>
 </div>
+
 
 @endsection

@@ -72,6 +72,30 @@
                         </tbody>
                     </table>
                     </div>
+
+
+                    <div class="card-body my-squash">
+
+
+                    <form action="{{ url('bidboard' , $schedule->id ) }}" method="GET">
+                        <input type="hidden" name="first_day" value="{{ $first_day }}">
+                        <input type="hidden" name="last_day" value="{{ $last_day }}">
+                        <input type="hidden" name="page" value="{{ $page }}">
+                        <input type="hidden" name="trap" value="{{ $trap }}">
+                        <input type="hidden" name="schedule" value="{{ $schedule }}">
+                        <input type="hidden" name="line_group" value="{{ $line_group }}">
+                        <input type="hidden" name="list_codes" value="{{ $list_codes }}">
+                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                        <input type="hidden" name="show_all" value={{$show_all}}>
+                        @csrf
+                        <button type="submit" class="btn btn-primary btn-my-edit float-right">Back</button>
+                    </form>
+                    </div>
+
+
+
+
                 </div>
 			</div>
         </div>

@@ -28,7 +28,7 @@ class ScheduleLineSetController extends Controller {
 
     /**
     * Display a listing of the resource - initial page for pagination
-    *
+    **
     * @return \Illuminate\Http\Response
     */
         public function index(Request $request) {
