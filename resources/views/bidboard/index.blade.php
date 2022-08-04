@@ -114,21 +114,14 @@
                                             </td>
                                         <td>
                                             @php
-                                            // comment
-                                            $comment = $schedule_line->comment; 
-                                            if ($schedule_line->nexus == 1){
-                                                $comment = $comment . ', NEXUS';
-                                            }
-                                            if ($schedule_line->barge == 1){
-                                                $comment = $comment . ', BARGE';
-                                            }
-                                            if ($schedule_line->offsite == 1){
-                                                $comment = $comment . ', OFFSITE';
-                                            }
-                                            if ($schedule_line->blackout == 1){
-                                                $comment = $comment . ', BLACK OUT';
-                                            }
-                                            echo '<span class="line-group">' . $comment . '</span>';
+                                            $note = '';
+                                            if (strlen($schedule_line->comment) > 0){ $note = $note . $schedule_line->comment . ', '; }
+                                            if ($schedule_line->nexus==1){ $note = $note . 'NEXUS, '; }
+                                            if ($schedule_line->barge==1){ $note = $note . 'Barge, '; }
+                                            if ($schedule_line->offsite==1){ $note = $note . 'Offsite, '; }
+                                            if ($schedule_line->blackout==1){ $note = $note . 'Blackout (This line can not be bid.), '; }
+                                            if ( substr( strrev($note),0,2 ) == ' ,' ){$note = substr($note,0,strlen($note)-2);}
+                                            echo '<span class="line-group">' . $note . '</span>';
                                             @endphp
                                         </td>
                                         <td>

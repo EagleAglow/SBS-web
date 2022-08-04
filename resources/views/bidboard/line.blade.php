@@ -15,11 +15,12 @@
                         {{$schedule_line->line}} &nbsp;&nbsp;{{ $line_group->code }}</span></b>&nbsp;&nbsp; ({{$line_group->name}})
                         @php
                             $note = 'Note: ';
-                            $note = $note . $schedule_line->comment;
-                            if ($schedule_line->nexus==1){ $note = $note . ', NEXUS'; }
-                            if ($schedule_line->barge==1){ $note = $note . ', Barge'; }
-                            if ($schedule_line->offsite==1){ $note = $note . ', Offsite'; }
-                            if ($schedule_line->blackout==1){ $note = $note . ', Blackout (This line can not be bid.)'; }
+                            if (strlen($schedule_line->comment) > 0){ $note = $note . $schedule_line->comment . ', '; }
+                            if ($schedule_line->nexus==1){ $note = $note . 'NEXUS, '; }
+                            if ($schedule_line->barge==1){ $note = $note . 'Barge, '; }
+                            if ($schedule_line->offsite==1){ $note = $note . 'Offsite, '; }
+                            if ($schedule_line->blackout==1){ $note = $note . 'Blackout (This line can not be bid.), '; }
+                            if ( substr( strrev($note),0,2 ) == ' ,' ){$note = substr($note,0,strlen($note)-2);}
                             if ($note == 'Note: '){ $note = 'Note: None';}
                         @endphp
                     </div>
