@@ -576,7 +576,7 @@ class UserController extends Controller {
                                     if(strlen($param_text_test_phone) > 0){
                                         // send text to test phone number
                                         // LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
-                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
+                                        LaraTwilio::notify($param_text_test_phone, 'TEST: Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone') . ", or attend the Boardroom if you are on site.);
                                     }
                                 }
                             } else {
@@ -584,7 +584,7 @@ class UserController extends Controller {
                                 if (isset($bid_user->phone_number)){
                                     if (strlen($bid_user->phone_number)>0){
                                         // LaraTwilio::notify($user->phone_number, 'Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Login at: ' . config('extra.login_url') . ' or call: ' . config('extra.app_bid_phone'));
-                                        LaraTwilio::notify($user->phone_number, 'Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone'));
+                                        LaraTwilio::notify($user->phone_number, 'Hello '. $bid_user->name . ' - You can bid now, you are the active bidder.  Call: ' . config('extra.app_bid_phone') . ", or attend the Boardroom if you are on site.);
                                         $note = 'Text for active bidder sent to: ' . $bid_user->name . ' (' . $bid_user->phone_number . ')';
                                         $log_item = new LogItem();
                                         $log_item->note = $note;
