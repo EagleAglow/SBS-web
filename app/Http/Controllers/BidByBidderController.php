@@ -147,6 +147,35 @@ abort('401');  // test to see if we are hitting this
     public function setbid($id) {
         if (Auth::user()->can('bid-now')){
             $schedule_line = ScheduleLine::findOrFail($id);
+            // some extra tests
+            if ( !is_null($schedule_line->user_id) ){
+                flash('Bid FAILED - Line already has a bidder assigned!')->warning()->important();
+                return redirect()->route('bidders.dash'); 
+            }
+            if ( !is_null($schedule_line->bid_at) ){
+                flash('Bid FAILED - Line has already been bid!')->warning()->important();
+                return redirect()->route('bidders.dash'); 
+            }
+            if ( !( (Schedule::where('id', $schedule_line->schedule_id)->first()->active) == 1) ){
+                flash('Bid FAILED - Line is not in an active schedule!')->warning()->important();
+                return redirect()->route('bidders.dash'); 
+            }
+
+            // identify valid line groups for this bidder
+            $role_names = Auth::user()->getRoleNames();
+            $list_ids = array();  //empty array for line group ids
+            $list_codes = array();  //empty array for line group codes (field = 'name')
+            foreach ($role_names as $role_name) {
+                if (strpos($role_name, 'bid-for-') !== false) {
+                    $look4 = strtoupper(str_replace('bid-for-','',$role_name));
+                    $list_ids[] = LineGroup::where('code',$look4)->first()['id'];
+                    $list_codes[] = $look4;
+                }
+            }
+            if ( !in_array(LineGroup::where('id', $schedule_line->line_group_id)->first()-> code, $list_codes ) ){
+                flash('Bid FAILED - Bidder Group vs. Line Group mismatch!')->warning()->important();
+                return redirect()->route('bidders.dash'); 
+            }
 
             // clone the line for mirror bidder
             if (Auth::user()->hasRole('flag-mirror')){
@@ -180,7 +209,7 @@ abort('401');  // test to see if we are hitting this
                 $schedule_line_clone->line_natural = ScheduleLine::natural($test_line);
                 $schedule_line_clone->schedule_id = $schedule_line->schedule_id;
                 $schedule_line_clone->line_group_id = $schedule_line->line_group_id;
-                $schedule_line_clone->comment = $schedule_line->comment . ', Mirror Of Line ' . $line;
+                $schedule_line_clone->comment = $schedule_line->comment . ' Mirror of line ' . $line;
                 $schedule_line_clone->blackout = $schedule_line->blackout;
                 $schedule_line_clone->nexus = $schedule_line->nexus;
                 $schedule_line_clone->barge = $schedule_line->barge;

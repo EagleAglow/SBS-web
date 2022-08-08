@@ -79,6 +79,8 @@ class UserScheduleShowController extends Controller {
             }
         }
 
+
+        
         // presentation selection = which line groups to show
         // if the bidder can only bid one line group, set 'my_selection' and 'next_selection' to that group code
         // if the bidder can bid more than one line group, rotate 'my_selection' through 'all' (lowercase to differ from any

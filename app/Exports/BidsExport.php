@@ -20,15 +20,11 @@ class BidsExport implements FromArray, WithHeadings
     {
         $my_header = array('BIDDER','SCHEDULE', 'GROUP', 'LINE', 'BID TIME (GMT)', 'BLACKOUT', 'NEXUS', 'BARGE', 'OFFSITE', 'COMMENT');
 
-        // lookup maximum day number in schedule(s) that were bid
-        $day_max = DB::table('schedule_lines')->whereNotNull('user_id')->join('users', 'user_id', '=', 'users.id')
-        ->join('schedules', 'schedule_id', '=', 'schedules.id')
-        ->join('line_days','schedule_line.id','=','line_days.schedule_line_id')
-        ->select('line_days.day_number')
-        ->max();
+        // lookup maximum day number in active schedule(s)
+        $day_max = Schedule::where('active','=',1)->max('cycle_days');
 
         // add day columns
-        for ($n = 1; $n <= day_max; $n++) {
+        for ($n = 1; $n <= $day_max; $n++) {
             $d = 'DAY_' . substr(('000' . $n),-3);
             $my_header[] = $d;
         }
@@ -41,7 +37,7 @@ class BidsExport implements FromArray, WithHeadings
                 ->join('schedules', 'schedule_id', '=', 'schedules.id')
                 ->join('line_groups', 'line_group_id', '=', 'line_groups.id')
                 ->select('users.name as bidder_name', 'title', 'code', 'line', 'bid_at', 'blackout', 'nexus', 'barge', 'offsite', 'comment', 'schedule_lines.id')
-                ->get();
+                ->orderBy('bid_at')->get();
 
         // replace 'id' with first day code, add more elements for others - PHP is weird!
         foreach ($lines as $line){
