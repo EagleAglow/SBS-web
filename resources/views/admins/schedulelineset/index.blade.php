@@ -299,6 +299,16 @@
                                                     </form>
                                                 </div>
                                                 <div>
+                                                    <form action="{{ route('schedulelineset.ics', $schedule_line->id) }}" method="GET" class="get">
+                                                        <input type="hidden" name="_method" value="GET">
+                                                        <input type="hidden" name="my_selection" value="{{ $my_selection }}">
+                                                        <input type="hidden" name="next_selection" value="{{ $next_selection }}">
+                                                        @csrf
+                                                        {{ method_field('GET') }}
+                                                        <button type="submit" class="btn btn-primary btn-my-edit" style="margin-right:0.5rem;">iCal</button>
+                                                    </form>
+                                                </div>
+                                                <div>
                                                     <form action="{{ route('schedulelineset.clone', $schedule_line->id) }}" method="GET" class="get">
                                                         <input type="hidden" name="_method" value="GET">
                                                         <input type="hidden" name="my_selection" value="{{ $my_selection }}">

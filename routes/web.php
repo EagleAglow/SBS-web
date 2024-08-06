@@ -126,6 +126,8 @@ Route::prefix('admins')->group(function () {
     Route::get('/schedulelinset{schedule_id}','ScheduleLineSetController@create')->name('schedulelineset.create');
     // clone line
     Route::get('/schedulelinset/clone{schedule_id}','ScheduleLineSetController@clone')->name('schedulelineset.clone');
+    // ics file
+    Route::get('/schedulelinset/ics{schedule_id}','ScheduleLineSetController@ics')->name('schedulelineset.ics');
 
     // schedules
     Route::resource('/schedules','ScheduleController');
